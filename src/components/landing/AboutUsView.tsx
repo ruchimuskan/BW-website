@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import { useRouter } from "next/navigation";
 import {
   motion,
@@ -229,7 +229,7 @@ export function AboutUsView() {
             className="relative order-1 mx-auto w-full max-w-lg lg:order-2 lg:max-w-none"
           >
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#dce8a8]/60 shadow-[0_28px_56px_-28px_rgba(40,54,20,0.5)] sm:rounded-3xl">
-              <Image
+              <ResilientImage
                 src={landingCaptainImage}
                 alt="Bull Wave Rides captain"
                 fill
@@ -254,7 +254,7 @@ export function AboutUsView() {
                   : { duration: 5, repeat: Infinity, ease: "easeInOut" }
               }
             >
-              <Image
+              <ResilientImage
                 src={landingAssets.cityBike}
                 alt="Bull Wave Rides bike ride"
                 fill
@@ -389,7 +389,7 @@ export function AboutUsView() {
       {/* Partner CTA */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <Image
+          <ResilientImage
             src={landingAssets.slideFleet}
             alt=""
             fill

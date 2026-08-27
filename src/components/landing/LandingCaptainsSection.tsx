@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import { BrandImageOverlay, BRAND_PHOTO_CLASS } from "@/components/brand/BrandImageOverlay";
 import { AnimateIn } from "@/components/motion";
 import { DownloadAppMenu } from "@/components/landing/DownloadAppMenu";
@@ -28,7 +28,7 @@ export function LandingCaptainsSection() {
         <AnimateIn>
           <div className="grid items-stretch overflow-hidden bw-elevated-card lg:grid-cols-2">
             <div className="relative order-1 min-h-[240px] sm:min-h-[300px] lg:order-2 lg:min-h-full">
-              <Image
+              <ResilientImage
                 src={landingCaptainImage}
                 alt="Bull Wave Rides captain partner"
                 fill

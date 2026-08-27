@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowRight, Clock } from "lucide-react";
@@ -92,7 +92,7 @@ export function BlogsView() {
                   className="group flex h-full flex-col overflow-hidden rounded-xl border border-primary/12 bg-white shadow-[0_16px_40px_-28px_rgba(184,217,38,0.3)] transition-transform duration-200 hover:-translate-y-1 sm:rounded-2xl"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden bg-[#f7fbe8]">
-                    <Image
+                    <ResilientImage
                       src={post.image}
                       alt={post.imageAlt}
                       fill

@@ -26,11 +26,7 @@ export function LandingFaqSection() {
       id="faqs"
       className="relative scroll-mt-20 overflow-hidden px-4 py-14 sm:px-5 md:px-6 lg:px-8 sm:py-20 lg:py-24"
     >
-      <PremiumSectionBackdrop
-        src="/images/landing/premium/atmosphere.png"
-        opacity={0.12}
-        side="left"
-      />
+      <PremiumSectionBackdrop opacity={0.12} side="left" />
       <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-secondary/15 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 bottom-8 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
 

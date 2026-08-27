@@ -22,11 +22,7 @@ export function LandingPillarsSection() {
 
   return (
     <section className="relative overflow-hidden px-4 py-16 sm:px-5 md:px-6 lg:px-8 sm:py-20 lg:py-24">
-      <PremiumSectionBackdrop
-        src="/images/landing/premium/atmosphere.png"
-        opacity={0.09}
-        side="center"
-      />
+      <PremiumSectionBackdrop opacity={0.09} side="center" />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       {!reduceMotion && (
         <motion.div

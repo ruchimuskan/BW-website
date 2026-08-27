@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
@@ -126,7 +126,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
                     {String(index + 1).padStart(2, "0")}
                   </div>
                   <div className="relative aspect-[16/10] overflow-hidden bg-[#f7fbe8]">
-                    <Image
+                    <ResilientImage
                       src={card.image}
                       alt={card.alt}
                       fill

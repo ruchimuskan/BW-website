@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
+import { resolveBrandImageSrc } from "@/lib/brand-image-src";
 import { cn } from "@/lib/utils";
 
 interface VehicleOptionImageProps {
@@ -24,13 +25,13 @@ function shouldSkipOptimize(src: string) {
 export function VehicleOptionImage({
   src,
   alt,
-  fallbackSrc = "/images/services/car.png",
+  fallbackSrc = "/images/services/car.webp",
   className,
 }: VehicleOptionImageProps) {
-  const [current, setCurrent] = useState(src || fallbackSrc);
+  const [current, setCurrent] = useState(resolveBrandImageSrc(src || fallbackSrc));
 
   useEffect(() => {
-    setCurrent(src || fallbackSrc);
+    setCurrent(resolveBrandImageSrc(src || fallbackSrc));
   }, [src, fallbackSrc]);
 
   return (

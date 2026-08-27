@@ -109,10 +109,10 @@ export const landingAssets = {
   bestFares: BRAND_IMAGES.featureFares,
   neverTooFar: BRAND_IMAGES.featureCoverage,
   serviceBike: "/images/pic-14.webp",
-  serviceAuto: "/images/services/auto.png",
-  serviceCab: "/images/services/car.png",
-  serviceParcel: "/images/services/parcel.png",
-  serviceAmbulance: "/images/services/ambulance.png",
+  serviceAuto: "/images/services/auto.webp",
+  serviceCab: "/images/services/car.webp",
+  serviceParcel: "/images/services/parcel.webp",
+  serviceAmbulance: "/images/services/ambulance.webp",
 } as const;
 
 export const landingHeroImage = landingAssets.cityCab;

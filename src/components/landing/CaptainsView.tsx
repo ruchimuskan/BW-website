@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import {
@@ -10,6 +9,7 @@ import {
   ShieldCheck,
   Wallet,
 } from "lucide-react";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import { BrandImageOverlay, BRAND_PHOTO_CLASS } from "@/components/brand/BrandImageOverlay";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
 import { DownloadAppMenu } from "@/components/landing/DownloadAppMenu";
@@ -74,7 +74,7 @@ export function CaptainsView() {
             className="relative order-1 mx-auto w-full max-w-lg lg:order-2 lg:max-w-none"
           >
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#dce8a8]/60 shadow-[0_28px_56px_-28px_rgba(40,54,20,0.5)] sm:rounded-3xl lg:aspect-[5/4]">
-              <Image
+              <ResilientImage
                 src={landingCaptainImage}
                 alt="Bull Wave Rides captain partner"
                 fill
@@ -204,7 +204,7 @@ export function CaptainsView() {
         <div className="mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-2 lg:gap-12">
           <AnimateIn className="relative order-1 overflow-hidden rounded-2xl border border-[#dce8a8]/60 shadow-[0_24px_48px_-28px_rgba(40,54,20,0.4)] sm:rounded-3xl">
             <div className="relative aspect-[16/11] w-full">
-              <Image
+              <ResilientImage
                 src={landingAssets.slideFleet}
                 alt="Bull Wave Rides captain fleet"
                 fill

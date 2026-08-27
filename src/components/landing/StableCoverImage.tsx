@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { PremiumImage } from "@/components/brand/PremiumImage";
 import { BRAND_PHOTOS } from "@/constants/brand-images";
+import { resolveBrandImageSrc } from "@/lib/brand-image-src";
 import { cn } from "@/lib/utils";
 
 interface StableCoverImageProps {
@@ -27,10 +28,10 @@ export function StableCoverImage({
   fallbackSrc = BRAND_PHOTOS.limeCab,
   quality = 90,
 }: StableCoverImageProps) {
-  const [current, setCurrent] = useState(src || fallbackSrc);
+  const [current, setCurrent] = useState(resolveBrandImageSrc(src || fallbackSrc));
 
   useEffect(() => {
-    setCurrent(src || fallbackSrc);
+    setCurrent(resolveBrandImageSrc(src || fallbackSrc));
   }, [src, fallbackSrc]);
 
   return (

@@ -15,8 +15,10 @@ Local files in this folder. Paths are `/images/<filename>` (served from `public/
 | `pic-9.png` | Coverage (Why WaveGo) |
 | `pic-10.png` | Home promo banner — app + cab, “Ride anytime, anywhere” |
 | `pic-11.png` | Street cab lifestyle — home promo, landing hero, gallery |
-| `pic-12.png` | Landing hero banner — “Rides, Anytime Anywhere” |
-| `pic-13.png` | Studio lime sedan — cab tiles, gallery, rentals |
-| `pic-14.png` | Studio lime motorcycle — bike tiles, gallery, rentals |
+| `pic-12.webp` | Landing hero banner — “Rides, Anytime Anywhere” |
+| `pic-13.png` / `.webp` | Studio lime sedan — cab tiles, gallery, rentals |
+| `pic-14.png` / `.webp` | Studio lime motorcycle — bike tiles, gallery, rentals |
+| `landing/captain-partner.webp` | Captains / About / Safety / Blogs partner hero |
+| `features/quick-pickup.webp` | Safety “For Customers” and related cards |
 
 Photos without baked-in text (`img-*`, `pic-11`, `pic-13`) use `object-cover`. Promo banners and white-studio cutouts (`pic-10`, `pic-12`, `pic-14`, and `pic-4`–`pic-9`) use `object-contain` so headlines and vehicles stay fully visible. Swap a file here, then hard-refresh (`Ctrl + Shift + R`).

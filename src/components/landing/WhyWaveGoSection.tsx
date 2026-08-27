@@ -44,11 +44,7 @@ export function WhyWaveGoSection() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <PremiumSectionBackdrop
-        src="/images/landing/premium/atmosphere.png"
-        opacity={0.14}
-        side="full"
-      />
+      <PremiumSectionBackdrop opacity={0.14} side="full" />
 
       <div className="relative z-10 mx-auto max-w-[90rem]">
         <AnimateIn className="mb-10 max-w-2xl lg:mb-16">

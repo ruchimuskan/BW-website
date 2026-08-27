@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
 import { BRAND_IMAGE_SIZES } from "@/constants/brand-images";
+import { resolveBrandImageSrc } from "@/lib/brand-image-src";
 import { cn } from "@/lib/utils";
 
 interface ServiceImageProps {
@@ -32,15 +33,15 @@ export function ServiceImage({
   alt,
   className,
   imageClassName,
-  fallbackSrc = "/images/services/car.png",
+  fallbackSrc = "/images/services/car.webp",
   blend = "multiply",
   priority = false,
 }: ServiceImageProps) {
-  const [current, setCurrent] = useState(src || fallbackSrc);
+  const [current, setCurrent] = useState(resolveBrandImageSrc(src || fallbackSrc));
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setCurrent(src || fallbackSrc);
+    setCurrent(resolveBrandImageSrc(src || fallbackSrc));
     setLoaded(false);
   }, [src, fallbackSrc]);
 

@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronRight, Minus, Plus, ShieldCheck } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import { ROUTES } from "@/constants/routes";
 import { BrandImageOverlay, BRAND_PHOTO_CLASS } from "@/components/brand/BrandImageOverlay";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
@@ -90,7 +90,7 @@ export function SafetyImageCollage({ images }: { images: readonly CollageImage[]
           )}
         >
           <div className="relative h-full w-full overflow-hidden rounded-2xl border border-white/60 bg-[#f7fbe8] shadow-[0_22px_50px_-28px_rgba(184,217,38,0.55)] ring-1 ring-primary/10 transition-transform duration-500 hover:scale-[1.03]">
-            <Image
+            <ResilientImage
               src={img.src}
               alt={img.alt}
               fill
@@ -128,7 +128,7 @@ export function SafetyOffsetImage({
         )}
       />
       <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-primary/15 bg-[#f7fbe8] shadow-[0_24px_56px_-30px_rgba(184,217,38,0.5)] ring-1 ring-white/50">
-        <Image
+        <ResilientImage
           src={src}
           alt={alt}
           fill

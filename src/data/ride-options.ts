@@ -30,7 +30,7 @@ export const RIDE_VEHICLE_OPTIONS: RideVehicleOption[] = [
     eta: "6 mins",
     price: 433,
     tagline: "No haggling, just easy rides",
-    image: "/images/services/auto.png",
+    image: "/images/services/auto.webp",
   },
   {
     id: "cab",
@@ -38,7 +38,7 @@ export const RIDE_VEHICLE_OPTIONS: RideVehicleOption[] = [
     eta: "8 mins",
     price: 520,
     tagline: "Comfortable rides for you",
-    image: "/images/services/car.png",
+    image: "/images/services/car.webp",
   },
   {
     id: "parcel",
@@ -46,7 +46,7 @@ export const RIDE_VEHICLE_OPTIONS: RideVehicleOption[] = [
     eta: "15 mins",
     price: 189,
     tagline: "Quick, secure & insured deliveries",
-    image: "/images/services/parcel.png",
+    image: "/images/services/parcel.webp",
   },
   {
     id: "travel",
@@ -54,7 +54,7 @@ export const RIDE_VEHICLE_OPTIONS: RideVehicleOption[] = [
     eta: "30 mins",
     price: 1200,
     tagline: "One app, all solutions",
-    image: "/images/services/travel.png",
+    image: "/images/services/travel.webp",
   },
   {
     id: "ambulance",
@@ -62,7 +62,7 @@ export const RIDE_VEHICLE_OPTIONS: RideVehicleOption[] = [
     eta: "10 mins",
     price: 800,
     tagline: "Emergency medical transport",
-    image: "/images/services/ambulance.png",
+    image: "/images/services/ambulance.webp",
   },
 ];
 

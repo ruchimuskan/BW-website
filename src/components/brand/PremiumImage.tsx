@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BrandImageOverlay } from "@/components/brand/BrandImageOverlay";
 import { BRAND_IMAGE_SIZES } from "@/constants/brand-images";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
+import { imageFallbackChain, resolveBrandImageSrc } from "@/lib/brand-image-src";
 import { cn } from "@/lib/utils";
 
 type PremiumImageProps = {
@@ -41,11 +42,17 @@ export function PremiumImage({
   overlay = "default",
   objectPosition,
 }: PremiumImageProps) {
-  const [current, setCurrent] = useState(src);
+  const chain = useMemo(
+    () => imageFallbackChain(src, fallbackSrc),
+    [src, fallbackSrc],
+  );
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    setCurrent(src);
-  }, [src]);
+    setIndex(0);
+  }, [src, fallbackSrc]);
+
+  const current = chain[Math.min(index, chain.length - 1)] ?? resolveBrandImageSrc(src);
 
   const imageProps = fill
     ? { fill: true as const, sizes }
@@ -58,6 +65,7 @@ export function PremiumImage({
         alt={alt}
         priority={priority}
         quality={quality}
+        loading={priority ? undefined : "lazy"}
         className={cn(
           "object-cover object-center will-change-transform",
           "transition-transform duration-700 ease-out group-hover/photo:scale-[1.045]",
@@ -66,7 +74,7 @@ export function PremiumImage({
         style={objectPosition ? { objectPosition } : undefined}
         {...imageProps}
         onError={() => {
-          if (fallbackSrc && current !== fallbackSrc) setCurrent(fallbackSrc);
+          setIndex((i) => (i < chain.length - 1 ? i + 1 : i));
         }}
       />
       {overlay !== "none" ? <BrandImageOverlay variant={overlay} /> : null}
