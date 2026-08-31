@@ -66,9 +66,10 @@ export function PremiumImage({
         priority={priority}
         quality={quality}
         loading={priority ? undefined : "lazy"}
+        unoptimized
         className={cn(
-          "object-cover object-center will-change-transform",
-          "transition-transform duration-700 ease-out group-hover/photo:scale-[1.045]",
+          "object-cover object-center",
+          "transition-transform duration-700 ease-out group-hover/photo:scale-[1.03]",
           imageClassName,
         )}
         style={objectPosition ? { objectPosition } : undefined}

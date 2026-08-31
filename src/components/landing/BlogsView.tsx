@@ -36,26 +36,23 @@ export function BlogsView() {
     <MarketingPageShell>
       <LandingHeader />
 
-      <section className="relative overflow-hidden bw-hero-atmosphere border-b border-primary/10 px-4 py-14 sm:px-6 sm:py-20">
+      <section className="relative overflow-hidden border-b border-[#eef5d4] bg-[#f8faf2] px-4 py-12 sm:px-6 sm:py-16">
         <AnimateIn className="relative z-10 mx-auto max-w-6xl">
-          <p className="text-[10px] font-semibold tracking-[0.28em] uppercase text-secondary sm:text-xs">
+          <p className="text-[10px] font-semibold tracking-[0.24em] uppercase text-[#7a8450] sm:text-[11px]">
             Insights
           </p>
-          <div className="mt-3 h-px w-14 bg-gradient-to-r from-secondary via-primary to-transparent" />
-          <h1
-            className="mt-4 font-heading text-[2rem] font-light tracking-tight sm:text-5xl"
-            style={{ color: "#B8D926" }}
-          >
+          <div className="mt-2 h-px w-12 bg-gradient-to-r from-[#B8D926] to-transparent" />
+          <h1 className="mt-4 font-heading text-[1.85rem] font-semibold tracking-tight text-[#38471B] min-[400px]:text-[2rem] sm:text-4xl lg:text-[2.75rem]">
             Stories, updates &amp; insights
           </h1>
-          <p className="mt-4 max-w-2xl text-sm font-light leading-relaxed text-[#4a5228] sm:text-lg">
+          <p className="mt-4 max-w-2xl text-sm font-light leading-relaxed text-[#4a5228] sm:text-base">
             Company news, product launches, safety guides, and captain stories from
             the team building India&apos;s trusted mobility platform.
           </p>
         </AnimateIn>
       </section>
 
-      <section className="px-4 py-10 sm:px-6 sm:py-14">
+      <section className="bg-white px-4 py-10 sm:px-6 sm:py-14">
         <div className="mx-auto max-w-6xl">
           <div
             className="flex flex-wrap gap-2"
@@ -74,8 +71,8 @@ export function BlogsView() {
                   className={cn(
                     "rounded-full border px-3.5 py-2 text-xs font-semibold tracking-wide transition-all duration-200 sm:text-sm",
                     selected
-                      ? "border-primary bg-primary text-white"
-                      : "border-primary/15 bg-white text-[#4a5228] hover:border-primary/40 hover:text-primary",
+                      ? "border-[#C6E31A] bg-[#C6E31A] text-[#111411] shadow-[0_10px_24px_-14px_rgba(17,20,17,0.28)]"
+                      : "border-[#e8eed8] bg-white text-[#4a5228] hover:border-[#dce8a8] hover:text-[#38471B]",
                   )}
                 >
                   {category}
@@ -89,9 +86,9 @@ export function BlogsView() {
               <StaggerItem key={post.slug} index={index}>
                 <Link
                   href={blogPostPath(post.slug)}
-                  className="group flex h-full flex-col overflow-hidden rounded-xl border border-primary/12 bg-white shadow-[0_16px_40px_-28px_rgba(184,217,38,0.3)] transition-transform duration-200 hover:-translate-y-1 sm:rounded-2xl"
+                  className="group flex h-full flex-col overflow-hidden rounded-xl border border-[#e8eed8] bg-white shadow-[0_18px_40px_-28px_rgba(40,54,20,0.22)] transition-all duration-200 hover:-translate-y-1 hover:border-[#dce8a8] hover:shadow-[0_22px_48px_-24px_rgba(40,54,20,0.28)] sm:rounded-2xl"
                 >
-                  <div className="relative aspect-[16/10] overflow-hidden bg-[#f7fbe8]">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-[#f4f6ee]">
                     <ResilientImage
                       src={post.image}
                       alt={post.imageAlt}
@@ -100,33 +97,30 @@ export function BlogsView() {
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className={cn(
                         BRAND_PHOTO_CLASS,
-                        "transition-transform duration-500 group-hover:scale-105",
+                        "transition-transform duration-500 group-hover:scale-[1.03]",
                       )}
                     />
                     <BrandImageOverlay variant="card" />
                   </div>
                   <div className="flex flex-1 flex-col px-4 py-4 sm:px-5 sm:py-5">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-semibold tracking-[0.16em] uppercase text-secondary">
+                      <span className="rounded-full bg-[#f4f6ee] px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.14em] uppercase text-[#6b7344]">
                         {post.category}
                       </span>
-                      <span className="flex items-center gap-1 text-[11px] text-[#4a5228]/80">
+                      <span className="flex items-center gap-1 text-[11px] text-[#5a6330]/80">
                         <Clock className="h-3.5 w-3.5" />
                         {post.readTime}
                       </span>
                     </div>
-                    <h2
-                      className="mt-2.5 font-heading text-lg font-semibold leading-snug tracking-tight transition-colors group-hover:text-secondary"
-                      style={{ color: "#B8D926" }}
-                    >
+                    <h2 className="mt-3 font-heading text-lg font-semibold leading-snug tracking-tight text-[#38471B] transition-colors group-hover:text-[#283614]">
                       {post.title}
                     </h2>
                     <p className="mt-2 line-clamp-3 flex-1 text-[13px] font-light leading-relaxed text-[#4a5228]">
                       {post.excerpt}
                     </p>
-                    <div className="mt-4 flex items-center justify-between border-t border-primary/10 pt-3 text-[11px] text-[#4a5228]/80">
+                    <div className="mt-4 flex items-center justify-between border-t border-[#eef5d4] pt-3 text-[11px] text-[#5a6330]/85">
                       <span>{formatDate(post.date)}</span>
-                      <span className="inline-flex items-center gap-1 font-semibold tracking-wide uppercase text-primary">
+                      <span className="inline-flex items-center gap-1 font-semibold tracking-wide uppercase text-[#38471B]">
                         Read
                         <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                       </span>
@@ -145,24 +139,27 @@ export function BlogsView() {
         </div>
       </section>
 
-      <section className="px-4 pb-14 sm:px-6 sm:pb-20">
-        <AnimateIn className="relative mx-auto max-w-6xl overflow-hidden rounded-xl border border-primary/12 bg-[#38471B] sm:rounded-2xl px-6 py-10 sm:px-10 sm:py-12">
-          <h2 className="font-heading text-2xl font-light text-white sm:text-3xl">
+      <section className="border-t border-[#eef5d4] bg-[#f8faf2] px-4 py-12 sm:px-6 sm:py-16">
+        <AnimateIn className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl bg-[#38471B] px-6 py-10 shadow-[0_24px_48px_-28px_rgba(40,54,20,0.45)] sm:rounded-3xl sm:px-10 sm:py-12">
+          <p className="text-[10px] font-semibold tracking-[0.22em] uppercase text-[#D4E88A]/90">
+            Next step
+          </p>
+          <h2 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-white sm:text-3xl">
             Ride with confidence
           </h2>
-          <p className="mt-3 max-w-xl text-sm font-light text-white/75 sm:text-base">
+          <p className="mt-3 max-w-xl text-sm font-light leading-relaxed text-white/80 sm:text-base">
             Explore safety tools, book a premium ride, or partner as a captain.
           </p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Link
               href={`${ROUTES.landing}#book`}
-              className="inline-flex h-11 items-center justify-center rounded-xl bg-white px-6 text-sm font-semibold text-primary"
+              className="inline-flex h-11 items-center justify-center rounded-xl bg-[#C6E31A] px-6 text-sm font-semibold text-[#111411] shadow-sm transition hover:bg-[#D4F04A]"
             >
               Book a ride
             </Link>
             <Link
               href={ROUTES.safety}
-              className="inline-flex h-11 items-center justify-center rounded-xl border border-white/30 px-6 text-sm font-semibold text-white hover:bg-white/10"
+              className="inline-flex h-11 items-center justify-center rounded-xl border border-white/25 bg-white/5 px-6 text-sm font-semibold text-white transition hover:bg-white/10"
             >
               Safety
             </Link>

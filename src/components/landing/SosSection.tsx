@@ -66,8 +66,7 @@ export function SosSection() {
               Emergency SOS
             </p>
             <h2
-              className="mt-3 font-heading text-[1.55rem] font-light leading-tight tracking-tight sm:text-3xl lg:text-4xl"
-              style={{ color: "#B8D926" }}
+              className="mt-3 font-heading text-[1.55rem] font-light leading-tight tracking-tight sm:text-3xl lg:text-4xl bw-title"
             >
               Need help fast?
               <span className="mt-1 block font-semibold text-destructive">
@@ -107,8 +106,7 @@ export function SosSection() {
                   <div className="rounded-xl border border-primary/10 bg-[#ffffff] px-3 py-3.5">
                     <Icon className="h-4 w-4 text-primary" strokeWidth={1.8} />
                     <p
-                      className="mt-2 font-heading text-sm font-semibold"
-                      style={{ color: "#B8D926" }}
+                      className="mt-2 font-heading text-sm font-semibold bw-title"
                     >
                       {title}
                     </p>

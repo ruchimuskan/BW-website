@@ -30,7 +30,7 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://*.razorpay.com",
   `connect-src 'self' ${apiOrigin} ${apiWsOrigin} http://127.0.0.1:8000 http://localhost:8000 ws://127.0.0.1:8000 ws://localhost:8000 https://*.razorpay.com https://*.amazonaws.com https://images.unsplash.com`,
-  "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com",
+  "frame-src 'self' https://maps.google.com https://www.google.com https://*.google.com https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com",
   "worker-src 'self' blob:",
 ].join("; ");
 
@@ -82,8 +82,11 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    formats: ["image/avif", "image/webp"],
-    deviceSizes: [640, 828, 1080, 1280, 1920],
+    // Serve public assets as static files. The /_next/image optimizer 404s on
+    // many hosts and is why photos look fine locally but vanish in production.
+    unoptimized: true,
+    formats: ["image/webp"],
+    deviceSizes: [640, 828, 1080, 1280],
     imageSizes: [32, 64, 96, 128, 256],
     qualities: [60, 70, 75, 85, 90],
     minimumCacheTTL: 60 * 60 * 24 * 30,

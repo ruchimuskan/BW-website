@@ -77,8 +77,7 @@ export function SosView() {
             </AnimateIn>
             <AnimateIn delay={0.06}>
               <h1
-                className="mt-4 font-heading text-[2rem] font-light leading-[1.15] tracking-tight sm:text-5xl"
-                style={{ color: "#B8D926" }}
+                className="mt-4 font-heading text-[2rem] font-light leading-[1.15] tracking-tight sm:text-5xl bw-title"
               >
                 Need help fast?
                 <span className="mt-1 block font-semibold text-destructive">
@@ -157,8 +156,7 @@ export function SosView() {
               Why SOS
             </p>
             <h2
-              className="mt-3 font-heading text-[1.55rem] font-light tracking-tight sm:text-3xl"
-              style={{ color: "#B8D926" }}
+              className="mt-3 font-heading text-[1.55rem] font-light tracking-tight sm:text-3xl bw-title"
             >
               Built for critical moments
             </h2>
@@ -174,8 +172,7 @@ export function SosView() {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <h3
-                    className="mt-2 font-heading text-lg font-semibold"
-                    style={{ color: "#B8D926" }}
+                    className="mt-2 font-heading text-lg font-semibold bw-title"
                   >
                     {title}
                   </h3>
@@ -197,8 +194,7 @@ export function SosView() {
               How it works
             </p>
             <h2
-              className="mt-3 font-heading text-[1.55rem] font-light tracking-tight sm:text-3xl"
-              style={{ color: "#B8D926" }}
+              className="mt-3 font-heading text-[1.55rem] font-light tracking-tight sm:text-3xl bw-title"
             >
               Three steps to help
             </h2>
@@ -211,8 +207,7 @@ export function SosView() {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <h3
-                    className="mt-3 font-heading text-lg font-semibold"
-                    style={{ color: "#B8D926" }}
+                    className="mt-3 font-heading text-lg font-semibold bw-title"
                   >
                     {step.title}
                   </h3>

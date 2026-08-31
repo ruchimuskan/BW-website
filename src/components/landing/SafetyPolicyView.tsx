@@ -58,13 +58,13 @@ export function SafetyPolicyView() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#ffffff] via-white to-white font-sans">
+    <div className="min-h-[100dvh] bg-gradient-to-b from-[#fafdf4] via-white to-[#ffffff] font-sans">
       <LandingHeader />
 
-      <div className="sticky top-[4rem] z-20 border-b border-primary/8 bg-white/85 backdrop-blur-xl lg:top-[5.25rem]">
+      <div className="sticky top-[calc(4.15rem+env(safe-area-inset-top,0px))] z-30 border-b border-primary/10 bg-[#fafdf4]/90 backdrop-blur-xl md:top-[calc(4.4rem+env(safe-area-inset-top,0px))]">
         <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6 sm:py-4">
           <div
-            className="flex gap-1 overflow-x-auto rounded-2xl border border-primary/10 bg-white/90 p-1 shadow-[0_16px_40px_-28px_rgba(184,217,38,0.35)] [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-1.5 [&::-webkit-scrollbar]:hidden"
+            className="flex gap-1 overflow-x-auto rounded-2xl border border-[#dce8a8]/60 bg-white/95 p-1 shadow-[0_16px_40px_-28px_rgba(184,217,38,0.35)] [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-1.5 [&::-webkit-scrollbar]:hidden"
             role="tablist"
             aria-label="Safety audience"
           >

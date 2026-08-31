@@ -13,41 +13,49 @@ import {
   Users,
 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
-import { landingAssets, landingCaptainImage } from "@/constants/services";
+import { BRAND_PHOTOS } from "@/constants/brand-images";
+import { landingAssets } from "@/constants/services";
 
-/** Customer-focused assets (riders, booking, trip experience) */
+/** Customer-focused assets — real brand photography only (no cartoons). */
 const customerImages = {
-  quickPickup: "/images/features/quick-pickup.webp",
-  rideConfirmed: landingAssets.quickPickup,
-  familyRide: landingAssets.cityAuto,
-  bikePassenger: landingAssets.cityBike,
-  ambulance: landingAssets.slideAmbulance,
+  quickPickup: BRAND_PHOTOS.streetCab,
+  rideConfirmed: BRAND_PHOTOS.streetCab,
+  familyRide: BRAND_PHOTOS.eAuto,
+  bikePassenger: BRAND_PHOTOS.studioBike,
+  ambulance: BRAND_PHOTOS.ambulance,
 } as const;
 
 /** Captain-focused assets (partners, fleet, delivery) */
 const captainImages = {
-  partner: landingCaptainImage,
-  partnerIllustration: landingAssets.captain,
+  partner: BRAND_PHOTOS.captainsHero,
+  partnerPng: BRAND_PHOTOS.captainsHeroPng,
+  partnerIllustration: BRAND_PHOTOS.captainsHero,
   fleet: landingAssets.slideFleet,
   delivery: landingAssets.slideParcel,
 } as const;
 
+const safetyCollageCaptain = {
+  src: BRAND_PHOTOS.captainsHero,
+  alt: "Bull Wave Rides captain on the road at night",
+  label: "Captain",
+  fallbackSrc: BRAND_PHOTOS.captainsHeroPng,
+  imageClassName: "object-[center_42%]",
+} as const;
+
 export const safetyHeroImages = [
   {
-    src: landingAssets.cityBike,
+    src: BRAND_PHOTOS.streetCab,
+    alt: "Bull Wave Rides customer in a street cab",
+    label: "Street Cab",
+  },
+  {
+    src: BRAND_PHOTOS.studioBike,
     alt: "Bull Wave Rides rider on a bike taxi",
-    className: "left-0 top-8 z-10 h-36 w-32 sm:h-40 sm:w-36",
+    label: "Bike Taxi",
+    featured: true,
+    fallbackSrc: "/images/pic-14.png",
   },
-  {
-    src: landingAssets.cityAuto,
-    alt: "Bull Wave Rides customer on electric auto",
-    className: "left-1/2 top-0 z-20 h-40 w-32 -translate-x-1/2 sm:h-44 sm:w-36",
-  },
-  {
-    src: landingCaptainImage,
-    alt: "Happy Bull Wave Rides captain and customer",
-    className: "right-0 top-10 z-10 h-36 w-32 sm:h-40 sm:w-36",
-  },
+  safetyCollageCaptain,
 ] as const;
 
 export const coversEveryoneCards = [
@@ -58,6 +66,7 @@ export const coversEveryoneCards = [
       "Every ride is protected through live tracking, verified captain information, emergency support, and trip-sharing features designed to keep you safe.",
     image: customerImages.quickPickup,
     alt: "Bull Wave Rides customer safety",
+    imageFallbackSrc: "/images/pic-12.png",
     tab: "customer" as const,
   },
   {
@@ -66,7 +75,9 @@ export const coversEveryoneCards = [
     description:
       "Bull Wave Rides supports captains with verification systems, safety training, emergency support tools, and fair platform policies.",
     image: captainImages.partner,
-    alt: "Bull Wave Rides captain safety",
+    alt: "Bull Wave Rides captain driving at night",
+    imageFallbackSrc: captainImages.partnerPng,
+    imageClassName: "object-[center_42%]",
     tab: "captain" as const,
   },
 ] as const;
@@ -237,35 +248,28 @@ const customerHeroImages = [
   {
     src: customerImages.quickPickup,
     alt: "Bull Wave Rides customer booking a ride on the app",
-    className: "left-2 top-6 z-10 h-36 w-32 sm:h-40 sm:w-36",
   },
   {
     src: customerImages.familyRide,
     alt: "Bull Wave Rides family riding in electric auto",
-    className: "left-1/2 top-0 z-20 h-40 w-32 -translate-x-1/2 sm:h-44 sm:w-36",
+    fallbackSrc: "/images/pic-5.png",
   },
   {
     src: customerImages.bikePassenger,
     alt: "Bull Wave Rides customer on a bike taxi",
-    className: "right-0 top-10 z-10 h-36 w-32 sm:h-40 sm:w-36",
+    fallbackSrc: "/images/pic-14.png",
   },
 ] as const;
 
 const captainHeroImages = [
-  {
-    src: captainImages.partner,
-    alt: "Bull Wave Rides captain partner with vehicle",
-    className: "left-0 top-8 z-10 h-36 w-32 sm:h-40 sm:w-36",
-  },
+  safetyCollageCaptain,
   {
     src: captainImages.fleet,
     alt: "Bull Wave Rides captain fleet on the road",
-    className: "left-1/2 top-0 z-20 h-40 w-32 -translate-x-1/2 sm:h-44 sm:w-36",
   },
   {
     src: captainImages.delivery,
     alt: "Bull Wave Rides delivery captain with parcel",
-    className: "right-0 top-10 z-10 h-36 w-32 sm:h-40 sm:w-36",
   },
 ] as const;
 
@@ -288,7 +292,7 @@ export const safetyTabContent = {
         title: "For Captains",
         description:
           "Bull Wave Rides supports captains with verification systems, safety training, emergency support tools, and fair platform policies.",
-        image: landingCaptainImage,
+        image: captainImages.partner,
         alt: "Bull Wave Rides captain safety",
       },
       {
@@ -480,23 +484,7 @@ export const safetyOverviewPage = {
     title: "Safety for all.",
     description:
       "At Bull Wave Rides, the well-being of our customers and captains is above everything else. We constantly enhance our safety technologies and processes so every ride is secure, reliable, and comfortable.",
-    images: [
-      {
-        src: customerImages.quickPickup,
-        alt: "Bull Wave Rides customer booking a ride",
-        className: "left-0 top-8 z-10 h-36 w-32 sm:h-40 sm:w-36",
-      },
-      {
-        src: landingAssets.cityBike,
-        alt: "Bull Wave Rides captain and customer on bike",
-        className: "left-1/2 top-0 z-20 h-40 w-32 -translate-x-1/2 sm:h-44 sm:w-36",
-      },
-      {
-        src: landingCaptainImage,
-        alt: "Bull Wave Rides captain partner",
-        className: "right-0 top-10 z-10 h-36 w-32 sm:h-40 sm:w-36",
-      },
-    ],
+    images: safetyHeroImages,
   },
   coversEveryone: {
     title: "Covers Everyone",
@@ -522,15 +510,18 @@ export const customerSafetyPage = {
     title: "Customers Safety",
     description:
       "At Bull Wave Rides, the well-being of our customers is above everything else. We constantly enhance our safety technologies and processes — live tracking, verified captains, SOS support, and trip sharing — so every ride is secure and comfortable.",
-    image: customerImages.quickPickup,
-    alt: "Bull Wave Rides customer booking a safe ride",
+    image: BRAND_PHOTOS.streetCab,
+    alt: "Bull Wave Rides customer enjoying a safe street cab ride",
+    fallbackSrc: "/images/pic-12.png",
   },
   captainVerification: {
     title: "Captain Verification",
     description:
       "At Bull Wave Rides, the safety and security of our customers is of utmost importance. We have a zero-tolerance policy towards captains who violate our community guidelines. Every captain undergoes a thorough background check and verification before joining the platform.",
-    image: captainImages.partner,
+    image: BRAND_PHOTOS.captainsHero,
     alt: "Verified Bull Wave Rides captain partner",
+    imageFallbackSrc: BRAND_PHOTOS.captainsHeroPng,
+    imageClassName: "object-[center_42%]",
     accordion: [
       {
         id: "hiring",
@@ -566,6 +557,8 @@ export const customerSafetyPage = {
   },
   appFeatures: {
     title: "App Safety Features",
+    description:
+      "Safety tools built into the Bull Wave Rides app — share trips, mask your number, trigger SOS, and review captain details before every ride.",
     features: [
       {
         icon: Share2,
@@ -621,8 +614,10 @@ export const captainSafetyPage = {
     title: "Captains Safety",
     description:
       "At Bull Wave Rides, every captain on the road matters. All active rides are insured — with accidental coverage and medical benefits up to ₹5 Lakh for you and your family. From OPD treatment and hospitalisation to emergency support, we stand behind our partners so you can ride with confidence, every single trip.",
-    image: customerImages.bikePassenger,
-    alt: "Bull Wave Rides captain on a bike taxi",
+    image: BRAND_PHOTOS.captainsHero,
+    alt: "Bull Wave Rides captain on the road at night",
+    fallbackSrc: BRAND_PHOTOS.captainsHeroPng,
+    imageClassName: "object-[center_42%]",
   },
   measures: {
     heading:

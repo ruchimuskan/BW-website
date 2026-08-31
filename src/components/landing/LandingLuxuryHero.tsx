@@ -64,25 +64,28 @@ export function LandingLuxuryHero({
             animate={{ y: 0 }}
             transition={{ ...transitions.reveal, delay: 0.04 }}
           >
+            <p className="text-[10px] font-semibold tracking-[0.28em] uppercase text-[#5A6158] sm:text-[11px]">
+              Ride · Parcel · SOS
+            </p>
             <h1
-              className="text-[1.85rem] leading-none tracking-tight text-[#B8D926] sm:text-[2.2rem] lg:text-[2.55rem] xl:text-[2.85rem]"
+              className="mt-2 text-[1.85rem] leading-none tracking-tight text-[#111411] sm:text-[2.2rem] lg:text-[2.55rem] xl:text-[2.85rem]"
               style={{ fontFamily: "var(--font-playwrite-gb-j), cursive" }}
             >
               Bull Wave Rides
             </h1>
 
-            <div className="mt-2.5 h-px w-14 bg-gradient-to-r from-secondary via-primary to-transparent sm:mt-3 sm:w-16" />
+            <div className="mt-3 h-1 w-12 rounded-full bg-[#C6E31A] sm:mt-3.5 sm:w-14" />
 
-            <p className="mt-3 max-w-2xl font-heading text-[1.35rem] font-semibold leading-[1.15] tracking-tight text-[#38471B] sm:mt-3.5 sm:text-[1.7rem] lg:text-[1.95rem]">
-              Premium travel,{" "}
-              <span className="font-semibold text-[#C8E84A]">
-                effortlessly yours
+            <p className="mt-3 max-w-2xl font-heading text-[1.4rem] font-semibold leading-[1.12] tracking-tight text-[#111411] sm:mt-3.5 sm:text-[1.75rem] lg:text-[2rem]">
+              Book a ride in seconds.
+              <span className="mt-1 block font-semibold text-[#C6E31A]">
+                Go anywhere in the city.
               </span>
             </p>
 
-            <p className="mt-2.5 max-w-xl text-[13px] leading-relaxed text-[#4a5228] sm:mt-3 sm:text-[15px] lg:text-base">
-              Book bike, auto, cab, parcel, and ambulance SOS online — live
-              tracking, verified captains, and calm city travel across India.
+            <p className="mt-2.5 max-w-xl text-[13px] leading-relaxed text-[#5A6158] sm:mt-3 sm:text-[15px] lg:text-base">
+              Bike, auto, cab, parcel, and ambulance SOS — live tracking, upfront
+              fares, and verified captains across India.
             </p>
 
             <ul className="mt-4 flex flex-wrap gap-2 sm:mt-5 sm:gap-2.5">
@@ -97,12 +100,14 @@ export function LandingLuxuryHero({
                       ...transitions.reveal,
                       delay: 0.1 + i * 0.05,
                     }}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#B8D926]/15 bg-white/90 px-2.5 py-1.5 text-[10px] font-semibold tracking-[0.08em] text-[#B8D926] uppercase shadow-[0_8px_18px_-14px_rgba(184,217,38,0.4)] sm:px-3 sm:text-[11px]"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#D4D8D0] bg-white px-2.5 py-1.5 text-[10px] font-semibold tracking-[0.08em] text-[#111411] uppercase shadow-[0_8px_18px_-14px_rgba(17,20,17,0.2)] sm:px-3 sm:text-[11px]"
                   >
-                    <Icon
-                      className="h-3 w-3 shrink-0 text-[#B8D926] sm:h-3.5 sm:w-3.5"
-                      strokeWidth={2}
-                    />
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#C6E31A]">
+                      <Icon
+                        className="h-3 w-3 shrink-0 text-[#111411] sm:h-3.5 sm:w-3.5"
+                        strokeWidth={2.4}
+                      />
+                    </span>
                     {item.label}
                   </motion.li>
                 );
@@ -123,13 +128,13 @@ export function LandingLuxuryHero({
               {...bookingProps}
               size="featured"
               showTitle
-              className="w-full max-w-full border-[#B8D926]/14 bg-white/98 shadow-[0_30px_70px_-28px_rgba(184,217,38,0.5)] backdrop-blur-sm"
+              className="w-full max-w-full"
             />
           </motion.div>
 
           {/* Hero image — below booking on mobile; under brand on desktop */}
           <motion.div
-            className="group relative z-10 order-3 aspect-[16/10] w-full min-w-0 overflow-hidden rounded-2xl border border-[#B8D926]/20 bg-[#38471B] shadow-[0_22px_48px_-24px_rgba(40,54,20,0.5)] ring-1 ring-[#C8E84A]/15 sm:aspect-[16/9] lg:col-start-1 lg:row-start-2 lg:mt-1 lg:min-h-[280px] xl:min-h-[340px] 2xl:min-h-[360px]"
+            className="group relative z-10 order-3 aspect-[16/10] w-full min-w-0 overflow-hidden rounded-2xl border border-[#D4D8D0] bg-[#111411] shadow-[0_22px_48px_-24px_rgba(17,20,17,0.45)] sm:aspect-[16/9] lg:col-start-1 lg:row-start-2 lg:mt-1 lg:min-h-[280px] xl:min-h-[340px] 2xl:min-h-[360px]"
             initial={reduceMotion || !mounted ? false : { y: 18 }}
             animate={{ y: 0 }}
             transition={{ ...transitions.reveal, delay: 0.12 }}

@@ -93,24 +93,15 @@ export function LandingBookSection({
         <div className="relative overflow-hidden border border-primary/12 bg-white shadow-[0_20px_40px_-28px_rgba(184,217,38,0.4)]">
           <div className="grid min-w-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
             <div className="relative z-10 flex min-w-0 flex-col justify-center px-4 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
-              <p
-                className="text-[10px] font-semibold tracking-[0.24em] uppercase sm:text-[11px] sm:tracking-[0.28em]"
-                style={{ color: "#B8D926" }}
-              >
+              <p className="text-[10px] font-semibold tracking-[0.24em] uppercase text-[#6B7344] sm:text-[11px] sm:tracking-[0.28em]">
                 Book
               </p>
-              <div className="mt-2.5 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#B8D926] via-[#C8E84A] to-transparent sm:mt-3 sm:w-14" />
-              <h2
-                className="mt-3 font-heading text-[1.4rem] font-semibold tracking-tight sm:mt-4 sm:text-3xl lg:text-[2.35rem] lg:leading-[1.15]"
-                style={{ color: "#B8D926" }}
-              >
+              <div className="mt-2.5 h-px w-12 bg-gradient-to-r from-[#B8D926] to-transparent sm:mt-3 sm:w-14" />
+              <h2 className="mt-3 font-heading text-[1.4rem] font-semibold tracking-tight text-[#38471B] sm:mt-4 sm:text-3xl lg:text-[2.35rem] lg:leading-[1.15]">
                 Book your elite transfer{" "}
-                <span style={{ color: "#C8E84A" }}>in minutes</span>
+                <span className="text-[#B8D926]">in minutes</span>
               </h2>
-              <p
-                className="mt-2.5 max-w-md text-[13px] font-normal leading-relaxed sm:mt-3 sm:text-base"
-                style={{ color: "#4a5228" }}
-              >
+              <p className="mt-2.5 max-w-md text-[13px] font-light leading-relaxed text-[#4a5228] sm:mt-3 sm:text-base">
                 Rides, parcels, or emergency SOS — set locations and move with confidence.
               </p>
 

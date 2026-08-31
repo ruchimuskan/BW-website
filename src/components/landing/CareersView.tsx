@@ -53,8 +53,7 @@ export function CareersView() {
             </AnimateIn>
             <AnimateIn delay={0.06}>
               <h1
-                className="mt-4 font-heading text-[2rem] font-light leading-[1.15] tracking-tight sm:text-5xl"
-                style={{ color: "#B8D926" }}
+                className="mt-4 font-heading text-[2rem] font-light leading-[1.15] tracking-tight sm:text-5xl bw-title"
               >
                 Build mobility
                 <span className="mt-1 block bg-gradient-to-r from-primary to-secondary bg-clip-text font-semibold text-transparent">
@@ -112,8 +111,7 @@ export function CareersView() {
               Where you can contribute
             </p>
             <h2
-              className="mt-3 font-heading text-2xl font-semibold tracking-tight sm:text-3xl"
-              style={{ color: "#B8D926" }}
+              className="mt-3 font-heading text-2xl font-semibold tracking-tight sm:text-3xl bw-title"
             >
               Teams shaping every mile
             </h2>
@@ -127,8 +125,7 @@ export function CareersView() {
               <StaggerItem key={area.title} index={index}>
                 <article className="h-full rounded-2xl border border-primary/10 bg-white p-5 shadow-[0_16px_40px_-28px_rgba(40,54,20,0.35)] sm:rounded-[1.25rem] sm:p-6">
                   <h3
-                    className="font-heading text-lg font-semibold tracking-tight"
-                    style={{ color: "#B8D926" }}
+                    className="font-heading text-lg font-semibold tracking-tight bw-title"
                   >
                     {area.title}
                   </h3>

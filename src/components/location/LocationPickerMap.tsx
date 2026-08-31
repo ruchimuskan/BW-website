@@ -1,6 +1,7 @@
 "use client";
 
 import { ambulanceLocationTheme, rideLocationTheme } from "@/lib/ambulance-theme";
+import { isValidLatLng, singlePointMapEmbedUrl } from "@/lib/ride-booking";
 import { cn } from "@/lib/utils";
 import { WaveGoLogo } from "@/components/layout/WaveGoLogo";
 
@@ -12,13 +13,6 @@ type LocationPickerMapProps = {
   emergency?: boolean;
 };
 
-const DEFAULT_LAT = 28.6328;
-const DEFAULT_LNG = 77.216721;
-
-function buildEmbedSrc(lat: number, lng: number, zoom = 15): string {
-  return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
-}
-
 /** Fixed Google Maps embed for the location picker. */
 export function LocationPickerMap({
   latitude,
@@ -27,9 +21,12 @@ export function LocationPickerMap({
   className,
   emergency = false,
 }: LocationPickerMapProps) {
-  const lat = latitude ?? DEFAULT_LAT;
-  const lng = longitude ?? DEFAULT_LNG;
-  const hasPin = latitude != null && longitude != null;
+  const hasPin = isValidLatLng(latitude, longitude);
+  const embedSrc = singlePointMapEmbedUrl(
+    latitude,
+    longitude,
+    hasPin ? 16 : 13,
+  );
   const theme = emergency ? ambulanceLocationTheme : rideLocationTheme;
 
   return (
@@ -41,8 +38,8 @@ export function LocationPickerMap({
       )}
     >
       <iframe
-        key={`${lat.toFixed(5)}-${lng.toFixed(5)}`}
-        src={buildEmbedSrc(lat, lng, hasPin ? 16 : 13)}
+        key={embedSrc}
+        src={embedSrc}
         title={label}
         className="absolute inset-0 h-full w-full border-0"
         loading="eager"

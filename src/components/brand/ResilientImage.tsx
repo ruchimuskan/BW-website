@@ -3,7 +3,7 @@
 import Image, { type ImageProps } from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { BRAND_PHOTOS } from "@/constants/brand-images";
-import { imageFallbackChain, resolveBrandImageSrc } from "@/lib/brand-image-src";
+import { imageFallbackChain, resolveBrandImageSrc, shouldSkipImageOptimizer } from "@/lib/brand-image-src";
 
 type ResilientImageProps = Omit<ImageProps, "src" | "onError"> & {
   src: string;
@@ -40,6 +40,7 @@ export function ResilientImage({
       alt={alt}
       priority={priority}
       loading={priority ? undefined : loading ?? "lazy"}
+      unoptimized={shouldSkipImageOptimizer(current)}
       onError={() => {
         setIndex((i) => (i < chain.length - 1 ? i + 1 : i));
       }}

@@ -68,7 +68,7 @@ export default function EmergencyHistoryPage() {
   );
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-[#fff6f4] pb-12">
+    <div className="flex min-h-[100dvh] w-full flex-col bg-[#fff6f4] pb-12">
       <SettingsHeader title="Emergency history" backHref={ROUTES.ambulance} />
 
       <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-6 sm:px-6">

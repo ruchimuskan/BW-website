@@ -137,7 +137,7 @@ export function HelpTopicShell({
   );
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#f5f6f2] text-[#283614]">
+    <div className="relative flex min-h-[100dvh] w-full flex-col overflow-x-hidden bg-[#f5f6f2] text-[#283614]">
       <header className="sticky top-0 z-40 border-b border-[#e5e7df] bg-[#283614] text-white shadow-[0_8px_24px_-18px_rgba(40,54,20,0.55)]">
         <div className={helpShell("flex items-center gap-3 py-3 sm:gap-4 sm:py-3.5")}>
           <button

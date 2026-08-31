@@ -15,7 +15,7 @@ export type SelfDriveLocation = {
   nearest?: boolean;
 };
 
-/** Demo hubs until a self-drive locations API is available. */
+/** Demo hubs — used only when allowDemoDataFallbacks() and API returns empty. */
 export const SELF_DRIVE_LOCATIONS: SelfDriveLocation[] = [
   {
     id: "pitampura-metro",

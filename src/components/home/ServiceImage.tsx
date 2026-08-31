@@ -21,7 +21,9 @@ interface ServiceImageProps {
 
 function shouldSkipOptimize(src: string) {
   // Signed S3 URLs break if Next rewrites the query string for the optimizer.
+  // Local public files should also skip /_next/image (404s on many hosts).
   return (
+    src.startsWith("/images/") ||
     src.includes("X-Amz-Signature=") ||
     src.includes("X-Amz-Credential=") ||
     src.startsWith("data:")

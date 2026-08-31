@@ -93,7 +93,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
   }, [pathname]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    const onScroll = () => setScrolled(window.scrollY > 10);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -122,65 +122,66 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
 
   const closeMobile = () => setMobileMenuOpen(false);
 
-  const downloadButtonClass = luxury
-    ? "bg-[#C8E84A] text-[#0b0614] hover:bg-[#d4f06a]"
-    : undefined;
+  const downloadButtonClass =
+    "bg-[#C6E31A] text-[#1B3A22] hover:bg-[#D4F04A] shadow-[0_8px_20px_-12px_rgba(27,58,34,0.35)]";
 
   return (
     <>
       <div
         aria-hidden
-        className="h-[calc(5rem+env(safe-area-inset-top,0px))] shrink-0 lg:h-[calc(5.75rem+env(safe-area-inset-top,0px))]"
+        className="h-[calc(4.15rem+env(safe-area-inset-top,0px))] shrink-0 md:h-[calc(4.4rem+env(safe-area-inset-top,0px))]"
       />
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-[80] border-b pt-[env(safe-area-inset-top)] backdrop-blur-xl transition-[background-color,box-shadow,border-color] duration-300",
+          "fixed inset-x-0 top-0 z-[80] border-b pt-[env(safe-area-inset-top)] transition-[background-color,box-shadow,border-color] duration-200",
           luxury
             ? scrolled
-              ? "border-[rgba(200,232,74,0.2)] bg-[#0b0614]/95 shadow-[0_10px_30px_-18px_rgba(0,0,0,0.7)]"
-              : "border-transparent bg-[#0b0614]/90"
+              ? "border-white/10 bg-[#1B3A22] shadow-[0_12px_28px_-18px_rgba(20,48,26,0.65)]"
+              : "border-transparent bg-[#1B3A22]/96"
             : scrolled
-              ? "border-[#B8D926]/15 bg-white/95 shadow-[0_12px_32px_-18px_rgba(56,71,27,0.28)]"
-              : "border-[#B8D926]/10 bg-white/95",
+              ? "border-[#D4D8D0] bg-white/98 shadow-[0_10px_28px_-18px_rgba(27,58,34,0.18)] backdrop-blur-md"
+              : "border-[#E4E7E0] bg-[#F4F5F2]/92 backdrop-blur-sm",
         )}
       >
+        {/* Brand lime rail */}
+        <div
+          aria-hidden
+          className="h-[3px] w-full bg-gradient-to-r from-[#C6E31A] via-[#9BB820] to-[#C6E31A]"
+        />
+
         <div
           className={cn(
             landingShell(
               "flex min-w-0 items-center gap-2 sm:gap-3 lg:gap-4",
             ),
-            scrolled ? "h-[4.5rem] lg:h-[5.25rem]" : "h-[5rem] lg:h-[5.75rem]",
+            "h-[3.85rem] md:h-[4.15rem]",
           )}
         >
           <Link
             href={logoHref}
             onClick={() => handleNavClick(logoHref)}
             className="flex min-w-0 shrink-0 items-center transition-opacity hover:opacity-90"
-            aria-label="Bull Wave Rides home"
+            aria-label="BW Rides home"
           >
             <WaveGoLogo
               size="sm"
               priority
+              withWordmark
               variant={luxury ? "light" : "default"}
-              className={cn(
-                "transition-[height,width] duration-300",
-                scrolled
-                  ? "h-14 w-14 sm:h-16 sm:w-16 lg:h-[4.25rem] lg:w-[4.25rem]"
-                  : "h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem] lg:h-20 lg:w-20",
-              )}
+              className="[&>span:first-child]:h-10 [&>span:first-child]:w-10 sm:[&>span:first-child]:h-11 sm:[&>span:first-child]:w-11 md:[&>span:first-child]:h-12 md:[&>span:first-child]:w-12"
             />
           </Link>
 
           <nav
-            className="mx-auto hidden min-w-0 items-center lg:flex"
+            className="mx-auto hidden min-w-0 flex-1 items-center justify-center lg:flex"
             aria-label="Primary"
           >
             <div
               className={cn(
-                "flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border px-1 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+                "flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border px-1.5 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
                 luxury
-                  ? "border-white/10 bg-white/5"
-                  : "border-[#B8D926]/12 bg-[#f7fbe8]/80",
+                  ? "border-white/12 bg-white/8"
+                  : "border-[#D4D8D0] bg-white/90 shadow-[0_6px_18px_-14px_rgba(27,58,34,0.2)]",
               )}
             >
               {landingNavLinks.map((link) => {
@@ -196,11 +197,11 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                       "whitespace-nowrap rounded-full px-2.5 py-1.5 text-[12px] font-semibold tracking-tight transition-colors xl:px-3.5 xl:text-[13px]",
                       luxury
                         ? active
-                          ? "bg-[#C8E84A] text-[#0b0614]"
+                          ? "bg-[#C6E31A] text-[#1B3A22]"
                           : "text-white/75 hover:bg-white/10 hover:text-white"
                         : active
-                          ? "bg-[#B8D926] text-[#38471B] shadow-[0_6px_14px_-8px_rgba(184,217,38,0.9)]"
-                          : "text-[#38471B]/75 hover:bg-white hover:text-[#38471B]",
+                          ? "bg-[#C6E31A] text-[#1B3A22] shadow-[0_4px_14px_-6px_rgba(198,227,26,0.7)]"
+                          : "text-[#1B3A22]/75 hover:bg-[#F4F5F2] hover:text-[#1B3A22]",
                     )}
                   >
                     <span className="xl:hidden">{link.shortLabel}</span>
@@ -211,8 +212,48 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
             </div>
           </nav>
 
+          {/* Tablet: compact horizontal nav (md–lg) */}
+          <nav
+            className="mx-auto hidden min-w-0 max-w-[min(100%,28rem)] flex-1 items-center justify-center md:flex lg:hidden"
+            aria-label="Primary compact"
+          >
+            <div
+              className={cn(
+                "flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border px-1 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+                luxury
+                  ? "border-white/12 bg-white/8"
+                  : "border-[#D4D8D0] bg-white/90",
+              )}
+            >
+              {landingNavLinks.map((link) => {
+                const href =
+                  link.href === ROUTES.ride ? bookRideHref : link.href;
+                const active = isActive(link.href);
+                return (
+                  <Link
+                    key={link.label}
+                    href={resolveHref(href)}
+                    onClick={() => handleNavClick(link.href)}
+                    className={cn(
+                      "whitespace-nowrap rounded-full px-2 py-1.5 text-[11px] font-semibold tracking-tight transition-colors",
+                      luxury
+                        ? active
+                          ? "bg-[#C6E31A] text-[#1B3A22]"
+                          : "text-white/75 hover:bg-white/10 hover:text-white"
+                        : active
+                          ? "bg-[#C6E31A] text-[#1B3A22]"
+                          : "text-[#1B3A22]/70 hover:bg-[#F4F5F2] hover:text-[#1B3A22]",
+                    )}
+                  >
+                    {link.shortLabel}
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+
           <div
-            className="ml-auto flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-2"
+            className="ml-auto flex min-w-0 shrink-0 items-center gap-1 sm:gap-1.5 md:gap-2"
             suppressHydrationWarning
           >
             {loggedIn ? (
@@ -220,10 +261,8 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                 href={ROUTES.home}
                 className={cn(
                   buttonVariants({ variant: "ghost", size: "sm" }),
-                  "hidden h-9 gap-1.5 px-3 font-semibold xl:inline-flex",
-                  luxury
-                    ? "text-white hover:bg-white/10 hover:text-[#C8E84A]"
-                    : "text-primary hover:bg-primary/10",
+                  "hidden h-9 gap-1.5 px-3 font-semibold text-[#1B3A22] hover:bg-[#C6E31A]/15 hover:text-[#1B3A22] xl:inline-flex",
+                  luxury && "text-white hover:bg-white/10 hover:text-[#C6E31A]",
                 )}
               >
                 <LayoutDashboard className="h-4 w-4" strokeWidth={1.75} aria-hidden />
@@ -243,25 +282,28 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
 
             <DownloadAppMenu
               compact
-              className="sm:hidden"
+              className="lg:hidden"
               buttonClassName={downloadButtonClass}
             />
             <DownloadAppMenu
-              className="hidden sm:inline-flex"
-              buttonClassName={downloadButtonClass}
+              className="hidden lg:inline-flex"
+              buttonClassName={cn(
+                downloadButtonClass,
+                "h-9 px-4 text-[12px] xl:h-10 xl:px-5 xl:text-[13px]",
+              )}
             />
 
             <button
               type="button"
               className={cn(
-                "inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors active:scale-95 lg:hidden",
+                "inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors active:scale-95 sm:h-10 sm:w-10 md:hidden",
                 luxury
-                  ? "border border-white/25 bg-white/10 text-white hover:border-[#C8E84A] hover:bg-white/15"
-                  : "border border-[#B8D926]/30 bg-white text-[#38471B] shadow-[0_6px_16px_-10px_rgba(184,217,38,0.55)] hover:border-[#B8D926] hover:bg-[#B8D926] hover:text-[#38471B]",
+                  ? "border border-white/25 bg-white/10 text-white hover:border-[#C6E31A]"
+                  : "border border-[#D4D8D0] bg-white text-[#1B3A22] hover:border-[#C6E31A] hover:bg-[#C6E31A]/15",
                 mobileMenuOpen &&
                   (luxury
-                    ? "border-[#C8E84A] bg-[#C8E84A]/15"
-                    : "border-[#B8D926] bg-[#B8D926]"),
+                    ? "border-[#C6E31A] bg-[#C6E31A]/15"
+                    : "border-[#C6E31A] bg-[#C6E31A] text-[#1B3A22]"),
               )}
               onClick={() => setMobileMenuOpen((open) => !open)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
@@ -286,23 +328,15 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
           className={cn(
             "flex w-[min(100vw-0.75rem,22rem)] flex-col gap-0 border-l p-0 sm:max-w-sm",
             luxury
-              ? "border-white/10 bg-[#0b0614] text-white"
-              : "border-[#B8D926]/15 bg-white",
+              ? "border-white/10 bg-[#1B3A22] text-white"
+              : "border-[#E4E7E0] bg-white",
           )}
         >
-          <div
-            aria-hidden
-            className={cn(
-              "h-1 w-full shrink-0",
-              luxury
-                ? "bg-gradient-to-r from-[#C8E84A] to-transparent"
-                : "bg-gradient-to-r from-[#B8D926] via-[#C8E84A] to-transparent",
-            )}
-          />
+          <div aria-hidden className="h-[3px] w-full shrink-0 bg-[#C6E31A]" />
           <SheetHeader
             className={cn(
               "shrink-0 border-b px-4 py-3.5 text-left sm:px-5",
-              luxury ? "border-white/10" : "border-[#B8D926]/12",
+              luxury ? "border-white/10" : "border-[#E4E7E0] bg-[#F4F5F2]",
             )}
           >
             <div className="flex items-center justify-between gap-3">
@@ -310,13 +344,14 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <WaveGoLogo
                   size="sm"
+                  withWordmark
                   variant={luxury ? "light" : "default"}
-                  className="h-14 w-14 sm:h-16 sm:w-16"
+                  className="[&>span:first-child]:h-11 [&>span:first-child]:w-11"
                 />
                 <SheetDescription
                   className={cn(
-                    "mt-1 text-xs",
-                    luxury ? "text-white/65" : "text-[#4a5228]",
+                    "mt-1.5 text-xs",
+                    luxury ? "text-white/65" : "text-[#5A7A5E]",
                   )}
                 >
                   Explore Bull Wave Rides
@@ -330,7 +365,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                   "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors active:scale-95",
                   luxury
                     ? "border border-white/20 text-white hover:bg-white/10"
-                    : "border border-[#B8D926]/20 text-[#38471B] hover:bg-[#B8D926]/15",
+                    : "border border-[#D4D8D0] text-[#1B3A22] hover:bg-[#C6E31A]/15",
                 )}
               >
                 <X className="h-4 w-4" strokeWidth={2} />
@@ -354,8 +389,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
               onClick={() => handleNavClick(ROUTES.ride)}
               className={cn(
                 buttonVariants({ size: "lg" }),
-                "mb-5 h-11 w-full justify-center gap-2 rounded-full text-sm font-semibold shadow-[0_12px_28px_-16px_rgba(184,217,38,0.55)]",
-                luxury && "bg-[#C8E84A] text-[#0b0614] hover:bg-[#d4f06a]",
+                "mb-5 h-11 w-full justify-center gap-2 rounded-full bg-[#C6E31A] text-sm font-semibold text-[#1B3A22] shadow-[0_10px_24px_-12px_rgba(27,58,34,0.35)] hover:bg-[#D4F04A]",
               )}
             >
               Book a Ride
@@ -366,7 +400,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
               <p
                 className={cn(
                   "mb-2 px-1 text-[10px] font-semibold tracking-[0.18em] uppercase",
-                  luxury ? "text-white/50" : "text-[#4a5228]/70",
+                  luxury ? "text-white/50" : "text-[#5A7A5E]",
                 )}
               >
                 Explore
@@ -386,11 +420,11 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                           "flex min-h-[48px] items-center gap-3 rounded-2xl px-2.5 py-2 transition-colors",
                           luxury
                             ? active
-                              ? "bg-white/10 text-[#C8E84A]"
+                              ? "bg-white/10 text-[#C6E31A]"
                               : "text-white/90 hover:bg-white/8"
                             : active
-                              ? "bg-[#B8D926]/15 text-[#38471B]"
-                              : "text-[#38471B] hover:bg-[#f7fbe8]",
+                              ? "bg-[#C6E31A]/20 text-[#1B3A22]"
+                              : "text-[#1B3A22] hover:bg-[#F4F5F2]",
                         )}
                       >
                         <span
@@ -398,11 +432,11 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                             "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors",
                             active
                               ? luxury
-                                ? "border-[#C8E84A]/40 bg-[#C8E84A]/20 text-[#C8E84A]"
-                                : "border-[#B8D926]/40 bg-[#B8D926] text-[#38471B]"
+                                ? "border-[#C6E31A]/40 bg-[#C6E31A]/20 text-[#C6E31A]"
+                                : "border-[#C6E31A] bg-[#C6E31A] text-[#1B3A22]"
                               : luxury
                                 ? "border-white/12 bg-white/5 text-white/80"
-                                : "border-[#B8D926]/15 bg-white text-[#B8D926]",
+                                : "border-[#E4E7E0] bg-white text-[#1B3A22]",
                           )}
                         >
                           <Icon className="h-4 w-4" strokeWidth={1.75} />
@@ -428,7 +462,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
               <div
                 className={cn(
                   "mt-5 border-t pt-4",
-                  luxury ? "border-white/10" : "border-[#B8D926]/12",
+                  luxury ? "border-white/10" : "border-[#E4E7E0]",
                 )}
               >
                 <Link
@@ -438,7 +472,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                     "flex min-h-[48px] items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition-colors active:scale-[0.99]",
                     luxury
                       ? "border-white/20 text-white hover:bg-white/10"
-                      : "border-[#B8D926]/30 text-[#38471B] hover:bg-[#B8D926]/12",
+                      : "border-[#1B3A22]/20 text-[#1B3A22] hover:bg-[#C6E31A]/12",
                   )}
                 >
                   Sign in to your account
@@ -449,7 +483,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
               <div
                 className={cn(
                   "mt-5 border-t pt-4",
-                  luxury ? "border-white/10" : "border-[#B8D926]/12",
+                  luxury ? "border-white/10" : "border-[#E4E7E0]",
                 )}
               >
                 <Link
@@ -459,7 +493,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                     "flex min-h-[48px] items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-colors active:scale-[0.99]",
                     luxury
                       ? "text-white hover:bg-white/10"
-                      : "text-primary hover:bg-primary/8",
+                      : "text-[#1B3A22] hover:bg-[#F4F5F2]",
                   )}
                 >
                   <LayoutDashboard className="h-4 w-4" strokeWidth={1.75} />
@@ -473,13 +507,15 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
           <div
             className={cn(
               "shrink-0 border-t px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-5",
-              luxury ? "border-white/10 bg-white/[0.03]" : "border-[#B8D926]/12 bg-[#f7fbe8]/70",
+              luxury
+                ? "border-white/10 bg-white/[0.03]"
+                : "border-[#E4E7E0] bg-[#F4F5F2]",
             )}
           >
             <p
               className={cn(
                 "mb-2.5 text-[10px] font-semibold tracking-[0.18em] uppercase",
-                luxury ? "text-white/50" : "text-[#4a5228]/70",
+                luxury ? "text-white/50" : "text-[#5A7A5E]",
               )}
             >
               Download app
@@ -494,13 +530,18 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                   "flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-2xl border px-2 py-2.5 text-center transition-colors active:scale-[0.98]",
                   luxury
                     ? "border-white/15 bg-white/8 hover:bg-white/12"
-                    : "border-[#B8D926]/20 bg-white hover:bg-[#B8D926]/10",
+                    : "border-[#E4E7E0] bg-white hover:border-[#C6E31A] hover:bg-[#C6E31A]/12",
                 )}
               >
                 <Smartphone
-                  className={cn("h-4 w-4", luxury ? "text-[#C8E84A]" : "text-primary")}
+                  className={cn(
+                    "h-4 w-4",
+                    luxury ? "text-[#C6E31A]" : "text-[#1B3A22]",
+                  )}
                 />
-                <span className="text-[11px] font-semibold leading-tight">Android</span>
+                <span className="text-[11px] font-semibold leading-tight">
+                  Android
+                </span>
               </a>
               <a
                 href={APP_DOWNLOAD.iosAppStoreUrl || "#"}
@@ -518,11 +559,14 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                   "flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-2xl border px-2 py-2.5 text-center transition-colors active:scale-[0.98]",
                   luxury
                     ? "border-white/15 bg-white/8 hover:bg-white/12"
-                    : "border-[#B8D926]/20 bg-white hover:bg-[#B8D926]/10",
+                    : "border-[#E4E7E0] bg-white hover:border-[#C6E31A] hover:bg-[#C6E31A]/12",
                 )}
               >
                 <Apple
-                  className={cn("h-4 w-4", luxury ? "text-[#C8E84A]" : "text-primary")}
+                  className={cn(
+                    "h-4 w-4",
+                    luxury ? "text-[#C6E31A]" : "text-[#1B3A22]",
+                  )}
                 />
                 <span className="text-[11px] font-semibold leading-tight">iOS</span>
               </a>

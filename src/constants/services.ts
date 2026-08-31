@@ -152,13 +152,13 @@ export const landingWelcomeGallery = [
   {
     src: BRAND_PHOTOS.studioBike,
     alt: "Premium Bull Wave Rides lime motorcycle",
-    fit: "contain" as const,
+    fit: "cover" as const,
     panel: "lime" as const,
   },
   {
     src: BRAND_PHOTOS.eAuto,
     alt: "Bull Wave Rides electric auto",
-    fit: "contain" as const,
+    fit: "cover" as const,
     panel: "sage" as const,
   },
 ] as const;
@@ -186,50 +186,51 @@ export const landingWelcomeDetails = [
 ] as const;
 
 /**
- * Cover-flow gallery — img-7…13 illustrations.
+ * Cover-flow gallery — BW Rides journey (track1…track6).
+ * WebP primary (small); PNG twins as fallback for production.
  */
 export const landingPremiumGallery = [
   {
-    src: BRAND_PHOTOS.gallery7,
-    alt: "Book a Bull Wave Rides cab from your phone",
+    src: BRAND_PHOTOS.journey1,
+    alt: "Book a BW Rides trip from the app",
     label: "Book",
     position: "center",
-    fit: "contain" as const,
+    fit: "cover" as const,
   },
   {
-    src: BRAND_PHOTOS.gallery8,
-    alt: "Live GPS tracking with Bull Wave Rides",
+    src: BRAND_PHOTOS.journey2,
+    alt: "Track your BW Rides captain live on the map",
     label: "Track",
     position: "center",
-    fit: "contain" as const,
+    fit: "cover" as const,
   },
   {
-    src: BRAND_PHOTOS.gallery9,
-    alt: "Rated captains on the Bull Wave Rides app",
-    label: "App",
+    src: BRAND_PHOTOS.journey3,
+    alt: "Ride with a verified BW Rides captain",
+    label: "Ride",
     position: "center",
-    fit: "contain" as const,
+    fit: "cover" as const,
   },
   {
-    src: BRAND_PHOTOS.gallery10,
-    alt: "Bull Wave Rides across the city",
-    label: "City",
+    src: BRAND_PHOTOS.journey4,
+    alt: "Pay securely in the BW Rides app",
+    label: "Pay",
     position: "center",
-    fit: "contain" as const,
+    fit: "cover" as const,
   },
   {
-    src: BRAND_PHOTOS.gallery11,
-    alt: "24×7 Bull Wave Rides taxi service",
-    label: "Taxi",
+    src: BRAND_PHOTOS.journey5,
+    alt: "Rate your BW Rides trip",
+    label: "Rate",
     position: "center",
-    fit: "contain" as const,
+    fit: "cover" as const,
   },
   {
-    src: BRAND_PHOTOS.gallery13,
-    alt: "Emergency ambulance SOS with Bull Wave Rides",
-    label: "SOS",
+    src: BRAND_PHOTOS.journey6,
+    alt: "24×7 BW Rides support and SOS help",
+    label: "Support",
     position: "center",
-    fit: "contain" as const,
+    fit: "cover" as const,
   },
 ] as const;
 

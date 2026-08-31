@@ -136,13 +136,12 @@ function PrinciplesStandard() {
           headerInView || reduceMotion ? "translate-y-0" : "translate-y-3",
         )}
       >
-        <p className="text-[0.65rem] font-semibold tracking-[0.28em] uppercase text-secondary">
+        <p className="text-[0.65rem] font-semibold tracking-[0.28em] uppercase text-[#6B7344]">
           The standard
         </p>
         <div className="mt-2.5 h-px w-12 bg-gradient-to-r from-secondary via-primary to-transparent" />
         <h3
-          className="mt-3 font-heading text-xl font-light tracking-tight sm:text-2xl"
-          style={{ color: "#B8D926" }}
+          className="mt-3 font-heading text-xl font-light tracking-tight sm:text-2xl bw-title"
         >
           What every journey is measured against
         </h3>
@@ -185,8 +184,7 @@ function PrinciplesStandard() {
             </span>
 
             <p
-              className="relative mt-3 font-heading text-lg font-medium tracking-tight transition-colors duration-300 group-hover:text-[#5a2d72] sm:text-xl"
-              style={{ color: "#B8D926" }}
+              className="relative mt-3 font-heading text-lg font-medium tracking-tight text-[#38471B] transition-colors duration-300 group-hover:text-[#283614] sm:text-xl"
             >
               {detail.label}
             </p>
@@ -264,13 +262,12 @@ export function LandingWelcomeSection({ onBookNow }: LandingWelcomeSectionProps)
         {/* Editorial split */}
         <div className="mt-12 grid items-center gap-10 sm:mt-16 lg:mt-20 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
           <AnimateIn>
-            <p className="text-[0.65rem] font-semibold tracking-[0.28em] uppercase text-secondary">
+            <p className="text-[0.65rem] font-semibold tracking-[0.28em] uppercase text-[#6B7344]">
               Our story
             </p>
             <div className="mt-3 h-px w-14 bg-gradient-to-r from-secondary via-primary to-transparent" />
             <h2
-              className="mt-4 font-heading text-[1.55rem] font-light leading-[1.2] tracking-tight sm:text-4xl lg:text-[2.45rem]"
-              style={{ color: "#B8D926" }}
+              className="mt-4 font-heading text-[1.55rem] font-light leading-[1.2] tracking-tight sm:text-4xl lg:text-[2.45rem] bw-title"
             >
               Travel that feels composed — from the first tap to the final drop.
             </h2>
@@ -324,17 +321,11 @@ export function LandingWelcomeSection({ onBookNow }: LandingWelcomeSectionProps)
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 45vw"
                       className={cn(
                         "select-none",
-                        slide.fit === "contain"
-                          ? "object-contain object-center"
-                          : cn(
-                              BRAND_PHOTO_CLASS,
-                              "transition-transform duration-700 group-hover:scale-[1.03]",
-                            ),
+                        BRAND_PHOTO_CLASS,
+                        "transition-transform duration-700 group-hover:scale-[1.03]",
                       )}
                     />
-                    {slide.fit === "contain" ? null : (
-                      <BrandImageOverlay variant="card" />
-                    )}
+                    <BrandImageOverlay variant="card" />
                     <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-primary/10" />
                   </figure>
                 </StaggerItem>

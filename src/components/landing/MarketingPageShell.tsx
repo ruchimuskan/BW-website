@@ -11,6 +11,13 @@ export function MarketingPageShell({
   className,
 }: MarketingPageShellProps) {
   return (
-    <div className={cn("bw-page-shell font-sans", className)}>{children}</div>
+    <div
+      className={cn(
+        "bw-page-shell font-sans text-[#283614] antialiased",
+        className,
+      )}
+    >
+      {children}
+    </div>
   );
 }

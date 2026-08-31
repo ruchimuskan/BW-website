@@ -38,8 +38,7 @@ export function CaptainSafetyView() {
             <AnimateIn delay={0.06}>
               <h1
                 id="captain-safety-heading"
-                className="mt-5 font-heading text-[2.15rem] font-light leading-[1.12] tracking-tight sm:text-5xl lg:text-[3.1rem]"
-                style={{ color: "#B8D926" }}
+                className="mt-5 font-heading text-[2.15rem] font-light leading-[1.12] tracking-tight sm:text-5xl lg:text-[3.1rem] bw-title"
               >
                 {hero.title}
               </h1>
@@ -78,7 +77,13 @@ export function CaptainSafetyView() {
           </div>
 
           <AnimateIn direction="right" delay={0.1}>
-            <SafetyOffsetImage src={hero.image} alt={hero.alt} align="right" />
+            <SafetyOffsetImage
+              src={hero.image}
+              alt={hero.alt}
+              align="right"
+              fallbackSrc={hero.fallbackSrc}
+              imageClassName={hero.imageClassName}
+            />
           </AnimateIn>
         </div>
       </section>
@@ -135,8 +140,7 @@ export function CaptainSafetyView() {
           <SafetyEyebrow>Partner with us</SafetyEyebrow>
           <h2
             id="captain-cta-heading"
-            className="mt-5 font-heading text-2xl font-light tracking-tight sm:text-3xl"
-            style={{ color: "#B8D926" }}
+            className="mt-5 font-heading text-2xl font-light tracking-tight sm:text-3xl bw-title"
           >
             Drive safer. Earn with confidence.
           </h2>

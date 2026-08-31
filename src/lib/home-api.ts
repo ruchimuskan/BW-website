@@ -1,3 +1,4 @@
+import type { SelfDriveLocation } from "@/constants/home-booking";
 import { authFetch, apiFetch } from "@/lib/api";
 
 export interface VehicleCategory {
@@ -161,4 +162,63 @@ export function getRentalCategories(): Promise<VehicleCategory[]> {
 
 export function getBanners(): Promise<HomeBanner[]> {
   return apiFetch<HomeBanner[]>("/api/v1/common/banners", undefined, "Unable to load banners");
+}
+
+function unwrapList<T>(res: unknown): T[] {
+  if (Array.isArray(res)) return res as T[];
+  if (res && typeof res === "object") {
+    const record = res as Record<string, unknown>;
+    for (const key of ["data", "items", "locations", "hubs"]) {
+      if (Array.isArray(record[key])) return record[key] as T[];
+    }
+  }
+  return [];
+}
+
+function mapSelfDriveHub(row: Record<string, unknown>, index: number): SelfDriveLocation | null {
+  const id = String(row.id ?? row.hub_id ?? "").trim();
+  const name = String(row.name ?? row.title ?? "").trim();
+  if (!id || !name) return null;
+
+  const lat = Number(row.lat ?? row.latitude ?? row.pickup_lat);
+  const lng = Number(row.lng ?? row.longitude ?? row.pickup_lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+  return {
+    id,
+    name,
+    address: String(row.address ?? row.full_address ?? name).trim(),
+    distanceKm: Number(row.distance_km ?? row.distanceKm ?? row.distance ?? 0) || 0,
+    cars: Number(row.cars ?? row.cars_available ?? row.car_count ?? 0) || 0,
+    bikes: Number(row.bikes ?? row.bikes_available ?? row.bike_count ?? 0) || 0,
+    lat,
+    lng,
+    nearest: Boolean(row.is_nearest ?? row.nearest ?? index === 0),
+  };
+}
+
+/** Self-drive pickup hubs from the vehicle panel API. */
+export async function getSelfDriveLocations(): Promise<SelfDriveLocation[]> {
+  const endpoints = [
+    "/api/v1/common/self-drive-locations",
+    "/api/v1/public/self-drive-locations",
+  ];
+
+  for (const path of endpoints) {
+    try {
+      const res = await apiFetch<unknown>(
+        path,
+        { skipAuth: true },
+        "Unable to load self-drive locations",
+      );
+      const mapped = unwrapList<Record<string, unknown>>(res)
+        .map((row, index) => mapSelfDriveHub(row, index))
+        .filter((row): row is SelfDriveLocation => row != null);
+      if (mapped.length > 0) return mapped;
+    } catch {
+      // Try next endpoint shape.
+    }
+  }
+
+  return [];
 }

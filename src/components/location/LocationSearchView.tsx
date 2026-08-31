@@ -406,7 +406,7 @@ export function LocationSearchView() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.22 }}
       className={cn(
-        "relative flex h-[100dvh] flex-col overflow-hidden font-sans lg:flex-row",
+        "relative flex min-h-[100dvh] flex-col overflow-x-hidden font-sans lg:h-[100dvh] lg:flex-row lg:overflow-hidden",
         theme.pageBg,
       )}
     >
@@ -472,6 +472,14 @@ export function LocationSearchView() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => {
+                window.setTimeout(() => {
+                  inputRef.current?.scrollIntoView({
+                    block: "nearest",
+                    behavior: "smooth",
+                  });
+                }, 320);
+              }}
               placeholder={copy.placeholder}
               className={cn("w-full bg-transparent text-[15px] font-medium outline-none placeholder:font-normal sm:text-base", theme.inputText)}
               autoComplete="off"

@@ -124,12 +124,12 @@ export function LandingBookingWidget({
     <div
       id="book"
       className={cn(
-        "scroll-mt-28 flex w-full min-w-0 max-w-full flex-col overflow-hidden border border-primary/12 bg-white",
+        "scroll-mt-28 flex w-full min-w-0 max-w-full flex-col overflow-hidden border border-[#D4D8D0] bg-white",
         featured
-          ? "rounded-2xl p-3 shadow-[0_28px_64px_-24px_rgba(184,217,38,0.48)] sm:rounded-[1.35rem] sm:p-4 md:p-5"
+          ? "rounded-2xl p-3 shadow-[0_28px_64px_-24px_rgba(17,20,17,0.28)] sm:rounded-[1.35rem] sm:p-4 md:p-5"
           : dense
-            ? "rounded-xl p-2 shadow-[0_22px_48px_-24px_rgba(184,217,38,0.45)] sm:rounded-2xl sm:p-2.5"
-            : "rounded-xl p-2.5 shadow-[0_22px_48px_-24px_rgba(184,217,38,0.45)] sm:rounded-2xl sm:p-3.5",
+            ? "rounded-xl p-2 shadow-[0_22px_48px_-24px_rgba(17,20,17,0.22)] sm:rounded-2xl sm:p-2.5"
+            : "rounded-xl p-2.5 shadow-[0_22px_48px_-24px_rgba(17,20,17,0.22)] sm:rounded-2xl sm:p-3.5",
         className,
       )}
     >
@@ -137,14 +137,14 @@ export function LandingBookingWidget({
         <div className={cn("min-w-0", featured ? "mb-3 sm:mb-4" : "mb-2.5")}>
           <p
             className={cn(
-              "font-semibold tracking-[0.2em] text-primary uppercase",
+              "font-semibold tracking-[0.2em] text-[#5A6158] uppercase",
               featured ? "text-[11px] sm:text-xs" : "text-[10px]",
             )}
           >
             Book your journey
           </p>
           {featured ? (
-            <p className="mt-1.5 text-sm leading-snug text-[#4a5228] sm:text-[15px]">
+            <p className="mt-1.5 text-sm leading-snug text-[#5A6158] sm:text-[15px]">
               Enter pickup & drop — see prices in seconds.
             </p>
           ) : null}
@@ -153,7 +153,7 @@ export function LandingBookingWidget({
 
       <div
         className={cn(
-          "relative flex w-full min-w-0 shrink-0 gap-1 rounded-xl bg-muted/80 p-1",
+          "relative flex w-full min-w-0 shrink-0 gap-1 rounded-xl bg-[#111411] p-1",
           featured && "sm:gap-1.5 sm:p-1.5",
         )}
         role="tablist"
@@ -182,10 +182,10 @@ export function LandingBookingWidget({
                 emergency
                   ? isActive
                     ? "bg-destructive text-white shadow-md shadow-destructive/25"
-                    : "text-destructive hover:bg-destructive/10"
+                    : "text-white/80 hover:bg-white/10"
                   : isActive
-                    ? "bg-primary text-white shadow-md shadow-primary/25"
-                    : "text-[#4a5228] hover:bg-white hover:text-primary",
+                    ? "bg-[#C6E31A] text-[#111411] shadow-md shadow-black/20"
+                    : "text-white/75 hover:bg-white/10 hover:text-white",
               )}
             >
               <TabPhoto
@@ -209,7 +209,7 @@ export function LandingBookingWidget({
           exit={reduceMotion ? undefined : { y: -4 }}
           transition={{ duration: 0.18 }}
           className={cn(
-            "flex min-w-0 items-center justify-center gap-2 px-2 text-center font-medium text-[#4a5228]",
+            "flex min-w-0 items-center justify-center gap-2 px-2 text-center font-medium text-[#5A6158]",
             featured
               ? "mt-2.5 text-xs sm:mt-3 sm:text-sm"
               : dense

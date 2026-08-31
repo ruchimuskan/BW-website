@@ -11,6 +11,7 @@ import {
   SafetyAtmosphere,
   SafetyEyebrow,
   SafetyFaqAccordion,
+  SafetyFeatureCard,
   SafetyHeroStats,
   SafetyImageCollage,
   SafetyMeasureCell,
@@ -45,8 +46,8 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
       >
         <SafetyAtmosphere />
 
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-          <div>
+        <div className="relative mx-auto grid max-w-6xl items-center gap-10 sm:gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14 xl:gap-16">
+          <div className="min-w-0">
             <AnimateIn>
               <SafetyEyebrow>Safety</SafetyEyebrow>
             </AnimateIn>
@@ -54,11 +55,10 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
             <AnimateIn delay={0.06}>
               <h1
                 id="overview-hero-heading"
-                className="mt-5 font-heading text-[2.15rem] font-light leading-[1.12] tracking-tight sm:text-5xl lg:text-[3.35rem]"
-                style={{ color: "#B8D926" }}
+                className="mt-5 font-heading text-[2.15rem] font-light leading-[1.12] tracking-tight sm:text-5xl lg:text-[3.35rem] bw-title"
               >
                 {hero.title.replace(".", "")}
-                <span className="text-secondary">.</span>
+                <span className="text-[#B8D926]">.</span>
               </h1>
             </AnimateIn>
 
@@ -99,8 +99,15 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
             </AnimateIn>
           </div>
 
-          <AnimateIn direction="right" delay={0.1}>
-            <SafetyImageCollage images={hero.images} />
+          <AnimateIn
+            direction="right"
+            delay={0.1}
+            className="flex w-full min-w-0 items-center justify-center lg:justify-end"
+          >
+            <SafetyImageCollage
+              images={hero.images}
+              className="w-full lg:max-w-[min(100%,28rem)] xl:max-w-[min(100%,32rem)]"
+            />
           </AnimateIn>
         </div>
       </section>
@@ -111,8 +118,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
             <SafetyEyebrow>Who we protect</SafetyEyebrow>
             <h2
               id="covers-everyone-heading"
-              className="mt-5 font-heading text-[1.65rem] font-light tracking-tight sm:text-3xl lg:text-4xl"
-              style={{ color: "#B8D926" }}
+              className="mt-5 font-heading text-[1.65rem] font-light tracking-tight sm:text-3xl lg:text-4xl bw-title"
             >
               {coversEveryone.title}
             </h2>
@@ -125,7 +131,12 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
                   <div className="absolute left-5 top-5 z-10 rounded-full border border-white/40 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-[0.2em] text-primary shadow-sm backdrop-blur-sm">
                     {String(index + 1).padStart(2, "0")}
                   </div>
-                  <div className="relative aspect-[16/10] overflow-hidden bg-[#f7fbe8]">
+                  <div
+                    className={cn(
+                      "relative aspect-[16/10] overflow-hidden",
+                      card.id === "captains" ? "bg-[#1a1f16]" : "bg-[#eef3dc]",
+                    )}
+                  >
                     <ResilientImage
                       src={card.image}
                       alt={card.alt}
@@ -133,30 +144,35 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
                       quality={NEXT_IMAGE_QUALITY.medium}
                       className={cn(
                         BRAND_PHOTO_CLASS,
-                        "transition-transform duration-700 group-hover:scale-105",
+                        "transition-transform duration-700 group-hover:scale-[1.03]",
+                        "imageClassName" in card ? card.imageClassName : undefined,
                       )}
                       sizes="(max-width: 640px) 100vw, 480px"
+                      fallbackSrc={
+                        "imageFallbackSrc" in card ? card.imageFallbackSrc : undefined
+                      }
                     />
                     <BrandImageOverlay variant="card" />
+                    <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/5" />
                   </div>
                   <div className="flex flex-1 flex-col px-5 py-5 sm:px-6 sm:py-6">
                     <h3
-                      className="font-heading text-xl font-semibold tracking-tight sm:text-2xl"
-                      style={{ color: "#B8D926" }}
+                      className="font-heading text-xl font-semibold tracking-tight sm:text-2xl bw-title"
                     >
                       {card.title}
                     </h3>
                     <p className="mt-2 flex-1 text-[13px] font-light leading-relaxed text-[#4a5228] sm:text-sm">
                       {card.description}
                     </p>
-                    <button
+                    <Button
                       type="button"
+                      size="lg"
                       onClick={() => onTabChange(card.tab)}
-                      className="mt-5 inline-flex items-center gap-1.5 rounded-xl border border-primary/15 bg-[#ffffff] px-4 py-2 text-xs font-semibold tracking-[0.12em] uppercase text-primary transition-colors hover:border-primary/30 hover:bg-primary hover:text-white sm:text-sm"
+                      className="mt-5 h-11 w-full rounded-xl px-5 text-xs font-semibold uppercase tracking-[0.14em] shadow-[0_14px_32px_-18px_rgba(184,217,38,0.55)] sm:w-auto sm:text-sm"
                     >
                       Know more
                       <ChevronRight className="h-4 w-4" />
-                    </button>
+                    </Button>
                   </div>
                 </article>
               </StaggerItem>
@@ -171,23 +187,21 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
             <SafetyEyebrow>How we protect</SafetyEyebrow>
             <h2
               id="safety-journey-heading"
-              className="mt-5 font-heading text-[1.65rem] font-light tracking-tight sm:text-3xl"
-              style={{ color: "#B8D926" }}
+              className="mt-5 font-heading text-[1.65rem] font-light tracking-tight sm:text-3xl bw-title"
             >
               Your safety journey, step by step
             </h2>
           </AnimateIn>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-5 lg:gap-3">
+          <div className="mt-8 grid items-start gap-3 min-[480px]:grid-cols-2 sm:mt-10 sm:gap-4 xl:grid-cols-5 lg:gap-4">
             {protectionSteps.map((step, index) => (
               <AnimateIn key={step.step} delay={index * 0.05}>
-                <div className="relative h-full rounded-2xl border border-primary/12 bg-white/90 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_-28px_rgba(184,217,38,0.35)] sm:p-6">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-[#9BB820] text-sm font-bold text-white shadow-md">
+                <div className="relative flex h-full flex-col rounded-2xl border border-[#dce8a8]/50 bg-gradient-to-b from-white to-[#f8fbe8]/60 p-5 shadow-[0_12px_36px_-24px_rgba(56,71,27,0.12)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_18px_44px_-26px_rgba(184,217,38,0.32)] sm:p-6">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-[#9BB820] text-sm font-bold text-white shadow-[0_8px_20px_-10px_rgba(184,217,38,0.65)]">
                     {step.step}
                   </span>
                   <h3
-                    className="mt-4 font-heading text-base font-semibold tracking-tight sm:text-lg"
-                    style={{ color: "#B8D926" }}
+                    className="mt-4 font-heading text-base font-semibold tracking-tight sm:text-lg bw-title"
                   >
                     {step.title}
                   </h3>
@@ -246,49 +260,28 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
         </div>
       </SafetySectionBand>
 
-      <SafetySectionBand aria-labelledby="safety-features-heading">
+      <SafetySectionBand accent aria-labelledby="safety-features-heading">
         <div className="mx-auto max-w-6xl">
           <AnimateIn className="max-w-2xl">
             <SafetyEyebrow>Built in</SafetyEyebrow>
             <h2
               id="safety-features-heading"
-              className="mt-5 font-heading text-[1.65rem] font-light tracking-tight sm:text-3xl"
-              style={{ color: "#B8D926" }}
+              className="mt-5 font-heading text-[1.65rem] font-light tracking-tight sm:text-3xl lg:text-4xl bw-title"
             >
               Safety tools on every trip
             </h2>
+            <p className="mt-3 max-w-xl text-sm font-light leading-relaxed text-[#4a5228] sm:mt-4 sm:text-base">
+              From verified captains to one-tap SOS — every Bull Wave Rides journey
+              includes tools designed to keep you safe before, during, and after the ride.
+            </p>
           </AnimateIn>
 
-          <Stagger className="mt-9 grid grid-cols-1 gap-3 sm:mt-11 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
-            {safetyFeatureCards.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <StaggerItem key={feature.title} index={index}>
-                  <article
-                    className={cn(
-                      "group h-full overflow-hidden rounded-2xl border border-primary/12 bg-white px-5 py-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_48px_-30px_rgba(184,217,38,0.4)] sm:rounded-3xl sm:px-6 sm:py-7",
-                      index === 0 && "lg:row-span-1",
-                    )}
-                  >
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-[#ffffff] text-primary transition-all duration-300 group-hover:border-primary/30 group-hover:bg-primary group-hover:text-white sm:h-11 sm:w-11">
-                      <Icon
-                        className="h-5 w-5 shrink-0 text-primary transition-colors duration-300 group-hover:text-white"
-                        strokeWidth={1.8}
-                      />
-                    </span>
-                    <h3
-                      className="mt-4 font-heading text-base font-semibold tracking-tight sm:text-lg"
-                      style={{ color: "#B8D926" }}
-                    >
-                      {feature.title}
-                    </h3>
-                    <p className="mt-1.5 text-[13px] font-light leading-relaxed text-[#4a5228]">
-                      {feature.description}
-                    </p>
-                  </article>
-                </StaggerItem>
-              );
-            })}
+          <Stagger className="mt-8 grid grid-cols-1 items-start gap-3 min-[480px]:grid-cols-2 sm:mt-10 sm:gap-4 lg:grid-cols-3 lg:gap-5">
+            {safetyFeatureCards.map((feature, index) => (
+              <StaggerItem key={feature.title} index={index}>
+                <SafetyFeatureCard {...feature} index={index} />
+              </StaggerItem>
+            ))}
           </Stagger>
         </div>
       </SafetySectionBand>
@@ -299,8 +292,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
             <SafetyEyebrow>FAQ</SafetyEyebrow>
             <h2
               id="safety-faq-heading"
-              className="mt-5 font-heading text-[1.65rem] font-light tracking-tight sm:text-3xl"
-              style={{ color: "#B8D926" }}
+              className="mt-5 font-heading text-[1.65rem] font-light tracking-tight sm:text-3xl bw-title"
             >
               Common safety questions
             </h2>

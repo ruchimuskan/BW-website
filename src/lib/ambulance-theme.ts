@@ -32,23 +32,23 @@ export const ambulanceBookTheme = {
 } as const;
 
 export const rideBookTheme = {
-  pageBg: "bg-[#f7fbe8]",
-  headerBorder: "border-[#e8f0c8]",
+  pageBg: "bg-[#F7F9F2]",
+  headerBorder: "border-[#e8eed8]",
   headerBg: "bg-white/95",
-  eyebrow: "text-[#B8D926]",
+  eyebrow: "text-[#6B7344]",
   title: "text-[#38471B]",
   backBtn:
-    "border-[#e8f0c8] bg-white text-[#38471B] hover:border-[#B8D926]/50 hover:bg-[#f7fbe8]",
-  card: "border-[#e8f0c8] bg-white",
+    "border-[#e8eed8] bg-white text-[#38471B] hover:border-[#B8D926]/50 hover:bg-[#F7F9F2]",
+  card: "border-[#e8eed8] bg-white",
   muted: "text-[#5a6330]",
   ink: "text-[#38471B]",
   mapShell: "bg-[#38471B]",
-  footerBorder: "border-[#e8f0c8]",
+  footerBorder: "border-[#e8eed8]",
   footerBtn:
-    "border-[#e8f0c8] bg-white text-[#38471B] hover:border-[#B8D926]/45 hover:bg-[#f7fbe8]",
+    "border-[#e8eed8] bg-white text-[#38471B] hover:border-[#B8D926]/45 hover:bg-[#F7F9F2]",
   selected:
     "border-[#B8D926]/45 bg-white shadow-[0_12px_28px_-18px_rgba(56,71,27,0.28)] ring-1 ring-[#B8D926]/25",
-  idle: "border-[#e8f0c8] hover:border-[#B8D926]/35 hover:bg-white",
+  idle: "border-[#e8eed8] hover:border-[#B8D926]/35 hover:bg-white",
   check: "bg-[#B8D926] text-[#38471B]",
   dropDot: "bg-[#B8D926] ring-[#B8D926]/20",
   input:

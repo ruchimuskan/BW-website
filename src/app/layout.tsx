@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BackendWarmup } from "@/components/BackendWarmup";
+import { AuthSessionGuard } from "@/components/auth/AuthSessionGuard";
 import { FloatingChatLazy } from "@/components/chat/FloatingChatLazy";
 import { ScrollToTopOnNavigate } from "@/components/layout/ScrollToTopOnNavigate";
 import { PageBackground } from "@/components/layout/PageBackground";
@@ -173,15 +174,17 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://api.bullwaverides.com" />
         <link rel="dns-prefetch" href="https://api.bullwaverides.com" />
+        <link rel="preload" as="image" href="/images/bwride.png" />
       </head>
       <body
-        className={`${inter.variable} ${playwriteEnglandJoined.variable} font-sans antialiased bg-muted text-foreground`}
+        className={`${inter.variable} ${playwriteEnglandJoined.variable} font-sans antialiased bg-background text-foreground`}
       >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <BackendWarmup />
+        <AuthSessionGuard />
         <ScrollToTopOnNavigate />
         <PageBackground />
         <div className="bw-page-root relative z-10 min-h-dvh w-full min-w-0">

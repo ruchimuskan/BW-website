@@ -27,7 +27,6 @@ interface BlogArticleViewProps {
 
 export function BlogArticleView({ slug }: BlogArticleViewProps) {
   const post = getBlogPost(slug);
-
   if (!post) {
     notFound();
   }
@@ -40,24 +39,22 @@ export function BlogArticleView({ slug }: BlogArticleViewProps) {
     <MarketingPageShell>
       <LandingHeader />
 
-      <article className="relative bw-section-glow px-4 py-10 sm:px-6 sm:py-14">
+      <article className="relative border-b border-[#eef5d4] bg-[#f8faf2] px-4 py-10 sm:px-6 sm:py-14">
         <AnimateIn className="relative z-10 mx-auto max-w-3xl">
           <Link
             href={ROUTES.blogs}
-            className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-secondary"
+            className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-[#38471B] transition-colors hover:text-[#5a6330]"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to all blogs
           </Link>
 
-          <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-secondary">
+          <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#7a8450]">
             {post.category}
           </p>
+          <div className="mt-2 h-px w-12 bg-gradient-to-r from-[#B8D926] to-transparent" />
 
-          <h1
-            className="mt-3 font-heading text-[1.75rem] font-light leading-tight tracking-tight sm:text-4xl lg:text-[2.6rem]"
-            style={{ color: "#B8D926" }}
-          >
+          <h1 className="mt-4 font-heading text-[1.75rem] font-semibold leading-tight tracking-tight text-[#38471B] sm:text-4xl lg:text-[2.5rem]">
             {post.title}
           </h1>
 
@@ -72,7 +69,7 @@ export function BlogArticleView({ slug }: BlogArticleViewProps) {
             </span>
           </div>
 
-          <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-xl border border-primary/12 bg-[#f7fbe8] sm:rounded-2xl shadow-[0_20px_48px_-28px_rgba(184,217,38,0.35)]">
+          <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-xl border border-[#e8eed8] bg-[#f4f6ee] shadow-[0_20px_48px_-28px_rgba(40,54,20,0.28)] sm:rounded-2xl">
             <Image
               src={post.image}
               alt={post.imageAlt}
@@ -93,8 +90,8 @@ export function BlogArticleView({ slug }: BlogArticleViewProps) {
         </AnimateIn>
 
         {related.length > 0 ? (
-          <AnimateIn className="mx-auto mt-14 max-w-3xl border-t border-primary/12 pt-10">
-            <p className="text-[10px] font-semibold tracking-[0.24em] uppercase text-secondary">
+          <AnimateIn className="mx-auto mt-14 max-w-3xl border-t border-[#eef5d4] pt-10">
+            <p className="text-[10px] font-semibold tracking-[0.24em] uppercase text-[#7a8450]">
               Related
             </p>
             <Stagger className="mt-4 space-y-3">
@@ -102,15 +99,12 @@ export function BlogArticleView({ slug }: BlogArticleViewProps) {
                 <StaggerItem key={item.slug} index={index}>
                   <Link
                     href={blogPostPath(item.slug)}
-                    className="group flex items-start justify-between gap-4 rounded-xl border border-primary/10 bg-[#ffffff] px-4 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_28px_-20px_rgba(184,217,38,0.4)] sm:rounded-2xl"
+                    className="group flex items-start justify-between gap-4 rounded-xl border border-[#e8eed8] bg-white px-4 py-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#dce8a8] hover:shadow-[0_12px_28px_-20px_rgba(40,54,20,0.22)] sm:rounded-2xl"
                   >
-                    <span
-                      className="font-heading text-base font-medium tracking-tight group-hover:text-secondary"
-                      style={{ color: "#B8D926" }}
-                    >
+                    <span className="font-heading text-base font-semibold tracking-tight text-[#38471B] group-hover:text-[#283614]">
                       {item.title}
                     </span>
-                    <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-primary">
+                    <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-[#38471B]">
                       Read →
                     </span>
                   </Link>

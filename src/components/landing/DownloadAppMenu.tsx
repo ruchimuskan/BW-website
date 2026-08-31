@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Apple, ChevronDown, Smartphone } from "lucide-react";
 import { APP_DOWNLOAD } from "@/constants/app-download";
 import { cn } from "@/lib/utils";
@@ -37,7 +36,6 @@ export function DownloadAppMenu({
   androidOptionLabel = "Get it on Google Play",
   iosOptionLabel = "Download for iOS",
 }: DownloadAppMenuProps) {
-  const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -88,7 +86,7 @@ export function DownloadAppMenu({
       if (!btn) return;
       const rect = btn.getBoundingClientRect();
 
-      const width = 240;
+      const width = 248;
       const margin = 8;
       const preferLeft = align === "left";
       const left = preferLeft
@@ -130,49 +128,33 @@ export function DownloadAppMenu({
 
   return (
     <div ref={containerRef} className={cn("relative inline-flex", className)}>
-      {/* Soft static glow — no continuous paint work */}
-      {!reduceMotion && (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-[-3px] -z-10 rounded-full bg-primary/25 blur-[10px]"
-        />
-      )}
-
-      <motion.button
+      <button
         ref={buttonRef}
         type="button"
         aria-label={label}
         aria-expanded={open}
         aria-haspopup="menu"
-        whileHover={
-          reduceMotion
-            ? undefined
-            : { y: compact ? 0 : -2, scale: 1.02, transition: { duration: 0.2 } }
-        }
-        whileTap={reduceMotion ? undefined : { scale: 0.97, y: 0 }}
         className={cn(
           buttonVariants({ variant, size: compact ? "icon-lg" : size }),
-          "group relative isolate overflow-hidden rounded-full font-semibold tracking-wide",
-          "shadow-[0_10px_26px_-12px_rgba(184,217,38,0.7)]",
-          "transition-[box-shadow,background-color] duration-200",
-          "hover:shadow-[0_18px_36px_-14px_rgba(184,217,38,0.8)]",
-          "focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2",
-          compact ? "h-10 w-10 p-0" : "h-9 px-4 text-sm sm:px-5",
-          open && "ring-2 ring-primary/30 ring-offset-2",
+          "group relative isolate overflow-hidden rounded-full font-semibold tracking-wide text-[#14301A]",
+          "bg-[#C6E31A] hover:bg-[#D4F04A]",
+          "shadow-[0_8px_22px_-10px_rgba(27,58,34,0.4)]",
+          "transition-[box-shadow,background-color,transform] duration-200",
+          "hover:shadow-[0_12px_28px_-12px_rgba(27,58,34,0.45)]",
+          "focus-visible:ring-2 focus-visible:ring-[#C6E31A]/50 focus-visible:ring-offset-2",
+          "active:scale-[0.98]",
+          compact ? "h-9 w-9 p-0 sm:h-10 sm:w-10" : "h-9 gap-1.5 px-3.5 text-[12px] sm:h-10 sm:px-5 sm:text-[13px]",
+          open && "ring-2 ring-[#1B3A22]/15 ring-offset-2",
           buttonClassName,
         )}
         onClick={() => setOpen((current) => !current)}
       >
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        />
-
         <span className="relative z-[1] inline-flex items-center justify-center gap-1.5">
           {compact ? (
-            <Smartphone className="h-4 w-4" strokeWidth={2} />
+            <Smartphone className="h-4 w-4" strokeWidth={2.25} />
           ) : (
             <>
+              <Smartphone className="hidden h-4 w-4 sm:inline" strokeWidth={2.25} />
               <span>{label}</span>
               <ChevronDown
                 className={cn(
@@ -183,76 +165,56 @@ export function DownloadAppMenu({
             </>
           )}
         </span>
-      </motion.button>
+      </button>
 
       {mounted &&
         createPortal(
-          <AnimatePresence>
-            {open && menuPosition ? (
-              <motion.div
-                ref={menuRef}
-                role="menu"
-                initial={
-                  reduceMotion ? false : { opacity: 0, y: -8, scale: 0.96 }
-                }
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={
-                  reduceMotion
-                    ? undefined
-                    : { opacity: 0, y: -6, scale: 0.97 }
-                }
-                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="fixed z-[100] overflow-hidden rounded-2xl border border-primary/15 bg-white/95 py-1.5 shadow-[0_22px_48px_-18px_rgba(184,217,38,0.5)] backdrop-blur-md"
-                style={{
-                  top: menuPosition.top,
-                  left: menuPosition.left,
-                  width: menuPosition.width,
-                }}
+          open && menuPosition ? (
+            <div
+              ref={menuRef}
+              role="menu"
+              className="fixed z-[100] overflow-hidden rounded-2xl border border-[#E4E7E0] bg-white py-1.5 shadow-[0_18px_40px_-16px_rgba(17,20,17,0.35)]"
+              style={{
+                top: menuPosition.top,
+                left: menuPosition.left,
+                width: menuPosition.width,
+              }}
+            >
+              <button
+                type="button"
+                role="menuitem"
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-[#111411] transition-colors hover:bg-[#C6E31A]/15"
+                onClick={handleAndroidDownload}
               >
-                <motion.button
-                  type="button"
-                  role="menuitem"
-                  initial={reduceMotion ? false : { opacity: 0, x: -6 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.04, duration: 0.18 }}
-                  className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-primary/8 hover:text-primary"
-                  onClick={handleAndroidDownload}
-                >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <Smartphone className="h-4 w-4" />
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#C6E31A] text-[#111411]">
+                  <Smartphone className="h-4 w-4" />
+                </span>
+                <span>
+                  <span className="block leading-tight">{androidOptionLabel}</span>
+                  <span className="mt-0.5 block text-[11px] font-normal text-[#5A6158]">
+                    APK download
                   </span>
-                  <span>
-                    <span className="block leading-tight">
-                      {androidOptionLabel}
-                    </span>
-                    <span className="mt-0.5 block text-[11px] font-normal text-muted-foreground">
-                      APK download
-                    </span>
-                  </span>
-                </motion.button>
+                </span>
+              </button>
 
-                <motion.button
-                  type="button"
-                  role="menuitem"
-                  initial={reduceMotion ? false : { opacity: 0, x: -6 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.08, duration: 0.18 }}
-                  className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-primary/8 hover:text-primary"
-                  onClick={handleIosDownload}
-                >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <Apple className="h-4 w-4" />
+              <button
+                type="button"
+                role="menuitem"
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-[#111411] transition-colors hover:bg-[#C6E31A]/15"
+                onClick={handleIosDownload}
+              >
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#111411] text-[#C6E31A]">
+                  <Apple className="h-4 w-4" />
+                </span>
+                <span>
+                  <span className="block leading-tight">{iosOptionLabel}</span>
+                  <span className="mt-0.5 block text-[11px] font-normal text-[#5A6158]">
+                    App Store
                   </span>
-                  <span>
-                    <span className="block leading-tight">{iosOptionLabel}</span>
-                    <span className="mt-0.5 block text-[11px] font-normal text-muted-foreground">
-                      App Store
-                    </span>
-                  </span>
-                </motion.button>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>,
+                </span>
+              </button>
+            </div>
+          ) : null,
           document.body,
         )}
     </div>

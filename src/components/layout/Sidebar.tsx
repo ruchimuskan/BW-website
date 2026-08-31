@@ -152,14 +152,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     className={cn(
                       "flex w-full items-center gap-3.5 rounded-xl px-3.5 py-3 text-left text-sm font-medium transition-colors",
                       active
-                        ? "bg-[#B8D926] text-[#38471B] shadow-sm shadow-primary/20"
-                        : "text-[#4a5228] hover:bg-[#f7fbe8] hover:text-[#38471B]",
+                        ? "bg-[#C6E31A] text-[#111411] shadow-sm"
+                        : "text-[#5A6158] hover:bg-[#EBEEE8] hover:text-[#111411]",
                     )}
                   >
                     <span
                       className={cn(
                         "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
-                        active ? "bg-[#38471B]/10 text-[#38471B]" : "bg-[#f7fbe8] text-primary",
+                        active ? "bg-[#111411]/10 text-[#111411]" : "bg-[#EBEEE8] text-[#111411]",
                       )}
                     >
                       <Icon className="h-4 w-4" strokeWidth={1.8} />

@@ -26,8 +26,8 @@ export function RideTrackingMap(props: RideTrackingMapProps) {
   return (
     <div
       className={cn(
-        "relative h-[42vh] min-h-[220px] w-full overflow-hidden bg-[#283614]",
-        "sm:h-[48vh] lg:h-full lg:min-h-dvh",
+        "relative h-[42dvh] min-h-[220px] w-full overflow-hidden bg-[#283614]",
+        "sm:h-[48dvh] lg:h-full lg:min-h-dvh",
         props.className,
       )}
     >

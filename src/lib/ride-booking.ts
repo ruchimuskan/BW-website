@@ -236,6 +236,18 @@ function googlePinUrl(lat: number, lng: number, zoom: number) {
   return `https://maps.google.com/maps?q=${lat},${lng}&ll=${lat},${lng}&z=${zoom}&hl=en&t=m&output=embed`;
 }
 
+/** Street-level embed for a single coordinate (location picker, tracking pin). */
+export function singlePointMapEmbedUrl(
+  lat?: number | null,
+  lng?: number | null,
+  zoom = 15,
+): string {
+  if (lat != null && lng != null && isValidLatLng(lat, lng)) {
+    return googlePinUrl(lat, lng, zoom);
+  }
+  return googlePinUrl(DELHI_LAT, DELHI_LNG, 13);
+}
+
 /**
  * Street-level Google embed. The old saddr/daddr directions iframe zooms to
  * continents when pickup ≈ dropoff or coords are invalid.

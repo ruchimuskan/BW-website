@@ -33,9 +33,9 @@ export function LandingAccountChip({
           aria-label="Sign in"
           className={cn(
             "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors active:scale-95",
-            luxury
-              ? "border-white/25 bg-white/10 text-white hover:border-[#C8E84A] hover:bg-white/15"
-              : "border-primary/25 bg-white text-primary shadow-[0_6px_16px_-10px_rgba(184,217,38,0.55)] hover:border-primary hover:bg-primary hover:text-white",
+          luxury
+            ? "border-white/25 bg-white/10 text-white hover:border-[#C6E31A] hover:bg-white/15"
+            : "border-[#D4D8D0] bg-white text-[#1B3A22] hover:border-[#C6E31A] hover:bg-[#C6E31A]/15",
             className,
           )}
         >
@@ -51,8 +51,8 @@ export function LandingAccountChip({
         className={cn(
           "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors",
           luxury
-            ? "text-white hover:bg-white/10 hover:text-[#C8E84A]"
-            : "text-foreground hover:bg-primary/10 hover:text-primary",
+            ? "text-white hover:bg-white/10 hover:text-[#C6E31A]"
+            : "rounded-full border border-[#D4D8D0] bg-white px-3.5 py-2 text-[#1B3A22] hover:border-[#C6E31A] hover:bg-[#C6E31A]/12",
           className,
         )}
       >
@@ -219,6 +219,7 @@ function AvatarBubble({
             src={user.profileImageUrl}
             alt=""
             fill
+            unoptimized
             className="object-cover"
             sizes={size === "sm" ? "32px" : "40px"}
           />

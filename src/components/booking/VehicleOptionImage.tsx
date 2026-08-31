@@ -15,6 +15,7 @@ interface VehicleOptionImageProps {
 
 function shouldSkipOptimize(src: string) {
   return (
+    src.startsWith("/images/") ||
     src.includes("X-Amz-Signature=") ||
     src.includes("X-Amz-Credential=") ||
     src.startsWith("data:")

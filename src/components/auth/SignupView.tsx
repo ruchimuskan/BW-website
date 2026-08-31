@@ -78,10 +78,15 @@ export function SignupView() {
   const strengthInfo = strengthMeta[password ? strength : 0];
 
   useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const apply = () => {
+      document.body.style.overflow = mq.matches ? "hidden" : "";
+    };
+    apply();
+    mq.addEventListener("change", apply);
     return () => {
-      document.body.style.overflow = prev;
+      mq.removeEventListener("change", apply);
+      document.body.style.overflow = "";
     };
   }, []);
 
@@ -173,7 +178,7 @@ export function SignupView() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35, ease: easeOut }}
-      className="relative h-[100dvh] overflow-hidden font-sans"
+      className="relative min-h-[100dvh] overflow-x-hidden overflow-y-auto font-sans lg:h-[100dvh] lg:overflow-hidden"
     >
       <LoginSceneDecor />
 

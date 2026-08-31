@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { WaveGoLogo } from "@/components/layout/WaveGoLogo";
 import { helpTopics, supportTrips, type HelpTopic } from "@/data/mock/support";
 import { ROUTES } from "@/constants/routes";
+import { allowDemoDataFallbacks } from "@/lib/app-env";
 import { helpSectionPath } from "@/lib/help-routes";
 import { helpShell } from "@/lib/help-shell";
 import { getRideHistory, type Ride } from "@/lib/ride-api";
@@ -137,6 +138,7 @@ export function HelpView({ onBack }: HelpViewProps) {
   const [query, setQuery] = useState("");
   const [recentTrips, setRecentTrips] = useState<HelpTripRow[]>([]);
   const [tripsLoading, setTripsLoading] = useState(true);
+  const [tripsError, setTripsError] = useState<string | null>(null);
 
   const filteredTopics = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -153,17 +155,31 @@ export function HelpView({ onBack }: HelpViewProps) {
   useEffect(() => {
     let cancelled = false;
     setTripsLoading(true);
+    setTripsError(null);
     void getRideHistory(1, 8)
       .then((res) => {
         if (cancelled) return;
         const rows = res.items.slice(0, 5).map(mapRideToRow);
-        setRecentTrips(
-          rows.length > 0 ? rows : supportTrips.map(mapMockToRow),
-        );
+        if (rows.length > 0) {
+          setRecentTrips(rows);
+          return;
+        }
+        if (allowDemoDataFallbacks()) {
+          setRecentTrips(supportTrips.map(mapMockToRow));
+        } else {
+          setRecentTrips([]);
+        }
       })
-      .catch(() => {
+      .catch((err) => {
         if (cancelled) return;
-        setRecentTrips(supportTrips.map(mapMockToRow));
+        if (allowDemoDataFallbacks()) {
+          setRecentTrips(supportTrips.map(mapMockToRow));
+        } else {
+          setRecentTrips([]);
+          setTripsError(
+            err instanceof Error ? err.message : "Unable to load recent trips",
+          );
+        }
       })
       .finally(() => {
         if (!cancelled) setTripsLoading(false);
@@ -186,7 +202,7 @@ export function HelpView({ onBack }: HelpViewProps) {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-[#f7fbe8] text-[#38471B]">
+    <div className="flex min-h-[100dvh] w-full min-w-0 flex-col overflow-x-clip bg-[#f7fbe8] text-[#38471B]">
       <header className="sticky top-0 z-40 border-b border-[#e8f0c8] bg-white/95 backdrop-blur-xl">
         <div className="h-0.5 w-full bg-gradient-to-r from-[#B8D926] via-[#C8E84A] to-transparent" />
         <div className={helpShell("flex h-16 items-center gap-3 sm:h-[4.25rem] sm:gap-4")}>
@@ -380,6 +396,19 @@ export function HelpView({ onBack }: HelpViewProps) {
                 <div className="flex items-center justify-center gap-2 px-4 py-10 text-sm text-[#5a6330]">
                   <Loader2 className="h-4 w-4 animate-spin text-[#9BB820]" />
                   Loading recent trips…
+                </div>
+              ) : recentTrips.length === 0 ? (
+                <div className="px-4 py-10 text-center sm:px-6">
+                  <p className="text-sm text-[#5a6330]">
+                    {tripsError ?? "No recent trips yet. Book a ride to get trip-specific help here."}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => router.push(ROUTES.home)}
+                    className="mt-3 text-sm font-semibold text-[#38471B] underline-offset-2 hover:underline"
+                  >
+                    Book a ride
+                  </button>
                 </div>
               ) : (
                 recentTrips.map((trip, index) => {

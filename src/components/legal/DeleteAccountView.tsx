@@ -99,7 +99,7 @@ function InfoCard({
 
 export function DeleteAccountView() {
   return (
-    <div className="min-h-screen bg-background font-sans">
+    <div className="min-h-[100dvh] bg-background font-sans">
       <LandingHeader />
 
       {/* Hero */}

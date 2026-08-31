@@ -7,6 +7,7 @@ import { VehicleOptionImage } from "@/components/booking/VehicleOptionImage";
 import { ROUTES } from "@/constants/routes";
 import { getProtectedPath, isAuthenticated } from "@/lib/auth-session";
 import { getRentalCategories, type VehicleCategory } from "@/lib/home-api";
+import { allowDemoDataFallbacks } from "@/lib/app-env";
 import {
   ActiveRideBlockError,
   assertNoBlockingActiveRide,
@@ -73,11 +74,22 @@ export function RentalView() {
       try {
         const items = await getRentalCategories();
         if (!cancelled) {
-          setCategories(items.length > 0 ? items : FALLBACK_RENTALS);
+          if (items.length > 0) {
+            setCategories(items);
+          } else if (allowDemoDataFallbacks()) {
+            setCategories(FALLBACK_RENTALS);
+          } else {
+            setCategories([]);
+            setError("No rental vehicles are available right now. Please try again later.");
+          }
         }
       } catch (err) {
         if (!cancelled) {
-          setCategories(FALLBACK_RENTALS);
+          if (allowDemoDataFallbacks()) {
+            setCategories(FALLBACK_RENTALS);
+          } else {
+            setCategories([]);
+          }
           setError(err instanceof Error ? err.message : "Unable to load rental options");
         }
       } finally {
@@ -90,6 +102,33 @@ export function RentalView() {
       cancelled = true;
     };
   }, []);
+
+  const reloadCategories = () => {
+    setIsLoading(true);
+    setError(null);
+    void getRentalCategories()
+      .then((items) => {
+        if (items.length > 0) {
+          setCategories(items);
+          return;
+        }
+        if (allowDemoDataFallbacks()) {
+          setCategories(FALLBACK_RENTALS);
+        } else {
+          setCategories([]);
+          setError("No rental vehicles are available right now.");
+        }
+      })
+      .catch((err) => {
+        if (allowDemoDataFallbacks()) {
+          setCategories(FALLBACK_RENTALS);
+        } else {
+          setCategories([]);
+        }
+        setError(err instanceof Error ? err.message : "Unable to load rental options");
+      })
+      .finally(() => setIsLoading(false));
+  };
 
   const selected = categories.find((c) => c.id === selectedId) ?? null;
 
@@ -210,6 +249,19 @@ export function RentalView() {
           <div className="flex items-center justify-center py-16">
             <Loader2 className="h-8 w-8 animate-spin text-[#B8D926]" />
           </div>
+        ) : categories.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-[#e8f0c8] bg-white px-4 py-10 text-center sm:px-6">
+            <p className="text-sm text-[#5a6330]">
+              {error ?? "Rental vehicles are not available at the moment."}
+            </p>
+            <button
+              type="button"
+              onClick={reloadCategories}
+              className="mt-3 text-sm font-semibold text-[#38471B] underline-offset-2 hover:underline"
+            >
+              Try again
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
             {categories.map((category) => {
@@ -254,7 +306,9 @@ export function RentalView() {
           </div>
         )}
 
-        {error ? <p className="mt-4 text-sm text-destructive">{error}</p> : null}
+        {error && categories.length > 0 ? (
+          <p className="mt-4 text-sm text-destructive">{error}</p>
+        ) : null}
 
         <button
           type="button"

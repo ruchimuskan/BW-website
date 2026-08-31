@@ -12,4 +12,4 @@ export function settingsShell(
   return cn(SETTINGS_SHELL_MAX, SETTINGS_SHELL_PAD, ...extra);
 }
 
-export const SETTINGS_PAGE_BG = "min-h-screen bg-muted bw-hero-atmosphere";
+export const SETTINGS_PAGE_BG = "min-h-[100dvh] bg-muted bw-hero-atmosphere";

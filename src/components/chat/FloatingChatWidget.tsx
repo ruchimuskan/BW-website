@@ -22,7 +22,7 @@ import {
   type AiChatMessage,
 } from "@/lib/ai-chat-api";
 import { getAiFeatureFallback } from "@/lib/ai-feature-fallbacks";
-import { chatFabOffsetClass, isChatWidgetPath } from "@/lib/chat-widget";
+import { chatFabLgOffsetClass, chatFabOffsetClass, isChatWidgetPath } from "@/lib/chat-widget";
 import { cn } from "@/lib/utils";
 
 /** Circular brand mark — masks square PNG / white corners. */
@@ -652,21 +652,41 @@ export function FloatingChatWidget() {
   }
 
   return (
-    <div
-      className={cn(
-        "pointer-events-none fixed right-3 z-[90] flex flex-col items-end gap-3 sm:right-4 lg:right-7",
-        chatFabOffsetClass(pathname),
-      )}
-    >
+    <>
+      <AnimatePresence>
+        {open ? (
+          <motion.button
+            key="chat-backdrop"
+            type="button"
+            aria-label="Close chat"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setOpen(false)}
+            className="pointer-events-auto fixed inset-0 z-[89] bg-black/35 lg:hidden"
+          />
+        ) : null}
+      </AnimatePresence>
+
+      <div
+        className={cn(
+          "pointer-events-none fixed z-[90] flex flex-col pr-[env(safe-area-inset-right)]",
+          open
+            ? "inset-x-0 bottom-0 items-stretch gap-0 pb-[env(safe-area-inset-bottom)] lg:inset-x-auto lg:right-7 lg:items-end lg:gap-3 lg:pb-0"
+            : "right-3 items-end gap-3 sm:right-4 lg:right-7",
+          open ? chatFabLgOffsetClass(pathname) : chatFabOffsetClass(pathname),
+        )}
+      >
       <AnimatePresence>
         {open ? (
           <motion.div
             key="panel"
-            initial={{ opacity: 0, y: 18, scale: 0.96 }}
+            initial={{ opacity: 0, y: 24, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 14, scale: 0.96 }}
+            exit={{ opacity: 0, y: 18, scale: 0.98 }}
             transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-            className="pointer-events-auto flex h-[min(580px,72vh)] w-[min(400px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-[28px] border border-[#C8E84A]/35 bg-[#f7fbe8] shadow-[0_28px_64px_-18px_rgba(40,54,20,0.5)]"
+            className="pointer-events-auto flex min-h-0 max-h-[min(580px,calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-4.5rem))] w-full flex-col overflow-hidden rounded-t-[24px] border border-b-0 border-[#C8E84A]/35 bg-[#f7fbe8] shadow-[0_28px_64px_-18px_rgba(40,54,20,0.5)] lg:max-h-none lg:h-[min(580px,72dvh)] lg:w-[min(400px,calc(100vw-1.5rem))] lg:rounded-[28px] lg:border-b"
           >
             <header className="relative overflow-hidden bg-[linear-gradient(160deg,#1c2610_0%,#283614_42%,#38471B_100%)] px-4 py-3.5">
               <div
@@ -743,7 +763,7 @@ export function FloatingChatWidget() {
 
             <div
               ref={listRef}
-              className="bw-chat-scroll flex-1 space-y-3 overflow-y-auto bg-[linear-gradient(180deg,#f7fbe8_0%,#eef6d4_48%,#f7fbe8_100%)] px-3 py-3.5"
+              className="bw-chat-scroll min-h-0 flex-1 space-y-3 overflow-y-auto bg-[linear-gradient(180deg,#f7fbe8_0%,#eef6d4_48%,#f7fbe8_100%)] px-3 py-3.5"
             >
               {messages.map((message, index) => {
                 const isUser = message.role === "user";
@@ -936,6 +956,7 @@ export function FloatingChatWidget() {
         }
         className={cn(
           "pointer-events-auto relative flex h-[3.65rem] w-[3.65rem] items-center justify-center overflow-visible rounded-full text-white transition-shadow duration-300",
+          open && "max-lg:hidden",
           open
             ? "border-2 border-[#C8E84A] bg-[#283614] shadow-[0_16px_32px_-10px_rgba(40,54,20,0.55)]"
             : "border-2 border-[#C8E84A]/70 bg-[linear-gradient(160deg,#1c2610_0%,#38471B_100%)] shadow-[0_16px_34px_-8px_rgba(40,54,20,0.6)]",
@@ -978,5 +999,6 @@ export function FloatingChatWidget() {
         ) : null}
       </motion.button>
     </div>
+    </>
   );
 }

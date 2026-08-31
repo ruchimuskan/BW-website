@@ -31,6 +31,7 @@ import { BrandImageOverlay, BRAND_PHOTO_CLASS } from "@/components/brand/BrandIm
 import { BrandPromoBanner } from "@/components/brand/BrandPromoBanner";
 import { ViewBookingsButton } from "@/components/bookings/ViewBookingsButton";
 import { BRAND_PHOTOS } from "@/constants/brand-images";
+import { resolveMediaUrl } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 export function HomeView() {
@@ -483,9 +484,16 @@ export function HomeView() {
 
           <BrandPromoBanner
             variant="home"
-            src={BRAND_PHOTOS.promoAnytime}
-            alt="Ride anytime, anywhere with the Bull Wave Rides app"
-            href={ROUTES.start}
+            src={
+              resolveMediaUrl(dashboard?.banners[0]?.image_url) ??
+              BRAND_PHOTOS.promoAnytime
+            }
+            alt={
+              dashboard?.banners[0]?.title ??
+              "Ride anytime, anywhere with the Bull Wave Rides app"
+            }
+            href={dashboard?.banners[0]?.cta_url ?? ROUTES.start}
+            fallbackSrc={BRAND_PHOTOS.promoAnytime}
           />
 
           {rentalServices.length > 0 ? (

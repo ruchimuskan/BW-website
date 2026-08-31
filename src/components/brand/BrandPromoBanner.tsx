@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { BRAND_IMAGE_SIZES } from "@/constants/brand-images";
+import { ResilientImage } from "@/components/brand/ResilientImage";
+import { BRAND_IMAGE_SIZES, BRAND_PHOTOS } from "@/constants/brand-images";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
 import { landingShell } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
@@ -13,11 +13,15 @@ type BrandPromoBannerProps = {
   href?: string;
   className?: string;
   variant?: "home" | "landing";
+  fallbackSrc?: string;
 };
 
+/** Marketing plate aspect — matches pic-12 hero banner (1536×1024). */
+const PROMO_ASPECT = "aspect-[3/2]";
+
 /**
- * Full-width marketing plate — scales to viewport without cropping
- * baked-in headlines or causing horizontal overflow.
+ * Full-width marketing plate — edge-to-edge artwork without letterboxing.
+ * Uses a fixed 3:2 frame so API banners with mismatched metadata still fill cleanly.
  */
 export function BrandPromoBanner({
   src,
@@ -25,27 +29,26 @@ export function BrandPromoBanner({
   href,
   className,
   variant = "landing",
+  fallbackSrc = BRAND_PHOTOS.promoAnytime,
 }: BrandPromoBannerProps) {
   const plate = (
     <div
       className={cn(
-        "relative w-full min-w-0 overflow-hidden rounded-xl bg-muted sm:rounded-2xl",
-        "ring-1 ring-primary/15",
-        // Keep tall marketing art readable without dominating phones
-        "max-h-[min(72vw,420px)] sm:max-h-[min(58vw,560px)] md:max-h-none",
+        "relative w-full min-w-0 overflow-hidden rounded-xl sm:rounded-2xl",
+        PROMO_ASPECT,
+        "shadow-[0_18px_44px_-28px_rgba(12,24,41,0.38)] ring-1 ring-primary/15",
       )}
     >
-      <Image
+      <ResilientImage
         src={src}
         alt={alt}
-        width={1600}
-        height={900}
+        fill
         sizes={
           variant === "home" ? BRAND_IMAGE_SIZES.homeFull : BRAND_IMAGE_SIZES.full
         }
-        quality={NEXT_IMAGE_QUALITY.medium}
-        className="h-auto w-full max-w-full select-none object-contain object-center"
-        priority={false}
+        quality={NEXT_IMAGE_QUALITY.high}
+        className="object-cover object-center select-none"
+        fallbackSrc={fallbackSrc}
       />
     </div>
   );
@@ -65,7 +68,7 @@ export function BrandPromoBanner({
     <section
       className={cn(
         "relative w-full min-w-0 overflow-x-clip",
-        variant === "home" ? "bg-card" : "bw-section-glow",
+        variant === "home" ? "bg-white" : "bw-section-glow",
         className,
       )}
       aria-label={alt}
@@ -73,7 +76,7 @@ export function BrandPromoBanner({
       <div
         className={
           variant === "home"
-            ? "mx-auto w-full min-w-0 max-w-6xl px-3 py-5 sm:px-6 sm:py-8 md:px-10 lg:px-12 lg:py-10"
+            ? "mx-auto w-full min-w-0 max-w-6xl px-3 py-5 sm:px-6 sm:py-7 md:px-10 lg:px-12"
             : landingShell("py-8 sm:py-10 lg:py-12")
         }
       >

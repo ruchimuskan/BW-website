@@ -652,7 +652,7 @@ export function RideBookingView() {
     : "Leave now";
 
   return (
-    <div className={cn("flex min-h-[100dvh] w-full flex-col font-sans", theme.pageBg)}>
+    <div className={cn("flex min-h-[100dvh] w-full min-w-0 flex-col overflow-x-clip font-sans", theme.pageBg)}>
       <header className={cn("sticky top-0 z-40 border-b backdrop-blur-md", theme.headerBorder, theme.headerBg)}>
         <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-3 py-3 min-[400px]:px-4 sm:px-6 lg:px-10">
           <button
@@ -685,7 +685,7 @@ export function RideBookingView() {
         </div>
       </header>
 
-      <div className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-1 gap-4 px-3 pb-[calc(10.75rem+env(safe-area-inset-bottom))] pt-3 min-[400px]:px-4 sm:gap-6 sm:px-6 sm:pb-[calc(11.5rem+env(safe-area-inset-bottom))] sm:pt-5 md:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] md:items-start md:pb-[calc(12rem+env(safe-area-inset-bottom))] lg:grid-cols-[minmax(0,1fr)_minmax(20rem,28rem)] lg:gap-8 lg:px-10 lg:pb-[calc(12.5rem+env(safe-area-inset-bottom))] lg:pt-6 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,32rem)]">
+      <div className="mx-auto grid w-full min-w-0 max-w-6xl flex-1 grid-cols-1 gap-4 px-3 pb-[calc(10.75rem+env(safe-area-inset-bottom))] pt-3 min-[400px]:px-4 sm:gap-6 sm:px-6 sm:pb-[calc(11.5rem+env(safe-area-inset-bottom))] sm:pt-5 md:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] md:items-start md:pb-[calc(12rem+env(safe-area-inset-bottom))] lg:grid-cols-[minmax(0,1fr)_minmax(20rem,28rem)] lg:gap-8 lg:px-10 lg:pb-[calc(12.5rem+env(safe-area-inset-bottom))] lg:pt-6 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,32rem)]">
         <div className="flex min-w-0 flex-col">
           <AnimateIn>
             <section className={cn("rounded-2xl border bg-white p-3.5 shadow-[0_12px_32px_-24px_rgba(40,54,20,0.35)] min-[400px]:p-4 sm:p-5", theme.card)}>
@@ -695,7 +695,7 @@ export function RideBookingView() {
                 className="flex w-full min-w-0 items-start gap-2.5 text-left"
               >
                 <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20" />
-                <span className={cn("min-w-0 flex-1 text-[14px] font-semibold leading-snug sm:text-[15px]", theme.ink)}>
+                <span className={cn("min-w-0 flex-1 truncate text-[14px] font-semibold leading-snug sm:text-[15px]", theme.ink)}>
                   {pickup}
                 </span>
               </button>
@@ -705,7 +705,7 @@ export function RideBookingView() {
                 className="mt-2 flex w-full min-w-0 items-start gap-2.5 text-left"
               >
                 <span className={cn("mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ring-2", theme.dropDot)} />
-                <span className={cn("min-w-0 flex-1 text-[13px] font-medium leading-snug sm:text-[14px]", theme.muted)}>
+                <span className={cn("min-w-0 flex-1 truncate text-[13px] font-medium leading-snug sm:text-[14px]", theme.muted)}>
                   {dropoff}
                 </span>
               </button>

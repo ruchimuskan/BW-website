@@ -368,7 +368,7 @@ export function RideTrackingView() {
 
   return (
     <>
-      <div className="flex min-h-dvh w-full flex-col bg-[#f7fbe8] font-sans lg:flex-row">
+      <div className="flex min-h-dvh w-full min-w-0 flex-col overflow-x-clip bg-[#f7fbe8] font-sans lg:flex-row">
         <div className="relative lg:min-h-dvh lg:flex-1">
           <RideTrackingMap
             pickupLat={ride?.pickup_lat}
@@ -648,7 +648,7 @@ export function RideTrackingView() {
                   <p className="text-[10px] font-semibold tracking-[0.16em] text-[#5a6330] uppercase">
                     Drop at
                   </p>
-                  <p className="mt-1 text-sm font-semibold leading-relaxed text-[#38471B]">
+                  <p className="mt-1 truncate text-sm font-semibold leading-relaxed text-[#38471B]">
                     {dropoff || "Loading drop location…"}
                   </p>
                 </div>
@@ -693,7 +693,7 @@ export function RideTrackingView() {
                     <p className="text-[10px] font-semibold tracking-[0.16em] text-destructive uppercase">
                       Drop
                     </p>
-                    <p className="mt-1 text-sm leading-relaxed text-[#38471B]">
+                    <p className="mt-1 truncate text-sm leading-relaxed text-[#38471B]">
                       {dropoff || "Loading drop…"}
                     </p>
                   </div>

@@ -1,0 +1,51 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+dist/
+.turbo/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+!.env*.example
+
+# Firebase / service credentials
+**/serviceAccountKey.json
+**/firebase-credentials.json
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing / coverage
+coverage/
+.nyc_output/
+
+# IDE / editor (local only)
+.vscode/
+.idea/
+*.swp
+*.swo
+.cursor/
+
+# Vercel
+.vercel/
+
+# Misc temp files
+*.tmp
+*.temp

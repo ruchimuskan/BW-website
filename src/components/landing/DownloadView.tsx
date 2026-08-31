@@ -25,8 +25,7 @@ export function DownloadView() {
                 Download the app
               </p>
               <h1
-                className="mt-4 font-heading text-[1.85rem] font-light leading-[1.12] tracking-tight min-[400px]:text-[2.2rem] sm:text-4xl lg:text-[2.65rem]"
-                style={{ color: "#B8D926" }}
+                className="mt-4 font-heading text-[1.85rem] font-light leading-[1.12] tracking-tight min-[400px]:text-[2.2rem] sm:text-4xl lg:text-[2.65rem] bw-title"
               >
                 Ride, deliver, and get SOS help
                 <span className="mt-1 block font-semibold sm:mt-1.5">
@@ -97,8 +96,7 @@ export function DownloadView() {
                   className="block h-full rounded-2xl border border-primary/10 bg-[#ffffff] p-5 transition hover:border-primary/25 hover:bg-white hover:shadow-[0_18px_40px_-28px_rgba(40,54,20,0.35)] sm:p-6"
                 >
                   <h2
-                    className="font-heading text-base font-semibold"
-                    style={{ color: "#B8D926" }}
+                    className="font-heading text-base font-semibold bw-title"
                   >
                     {item.title}
                   </h2>

@@ -316,8 +316,7 @@ export function CorporateRegisterView() {
               Why organisations choose us
             </p>
             <h2
-              className="mt-3 font-heading text-2xl font-semibold tracking-tight sm:text-3xl"
-              style={{ color: "#B8D926" }}
+              className="mt-3 font-heading text-2xl font-semibold tracking-tight sm:text-3xl bw-title"
             >
               Built for finance, ops, and employee experience
             </h2>
@@ -344,8 +343,7 @@ export function CorporateRegisterView() {
                       <Icon className="h-5 w-5" strokeWidth={1.7} />
                     </div>
                     <h3
-                      className="mt-5 font-heading text-base font-semibold tracking-tight sm:text-[1.05rem]"
-                      style={{ color: "#B8D926" }}
+                      className="mt-5 font-heading text-base font-semibold tracking-tight sm:text-[1.05rem] bw-title"
                     >
                       {perk.title}
                     </h3>
@@ -410,8 +408,7 @@ export function CorporateRegisterView() {
                     <CheckCircle2 className="h-7 w-7" />
                   </motion.span>
                   <h2
-                    className="font-heading text-xl font-semibold"
-                    style={{ color: "#B8D926" }}
+                    className="font-heading text-xl font-semibold bw-title"
                   >
                     Application received
                   </h2>
@@ -466,8 +463,7 @@ export function CorporateRegisterView() {
                   Company registration
                 </p>
                 <h2
-                  className="mt-3 font-heading text-2xl font-semibold tracking-tight sm:text-3xl"
-                  style={{ color: "#B8D926" }}
+                  className="mt-3 font-heading text-2xl font-semibold tracking-tight sm:text-3xl bw-title"
                 >
                   Apply for a corporate account
                 </h2>
@@ -518,8 +514,7 @@ export function CorporateRegisterView() {
                         <div className="mb-5 flex items-start justify-between gap-3">
                           <div>
                             <h3
-                              className="font-heading text-lg font-semibold"
-                              style={{ color: "#B8D926" }}
+                              className="font-heading text-lg font-semibold bw-title"
                             >
                               Organisation details
                             </h3>
@@ -635,8 +630,7 @@ export function CorporateRegisterView() {
                       <section className="mt-9 border-t border-primary/10 pt-8">
                         <div className="mb-5">
                           <h3
-                            className="font-heading text-lg font-semibold"
-                            style={{ color: "#B8D926" }}
+                            className="font-heading text-lg font-semibold bw-title"
                           >
                             Primary admin &amp; login
                           </h3>

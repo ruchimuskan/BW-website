@@ -190,8 +190,15 @@ export function setAuthSession(session: AuthSession) {
     session.profileComplete ?? !needsProfileSetup(session.name);
   const normalized: AuthSession = { ...session, profileComplete };
   sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(normalized));
-  writeClientCookie(AUTH_COOKIE_NAME, "1", 86400);
-  syncProfileCompleteCookie(profileComplete);
+
+  if (normalized.accessToken?.trim()) {
+    writeClientCookie(AUTH_COOKIE_NAME, "1", 86400);
+    syncProfileCompleteCookie(profileComplete);
+  } else {
+    clearClientCookie(AUTH_COOKIE_NAME);
+    syncProfileCompleteCookie(false);
+  }
+
   window.dispatchEvent(new Event("wavego-auth-update"));
 }
 

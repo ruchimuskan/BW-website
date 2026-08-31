@@ -160,7 +160,7 @@ export function SafetyPolicyView() {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-background pb-10">
+    <div className="flex min-h-[100dvh] w-full flex-col bg-background pb-10">
       {/* Hero */}
       <section className="relative overflow-hidden rounded-b-[32px] bg-primary px-5 pb-10 pt-5 text-white sm:px-8 md:px-12 md:pb-12 lg:px-16">
         <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/10 blur-3xl" />

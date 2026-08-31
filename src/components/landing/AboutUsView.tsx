@@ -21,9 +21,9 @@ import { MarketingPageShell } from "@/components/landing/MarketingPageShell";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
 import { ROUTES } from "@/constants/routes";
+import { BRAND_PHOTOS } from "@/constants/brand-images";
 import {
   landingAssets,
-  landingCaptainImage,
   landingStats,
 } from "@/constants/services";
 import { getProtectedPath } from "@/lib/auth-session";
@@ -175,16 +175,17 @@ export function AboutUsView() {
         <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-8 px-4 py-10 sm:gap-10 sm:px-6 sm:py-14 lg:grid-cols-2 lg:gap-12 lg:py-16 xl:gap-16">
           <div className="min-w-0 order-2 lg:order-1">
             <AnimateIn>
-              <p className="font-heading text-3xl font-semibold tracking-tight text-[#B8D926] sm:text-4xl lg:text-[2.75rem]">
+              <p className="font-heading text-3xl font-semibold tracking-tight text-[#38471B] sm:text-4xl lg:text-[2.75rem]">
                 Bull Wave Rides
               </p>
-              <p className="mt-1 text-[10px] font-semibold tracking-[0.24em] text-[#C8E84A] uppercase sm:text-[11px]">
+              <p className="mt-1 text-[10px] font-semibold tracking-[0.24em] text-[#6B7344] uppercase sm:text-[11px]">
                 About us
               </p>
+              <div className="mt-3 h-px w-14 bg-gradient-to-r from-[#B8D926] to-transparent" />
             </AnimateIn>
 
             <AnimateIn delay={0.06}>
-              <h1 className="mt-4 font-heading text-[1.55rem] font-light leading-snug tracking-tight text-[#38471B] min-[400px]:text-[1.75rem] sm:text-3xl lg:text-[2.15rem]">
+              <h1 className="mt-4 font-heading text-[1.55rem] font-light leading-snug tracking-tight text-[#283614] min-[400px]:text-[1.75rem] sm:text-3xl lg:text-[2.15rem]">
                 India&apos;s trusted{" "}
                 <span className="font-semibold text-[#B8D926]">
                   mobility platform
@@ -222,47 +223,46 @@ export function AboutUsView() {
             </AnimateIn>
           </div>
 
-          {/* Single dominant visual — stable on all breakpoints */}
+          {/* Hero visual — single stable card, inset caption (no floating overlap) */}
           <AnimateIn
             direction="right"
             delay={0.08}
             className="relative order-1 mx-auto w-full max-w-lg lg:order-2 lg:max-w-none"
           >
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#dce8a8]/60 shadow-[0_28px_56px_-28px_rgba(40,54,20,0.5)] sm:rounded-3xl">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#dce8a8]/60 bg-[#1a1f16] shadow-[0_28px_56px_-28px_rgba(40,54,20,0.5)] sm:rounded-3xl">
               <ResilientImage
-                src={landingCaptainImage}
-                alt="Bull Wave Rides captain"
+                src={BRAND_PHOTOS.captainsHero}
+                alt="Bull Wave Rides captain driving at night"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 560px"
-                className={BRAND_PHOTO_CLASS}
+                className={cn(
+                  BRAND_PHOTO_CLASS,
+                  "object-[center_42%]",
+                )}
+                fallbackSrc={BRAND_PHOTOS.captainsHeroPng}
               />
-              <BrandImageOverlay variant="default" />
-              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto">
-                <span className="inline-flex rounded-full border border-white/25 bg-[#38471B]/75 px-3 py-1.5 text-[11px] font-semibold tracking-wide text-white backdrop-blur-md">
+              <BrandImageOverlay variant="card" />
+              <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10" />
+
+              <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-3 bg-gradient-to-t from-[#111411]/90 via-[#111411]/45 to-transparent px-3 pb-3 pt-12 sm:px-4 sm:pb-4 sm:pt-14">
+                <span className="inline-flex max-w-[min(100%,14rem)] rounded-full border border-white/25 bg-[#38471B]/80 px-3 py-1.5 text-[10px] font-semibold tracking-wide text-white backdrop-blur-md sm:text-[11px]">
                   Premium · Safe · On time
                 </span>
+
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border-2 border-white/85 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.55)] sm:h-16 sm:w-16 sm:rounded-2xl">
+                  <ResilientImage
+                    src={landingAssets.cityBike}
+                    alt="Bull Wave Rides bike taxi"
+                    fill
+                    sizes="64px"
+                    className={cn(BRAND_PHOTO_CLASS, "object-center")}
+                    fallbackSrc="/images/pic-14.png"
+                  />
+                  <BrandImageOverlay variant="subtle" />
+                </div>
               </div>
             </div>
-
-            <motion.div
-              className="absolute -bottom-4 -left-2 hidden h-28 w-28 overflow-hidden rounded-2xl border-4 border-white shadow-xl sm:-bottom-5 sm:left-4 sm:block sm:h-36 sm:w-36"
-              animate={reduceMotion ? undefined : { y: [0, -6, 0] }}
-              transition={
-                reduceMotion
-                  ? undefined
-                  : { duration: 5, repeat: Infinity, ease: "easeInOut" }
-              }
-            >
-              <ResilientImage
-                src={landingAssets.cityBike}
-                alt="Bull Wave Rides bike ride"
-                fill
-                sizes="144px"
-                className={BRAND_PHOTO_CLASS}
-              />
-              <BrandImageOverlay variant="subtle" />
-            </motion.div>
           </AnimateIn>
         </div>
       </section>
@@ -271,10 +271,10 @@ export function AboutUsView() {
       <section className="border-y border-[#eef5d4] bg-white px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-6xl">
           <AnimateIn className="max-w-2xl">
-            <p className="text-[10px] font-semibold tracking-[0.24em] text-[#C8E84A] uppercase sm:text-[11px]">
+            <p className="text-[10px] font-semibold tracking-[0.24em] text-[#7a8450] uppercase sm:text-[11px]">
               Our mission
             </p>
-            <div className="mt-2 h-px w-12 bg-gradient-to-r from-[#B8D926] via-[#C8E84A] to-transparent" />
+            <div className="mt-2 h-px w-12 bg-gradient-to-r from-[#B8D926] to-transparent" />
             <h2 className="mt-3 font-heading text-2xl font-semibold tracking-tight text-[#38471B] sm:text-3xl">
               Calm, confident mobility for every rider
             </h2>
@@ -288,11 +288,11 @@ export function AboutUsView() {
           <Stagger className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
             {missionPoints.map((point, index) => (
               <StaggerItem key={point.title} index={index}>
-                <article className="h-full rounded-2xl border border-[#eef5d4] bg-gradient-to-b from-[#ffffff] to-white p-5 transition hover:border-[#C8E84A]/40 hover:shadow-[0_16px_36px_-24px_rgba(184,217,38,0.35)] sm:p-6">
-                  <span className="font-heading text-xs tracking-[0.16em] text-[#C8E84A]">
+                <article className="h-full rounded-2xl border border-[#eef5d4] bg-gradient-to-b from-[#ffffff] to-white p-5 transition hover:border-[#dce8a8] hover:shadow-[0_16px_36px_-24px_rgba(56,71,27,0.18)] sm:p-6">
+                  <span className="font-heading text-xs tracking-[0.16em] text-[#6B7344]">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="mt-2 font-heading text-lg font-semibold text-[#B8D926]">
+                  <h3 className="mt-2 font-heading text-lg font-semibold text-[#38471B]">
                     {point.title}
                   </h3>
                   <p className="mt-2 text-sm font-light leading-relaxed text-[#4a5228]">
@@ -340,10 +340,10 @@ export function AboutUsView() {
       <section className="px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-6xl">
           <AnimateIn className="max-w-2xl">
-            <p className="text-[10px] font-semibold tracking-[0.24em] text-[#C8E84A] uppercase sm:text-[11px]">
+            <p className="text-[10px] font-semibold tracking-[0.24em] text-[#6B7344] uppercase sm:text-[11px]">
               What sets us apart
             </p>
-            <div className="mt-2 h-px w-12 bg-gradient-to-r from-[#B8D926] via-[#C8E84A] to-transparent" />
+            <div className="mt-2 h-px w-12 bg-gradient-to-r from-[#B8D926] to-transparent" />
             <h2 className="mt-3 font-heading text-2xl font-semibold tracking-tight text-[#38471B] sm:text-3xl">
               What makes us different?
             </h2>
@@ -366,10 +366,10 @@ export function AboutUsView() {
                     }
                     className="group h-full rounded-2xl border border-[#eef5d4] bg-white p-5 shadow-sm transition hover:border-[#C8E84A]/40 hover:shadow-[0_18px_40px_-24px_rgba(184,217,38,0.4)] sm:p-6"
                   >
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#dce8a8] bg-[#ffffff] text-[#B8D926] transition group-hover:border-transparent group-hover:bg-gradient-to-br group-hover:from-[#B8D926] group-hover:to-[#C8E84A] group-hover:text-white">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#dce8a8] bg-[#ffffff] text-[#38471B] transition group-hover:border-[#B8D926] group-hover:bg-[#B8D926] group-hover:text-[#1F2A10]">
                       <Icon className="h-5 w-5" strokeWidth={1.8} />
                     </div>
-                    <span className="mt-4 block font-heading text-xs tracking-[0.16em] text-[#C8E84A]">
+                    <span className="mt-4 block font-heading text-xs tracking-[0.16em] text-[#6B7344]">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <h3 className="mt-1.5 font-heading text-base font-semibold tracking-tight text-[#38471B] sm:text-lg">
@@ -398,12 +398,12 @@ export function AboutUsView() {
             aria-hidden
           />
           <BrandImageOverlay variant="premium" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#38471B]/95 via-[#B8D926]/85 to-[#38471B]/75" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#38471B]/92 via-[#38471B]/80 to-[#283614]/88" />
         </div>
 
         <div className="relative mx-auto flex max-w-6xl flex-col items-center px-4 py-14 text-center sm:px-6 sm:py-16 lg:py-20">
           <AnimateIn>
-            <p className="text-[10px] font-semibold tracking-[0.24em] text-[#D4E88A] uppercase sm:text-[11px]">
+            <p className="text-[10px] font-semibold tracking-[0.24em] text-[#D4E88A]/90 uppercase sm:text-[11px]">
               Grow with us
             </p>
             <h2 className="mt-3 font-heading text-2xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
