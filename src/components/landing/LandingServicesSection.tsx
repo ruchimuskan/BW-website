@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import { ArrowUpRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { startTransition } from "react";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
-import { BRAND_IMAGE_SIZES } from "@/constants/brand-images";
+import { BRAND_IMAGE_SIZES, BRAND_PHOTOS } from "@/constants/brand-images";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
 import { type ServiceItem } from "@/constants/services";
 import { ROUTES } from "@/constants/routes";
@@ -34,7 +34,7 @@ export function LandingServicesSection({ services }: LandingServicesSectionProps
   return (
     <section
       id="services"
-      className="relative z-10 scroll-mt-20 isolate bw-dark-band bw-dark-band-glow py-16 sm:py-20 lg:py-24"
+      className="relative z-10 isolate bw-dark-band bw-dark-band-glow py-12 sm:py-16 lg:py-20"
       style={{ color: "#ffffff" }}
     >
       <div className={landingShell("relative z-20")}>
@@ -89,14 +89,15 @@ export function LandingServicesSection({ services }: LandingServicesSectionProps
                   />
 
                   <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl">
-                    <div className="relative isolate aspect-[4/3] w-full shrink-0 overflow-hidden bg-[#f7fbe8] sm:aspect-[16/11]">
-                      <Image
+                    <div className="relative isolate aspect-[4/3] w-full shrink-0 overflow-hidden bg-[#283614] sm:aspect-[16/10]">
+                      <ResilientImage
                         src={service.image}
                         alt={service.name}
                         fill
                         quality={NEXT_IMAGE_QUALITY.high}
                         sizes={BRAND_IMAGE_SIZES.card}
-                        className="select-none object-contain object-center p-3 sm:p-5"
+                        className="select-none object-cover object-center"
+                        fallbackSrc={BRAND_PHOTOS.streetCab}
                       />
                       <span className="absolute left-2 top-2 rounded-full bg-white/80 px-2 py-0.5 font-heading text-[10px] font-semibold tracking-[0.16em] text-[#38471B] backdrop-blur-sm">
                         {number}

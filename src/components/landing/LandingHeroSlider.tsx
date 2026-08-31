@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { BrandImageOverlay, BRAND_PHOTO_CLASS } from "@/components/brand/BrandImageOverlay";
+import { BRAND_PHOTOS } from "@/constants/brand-images";
 
 interface Slide {
   src: string;
@@ -75,13 +76,14 @@ export function LandingHeroSlider({ slides }: LandingHeroSliderProps) {
                     : "shadow-[0_12px_28px_-8px_rgba(49,82,110,0.2)]",
                 )}
               >
-                <Image
+                <ResilientImage
                   src={slide.src}
                   alt={slide.alt}
                   fill
                   sizes="(max-width: 768px) 95vw, 440px"
                   priority
                   className={BRAND_PHOTO_CLASS}
+                  fallbackSrc={BRAND_PHOTOS.streetCab}
                 />
                 <BrandImageOverlay variant="card" />
               </div>

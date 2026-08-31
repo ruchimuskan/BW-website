@@ -19,6 +19,7 @@ import {
   landingBookingTabs,
   type LandingBookingTab,
 } from "@/constants/services";
+import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 import type { LocationFieldType } from "@/lib/location-search";
 
@@ -81,7 +82,7 @@ export function LandingBookSection({
   return (
     <section
       id="book"
-      className="relative z-10 scroll-mt-24 px-4 py-10 sm:px-5 md:px-6 lg:px-8 sm:py-16 lg:py-24"
+      className={cn("relative z-10 scroll-mt-24", LANDING_SECTION_PY)}
       style={{ backgroundColor: "#ffffff", color: "#B8D926" }}
     >
       <div
@@ -89,7 +90,7 @@ export function LandingBookSection({
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(200,232,74,0.1),transparent_60%)]"
       />
 
-      <div className="relative z-10 mx-auto w-full min-w-0 max-w-[90rem]">
+      <div className={landingShell("relative z-10 w-full min-w-0")}>
         <div className="relative overflow-hidden border border-primary/12 bg-white shadow-[0_20px_40px_-28px_rgba(184,217,38,0.4)]">
           <div className="grid min-w-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
             <div className="relative z-10 flex min-w-0 flex-col justify-center px-4 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-14">

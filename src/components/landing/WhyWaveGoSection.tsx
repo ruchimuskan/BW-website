@@ -10,6 +10,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import { useProtectedHref } from "@/hooks/useProtectedHref";
 import { landingFeatures } from "@/constants/services";
+import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 
 const featureMeta = [
@@ -157,13 +158,13 @@ export function WhyWaveGoSection() {
   return (
     <section
       id="why-wavego"
-      className="relative scroll-mt-20 overflow-hidden px-4 py-8 sm:px-5 sm:py-10 md:px-6 lg:px-8 lg:py-12"
+      className={cn("relative scroll-mt-20 overflow-hidden", LANDING_SECTION_PY)}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
       <PremiumSectionBackdrop opacity={0.12} side="full" />
 
-      <div className="relative z-10 mx-auto flex max-h-[calc(100dvh-5rem)] min-h-0 max-w-6xl flex-col">
+      <div className={landingShell("relative z-10 flex max-h-[calc(100dvh-5rem)] min-h-0 flex-col")}>
         <AnimateIn className="mb-4 shrink-0 sm:mb-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-primary">
             Difference

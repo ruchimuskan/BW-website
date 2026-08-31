@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import { MapPin, ShieldCheck, Sparkles } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -8,7 +8,7 @@ import {
   LandingBookingWidget,
   type LandingBookingWidgetProps,
 } from "@/components/landing/LandingBookingWidget";
-import { BRAND_IMAGE_SIZES } from "@/constants/brand-images";
+import { BRAND_IMAGE_SIZES, BRAND_PHOTOS } from "@/constants/brand-images";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
 import {
   landingBookImages,
@@ -53,10 +53,10 @@ export function LandingLuxuryHero({
     >
       <div
         className={landingShell(
-          "relative z-10 py-5 sm:py-7 md:py-9 lg:py-10 xl:py-12",
+          "relative z-10 py-8 sm:py-10 lg:py-12 xl:py-14",
         )}
       >
-        <div className="grid w-full min-w-0 grid-cols-1 items-start gap-5 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,32rem)] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(26rem,36rem)] xl:gap-10 2xl:gap-12">
+        <div className="grid w-full min-w-0 grid-cols-1 items-start gap-4 sm:gap-5 md:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,24rem)] lg:gap-7 xl:grid-cols-[minmax(0,1.08fr)_minmax(22rem,28rem)] xl:gap-8 2xl:grid-cols-[minmax(0,1.12fr)_minmax(24rem,30rem)] 2xl:gap-10">
           {/* Brand copy — top on all screens */}
           <motion.div
             className="relative z-10 order-1 min-w-0 lg:col-start-1 lg:row-start-1"
@@ -117,7 +117,7 @@ export function LandingLuxuryHero({
 
           {/* Booking — directly under brand on mobile; sticky right column on desktop */}
           <motion.div
-            className="relative z-10 order-2 w-full min-w-0 max-w-full sm:mx-auto sm:max-w-xl lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mx-0 lg:max-w-none lg:sticky lg:top-24"
+            className="relative z-10 order-2 w-full min-w-0 max-w-full sm:max-w-lg sm:mx-auto lg:mx-0 lg:max-w-none lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:sticky lg:top-24"
             initial={reduceMotion || !mounted ? false : { y: 18 }}
             animate={{ y: 0 }}
             transition={{ ...transitions.reveal, delay: 0.08 }}
@@ -134,7 +134,7 @@ export function LandingLuxuryHero({
 
           {/* Hero image — below booking on mobile; under brand on desktop */}
           <motion.div
-            className="group relative z-10 order-3 aspect-[16/10] w-full min-w-0 overflow-hidden rounded-2xl border border-[#D4D8D0] bg-[#111411] shadow-[0_22px_48px_-24px_rgba(17,20,17,0.45)] sm:aspect-[16/9] lg:col-start-1 lg:row-start-2 lg:mt-1 lg:min-h-[280px] xl:min-h-[340px] 2xl:min-h-[360px]"
+            className="group relative z-10 order-3 aspect-[16/10] w-full min-w-0 overflow-hidden rounded-2xl border border-[#D4D8D0] bg-[#111411] shadow-[0_22px_48px_-24px_rgba(17,20,17,0.45)] sm:aspect-[16/9] md:max-w-none lg:col-start-1 lg:row-start-2 lg:mt-0 lg:min-h-[260px] xl:min-h-[300px] 2xl:min-h-[340px]"
             initial={reduceMotion || !mounted ? false : { y: 18 }}
             animate={{ y: 0 }}
             transition={{ ...transitions.reveal, delay: 0.12 }}
@@ -165,7 +165,7 @@ export function LandingLuxuryHero({
                     }
                     transition={{ duration: 5.5, ease: "easeOut" }}
                   >
-                    <Image
+                    <ResilientImage
                       src={slide.src}
                       alt={isActive ? slide.alt : ""}
                       fill
@@ -173,6 +173,7 @@ export function LandingLuxuryHero({
                       sizes={BRAND_IMAGE_SIZES.hero}
                       className={BRAND_PHOTO_CLASS}
                       style={{ objectPosition: slide.objectPosition }}
+                      fallbackSrc={BRAND_PHOTOS.streetCab}
                       {...(tab === "rides"
                         ? { priority: true as const }
                         : { loading: "lazy" as const })}

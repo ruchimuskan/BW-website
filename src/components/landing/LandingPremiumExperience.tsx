@@ -1,13 +1,14 @@
 "use client";
 
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import { BRAND_PHOTO_CLASS } from "@/components/brand/BrandImageOverlay";
 import { SectionHeading } from "@/components/landing/SectionHeading";
 import { AnimateIn } from "@/components/motion";
-import { BRAND_IMAGES, brandPhotoFit } from "@/constants/brand-images";
+import { BRAND_IMAGES } from "@/constants/brand-images";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
+import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 
 const AUTO_MS = 5500;
@@ -106,7 +107,7 @@ function ExperiencePanel({
       />
 
       <div className="relative aspect-[4/3] w-full sm:aspect-[16/10] lg:absolute lg:inset-0 lg:aspect-auto">
-        <Image
+        <ResilientImage
           src={item.src}
           alt={item.alt}
           fill
@@ -117,15 +118,14 @@ function ExperiencePanel({
               : "(max-width: 1024px) 100vw, 18vw"
           }
           className={cn(
-            brandPhotoFit(item.src) === "contain"
-              ? "object-contain object-center p-3 sm:p-4 lg:p-0"
-              : BRAND_PHOTO_CLASS,
+            BRAND_PHOTO_CLASS,
             "transition-transform duration-[850ms] ease-out",
             active ? "scale-100" : "scale-110 grayscale-[0.15]",
             "group-hover:scale-105",
           )}
           style={{ objectPosition: item.objectPosition }}
           priority={index === 0}
+          fallbackSrc={BRAND_IMAGES.cityCab}
         />
       </div>
 
@@ -220,7 +220,10 @@ export function LandingPremiumExperience() {
   return (
     <section
       id="experience"
-      className="relative scroll-mt-20 overflow-hidden bw-section-glow px-4 py-14 sm:px-5 md:px-6 lg:px-8 sm:py-20 lg:py-24"
+      className={cn(
+        "relative scroll-mt-20 overflow-hidden bw-section-glow",
+        LANDING_SECTION_PY,
+      )}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -233,7 +236,7 @@ export function LandingPremiumExperience() {
         className="pointer-events-none absolute -left-32 top-1/3 h-64 w-64 rounded-full bg-[#B8D926]/10 blur-3xl"
       />
 
-      <div className="relative z-10 mx-auto max-w-[90rem]">
+      <div className={landingShell("relative z-10")}>
         <AnimateIn>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeading
@@ -289,7 +292,7 @@ export function LandingPremiumExperience() {
         </div>
 
         {/* Desktop — expanding accordion strip */}
-        <div className="mt-8 hidden h-[min(520px,56vh)] min-h-[420px] lg:flex lg:gap-3">
+        <div className="mt-8 hidden h-[min(480px,52vh)] min-h-[380px] lg:flex lg:gap-3">
           {experiences.map((item, index) => (
             <ExperiencePanel
               key={item.title}

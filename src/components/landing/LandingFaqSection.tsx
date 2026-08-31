@@ -10,6 +10,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { landingFaqItems } from "@/constants/landing-faq";
 import { ROUTES } from "@/constants/routes";
 import { getProtectedPath } from "@/lib/auth-session";
+import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 
 export function LandingFaqSection() {
@@ -24,20 +25,20 @@ export function LandingFaqSection() {
   return (
     <section
       id="faqs"
-      className="relative scroll-mt-20 overflow-hidden px-4 py-14 sm:px-5 md:px-6 lg:px-8 sm:py-20 lg:py-24"
+      className={cn("relative scroll-mt-20 overflow-hidden", LANDING_SECTION_PY)}
     >
       <PremiumSectionBackdrop opacity={0.12} side="left" />
       <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-secondary/15 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 bottom-8 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
 
-      <div className="relative z-10 mx-auto max-w-[90rem]">
+      <div className={landingShell("relative z-10")}>
         <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-primary sm:text-xs sm:tracking-[0.28em]">
           FAQs
         </p>
         <div className="mt-4 h-px w-full bg-gradient-to-r from-primary/25 via-border to-transparent" />
       </div>
 
-      <div className="relative z-10 mx-auto mt-8 grid max-w-[90rem] gap-10 sm:mt-10 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:items-start lg:gap-16">
+      <div className={landingShell("relative z-10 mt-8 grid gap-10 sm:mt-10 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:items-start lg:gap-16")}>
         <AnimateIn className="lg:sticky lg:top-24">
           <h2 className="mt-2 font-heading text-[1.45rem] font-medium tracking-tight text-foreground sm:mt-3 sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
             Questions?
@@ -154,7 +155,7 @@ export function LandingFaqSection() {
         </Stagger>
       </div>
 
-      <AnimateIn delay={0.1} className="relative mx-auto mt-10 max-w-[90rem] lg:hidden">
+      <AnimateIn delay={0.1} className={landingShell("relative mt-10 lg:hidden")}>
         <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/50 text-primary">
             <HelpCircle className="h-5 w-5" strokeWidth={2} />

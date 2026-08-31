@@ -6,6 +6,7 @@ import {
   RETURNING_VISITOR_COOKIE,
 } from "@/constants/auth";
 import { ROUTES } from "@/constants/routes";
+import { isProductionEnv } from "@/lib/app-env";
 
 /**
  * Full route access map for the user panel.
@@ -54,6 +55,15 @@ const PUBLIC_PATHS = new Set<string>([
   "/apple-touch-icon.png",
   "/icon-192.png",
   "/icon-512.png",
+  "/favicon.png",
+  "/icon.png",
+  "/file.svg",
+  "/globe.svg",
+  "/next.svg",
+  "/vercel.svg",
+  "/window.svg",
+  "/app-release-driver.apk",
+  "/app-release-user.apk",
 ]);
 
 /** Nested public sections. */
@@ -129,6 +139,22 @@ function isProtectedPath(pathname: string) {
   return PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 
+/** Static files must never hit auth redirects (images, fonts, Next internals). */
+function isStaticAssetPath(pathname: string): boolean {
+  if (
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/images/") ||
+    pathname.startsWith("/uploads/") ||
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/fonts/")
+  ) {
+    return true;
+  }
+  return /\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm)$/i.test(
+    pathname,
+  );
+}
+
 function postAuthDestination(request: NextRequest, profileComplete: boolean) {
   return new URL(profileComplete ? ROUTES.home : ROUTES.createProfile, request.url);
 }
@@ -153,13 +179,21 @@ function safeReturnPath(pathname: string, search: string): string {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (isStaticAssetPath(pathname)) {
+    return NextResponse.next();
+  }
+
   const isAuthenticated = request.cookies.get(AUTH_COOKIE_NAME)?.value === "1";
   const profileComplete = request.cookies.get(PROFILE_COMPLETE_COOKIE)?.value === "1";
   const isReturningVisitor =
     request.cookies.get(RETURNING_VISITOR_COOKIE)?.value === "1";
 
-  // First open of the website → signup (account is created/stored on the backend).
+  // Production: always show landing. Staging/dev: first visit can funnel to signup.
   if (pathname === ROUTES.landing && !isAuthenticated && !isReturningVisitor) {
+    if (isProductionEnv()) {
+      return markReturningVisitor(NextResponse.next());
+    }
     const signupUrl = new URL(ROUTES.signup, request.url);
     return markReturningVisitor(NextResponse.redirect(signupUrl));
   }
@@ -211,9 +245,9 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Run middleware on all app routes except Next internals, static assets,
-     * and proxied API/uploads.
+     * App routes only — skip Next internals, /images, /uploads, /api, and
+     * any path with a static file extension (see isStaticAssetPath too).
      */
-    "/((?!_next/static|_next/image|favicon.ico|apple-icon|apple-touch-icon.png|icon-192.png|icon-512.png|robots.txt|sitemap.xml|manifest.webmanifest|opengraph-image|twitter-image|icon|images|api|uploads|.*\\.(?:svg|png|jpg|jpeg|gif|webp|apk|ico|txt|xml|webmanifest)$).*)",
+    "/((?!_next|images|uploads|api|fonts|favicon\\.ico|robots\\.txt|sitemap\\.xml|manifest\\.webmanifest|opengraph-image|twitter-image|icon|apple-icon|.*\\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm)$).*)",
   ],
 };

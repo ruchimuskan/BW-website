@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -8,9 +8,11 @@ import { Ambulance, PhoneCall, Share2, ShieldCheck } from "lucide-react";
 import { BrandImageOverlay, BRAND_PHOTO_CLASS } from "@/components/brand/BrandImageOverlay";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
 import { buttonVariants } from "@/components/ui/button";
+import { BRAND_PHOTOS } from "@/constants/brand-images";
 import { ROUTES } from "@/constants/routes";
 import { landingAssets } from "@/constants/services";
 import { getProtectedPath } from "@/lib/auth-session";
+import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 
 const highlights = [
@@ -43,9 +45,9 @@ export function SosSection() {
   return (
     <section
       id="sos"
-      className="scroll-mt-20 bw-section-glow border-y border-primary/10 px-4 py-16 sm:px-5 md:px-6 lg:px-8 sm:py-20 lg:py-24"
+      className={cn("scroll-mt-20 bw-section-glow border-y border-primary/10", LANDING_SECTION_PY)}
     >
-      <div className="relative z-10 mx-auto max-w-[90rem] bw-frosted-panel overflow-hidden sm:rounded-2xl">
+      <div className={landingShell("relative z-10 bw-frosted-panel overflow-hidden sm:rounded-2xl")}>
         <div
           aria-hidden
           className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-destructive/10 blur-3xl"
@@ -121,13 +123,14 @@ export function SosSection() {
 
           <AnimateIn direction="right" delay={0.08}>
             <div className="relative mx-auto aspect-[5/4] w-full max-w-md overflow-hidden rounded-xl border border-primary/12 bg-[#f7fbe8] sm:rounded-2xl lg:max-w-none">
-              <Image
+              <ResilientImage
                 src={landingAssets.slideAmbulance}
                 alt="Bull Wave Rides emergency ambulance"
                 fill
                 quality={85}
                 className={BRAND_PHOTO_CLASS}
                 sizes="(max-width: 1024px) 100vw, 40vw"
+                fallbackSrc={BRAND_PHOTOS.ambulance}
               />
               <BrandImageOverlay variant="default" />
             </div>

@@ -6,6 +6,7 @@ import { CaptainsShowcaseGallery } from "@/components/landing/CaptainsShowcaseGa
 import { DownloadAppMenu } from "@/components/landing/DownloadAppMenu";
 import { APP_DOWNLOAD } from "@/constants/app-download";
 import { ROUTES } from "@/constants/routes";
+import { landingShell } from "@/lib/landing-shell";
 
 const benefits = [
   "Flexible hours — you choose when to drive",
@@ -22,7 +23,7 @@ export function LandingCaptainsSection() {
       id="captains"
       className="relative scroll-mt-20 overflow-hidden border-y border-[#eef5d4] bg-white"
     >
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-6 px-5 py-8 sm:gap-8 sm:px-8 sm:py-10 lg:grid-cols-2 lg:gap-10 lg:py-12">
+      <div className={landingShell("grid grid-cols-1 items-center gap-6 py-8 sm:gap-8 sm:py-10 lg:grid-cols-2 lg:gap-10 lg:py-12")}>
         <AnimateIn className="order-2 min-w-0 lg:order-1">
           <p className="text-[9px] font-semibold tracking-[0.22em] uppercase text-[#6b7344] sm:text-[10px]">
             Drive with Bull Wave Rides

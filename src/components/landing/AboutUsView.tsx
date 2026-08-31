@@ -172,7 +172,7 @@ export function AboutUsView() {
       {/* Hero — one clear composition */}
       <section className="relative overflow-hidden bw-hero-atmosphere">
 
-        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-8 px-4 py-10 sm:gap-10 sm:px-6 sm:py-14 lg:grid-cols-2 lg:gap-12 lg:py-16 xl:gap-16">
+        <div className="relative z-10 mx-auto grid w-full min-w-0 max-w-[min(100%,76rem)] items-center gap-8 px-3 py-10 sm:gap-10 sm:px-4 sm:py-14 md:px-5 lg:grid-cols-2 lg:gap-12 lg:px-6 lg:py-16 xl:max-w-[min(100%,82rem)] xl:gap-16 xl:px-7 2xl:max-w-[min(100%,88rem)]">
           <div className="min-w-0 order-2 lg:order-1">
             <AnimateIn>
               <p className="font-heading text-3xl font-semibold tracking-tight text-[#38471B] sm:text-4xl lg:text-[2.75rem]">

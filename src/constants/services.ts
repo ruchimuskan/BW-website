@@ -108,7 +108,7 @@ export const landingAssets = {
   quickPickup: BRAND_IMAGES.featurePickup,
   bestFares: BRAND_IMAGES.featureFares,
   neverTooFar: BRAND_IMAGES.featureCoverage,
-  serviceBike: "/images/pic-14.webp",
+  serviceBike: "/images/services/bike.webp",
   serviceAuto: "/images/services/auto.webp",
   serviceCab: "/images/services/car.webp",
   serviceParcel: "/images/services/parcel.webp",

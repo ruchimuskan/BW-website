@@ -13,7 +13,9 @@ import { Stagger, StaggerItem } from "@/components/motion";
 import { PremiumSectionBackdrop } from "@/components/landing/PremiumSectionBackdrop";
 import { SectionHeading } from "@/components/landing/SectionHeading";
 import { landingPillars } from "@/constants/services";
+import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
 import { transitions } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 const icons = [Clock3, MapPinned, ShieldCheck, Wallet, Sparkles, Leaf] as const;
 
@@ -21,7 +23,7 @@ export function LandingPillarsSection() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden px-4 py-16 sm:px-5 md:px-6 lg:px-8 sm:py-20 lg:py-24">
+    <section className={cn("relative overflow-hidden", LANDING_SECTION_PY)}>
       <PremiumSectionBackdrop opacity={0.09} side="center" />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       {!reduceMotion && (
@@ -33,7 +35,7 @@ export function LandingPillarsSection() {
         />
       )}
 
-      <div className="relative z-10 mx-auto max-w-[90rem]">
+      <div className={landingShell("relative z-10")}>
         <SectionHeading
           align="center"
           eyebrow="Why riders choose us"

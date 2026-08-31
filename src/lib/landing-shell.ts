@@ -1,15 +1,17 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Shared marketing layout width — fills large desktops without huge side gutters.
- * Use on header, hero, and section inner wrappers.
+ * Marketing layout — scales up on xl/2xl so content is not boxed in with huge gutters.
  */
 export const LANDING_SHELL_MAX =
-  "mx-auto w-full min-w-0 max-w-[90rem]"; /* 1440px */
+  "mx-auto w-full min-w-0 max-w-[min(100%,76rem)] xl:max-w-[min(100%,82rem)] 2xl:max-w-[min(100%,88rem)]";
 
-/** Horizontal padding that stays tight from phone → ultrawide */
-export const LANDING_SHELL_PAD = "px-4 sm:px-5 md:px-6 lg:px-7 xl:px-8";
+/** Tight but safe horizontal inset — grows slightly on very large screens */
+export const LANDING_SHELL_PAD = "px-3 sm:px-4 md:px-5 lg:px-6 xl:px-7";
 
 export function landingShell(...extra: Array<string | false | null | undefined>) {
   return cn(LANDING_SHELL_MAX, LANDING_SHELL_PAD, ...extra);
 }
+
+/** Standard vertical rhythm for marketing sections */
+export const LANDING_SECTION_PY = "py-10 sm:py-14 lg:py-16 xl:py-20";

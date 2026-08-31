@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import {
   MapPin,
   Navigation2,
@@ -64,13 +64,14 @@ function TabPhoto({
         className,
       )}
     >
-      <Image
+      <ResilientImage
         src={src}
         alt=""
         fill
         sizes="36px"
         className="object-cover"
         aria-hidden
+        fallbackSrc={BRAND_PHOTOS.streetCab}
       />
       <span className="sr-only">{alt}</span>
     </span>
@@ -175,7 +176,7 @@ export function LandingBookingWidget({
                 "relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1 px-1.5 font-semibold transition-all duration-200 sm:gap-2 sm:px-3",
                 "rounded-lg",
                 featured
-                  ? "min-h-12 py-2.5 text-[11px] sm:min-h-[3.25rem] sm:text-sm"
+                  ? "min-h-12 py-2.5 text-[11px] sm:min-h-[3.25rem] sm:text-xs md:text-sm"
                   : dense
                     ? "min-h-10 py-2 text-[10px] sm:py-2.5 sm:text-xs"
                     : "min-h-11 py-2.5 text-[10px] sm:text-sm",
@@ -193,9 +194,18 @@ export function LandingBookingWidget({
                 alt={photo.photoAlt}
                 active={isActive}
                 featured={featured}
-                className="hidden min-[400px]:block"
+                className="hidden min-[360px]:block"
               />
-              <span className="truncate">{tab.label}</span>
+              <span className="truncate leading-tight">
+                {tab.id === "ambulance" ? (
+                  <>
+                    <span className="min-[420px]:hidden">SOS</span>
+                    <span className="hidden min-[420px]:inline">Emergency</span>
+                  </>
+                ) : (
+                  tab.label
+                )}
+              </span>
             </button>
           );
         })}

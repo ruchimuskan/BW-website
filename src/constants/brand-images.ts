@@ -1,22 +1,23 @@
 /**
  * Local brand photography from /public/images
  * img-1 cab · img-2 parcel · img-3 ambulance
- * img-7…img-13 gallery illustrations
  * pic-4 bike · pic-5 e-auto · pic-6 travel · pic-7 fares · pic-8 pickup · pic-9 coverage
  * pic-10 app promo · pic-11 street cab · pic-12 hero banner
- * pic-13 studio cab · pic-14 studio bike · img15 captains hero
+ * pic-14 studio bike · img15 captains hero
+ *
+ * Paths must match files shipped in /public/images (PNG when no WebP twin exists).
  */
 
 export const BRAND_PHOTOS = {
-  limeCab: "/images/img-1.webp",
-  parcelDelivery: "/images/img-2.webp",
-  ambulance: "/images/img-3.webp",
-  gallery7: "/images/img-7.png",
-  gallery8: "/images/img-8.png",
-  gallery9: "/images/img-9.png",
-  gallery10: "/images/img-10.png",
-  gallery11: "/images/img-11.png",
-  gallery13: "/images/img-13.png",
+  limeCab: "/images/img-1.png",
+  parcelDelivery: "/images/img-2.png",
+  ambulance: "/images/img-3.png",
+  gallery7: "/images/pic-7.webp",
+  gallery8: "/images/pic-8.webp",
+  gallery9: "/images/pic-9.webp",
+  gallery10: "/images/gallery/track4.webp",
+  gallery11: "/images/pic-11.webp",
+  gallery13: "/images/services/car.webp",
   /** Visual journey carousel — track1…track6 (Book → Support). */
   journey1: "/images/gallery/track1.webp",
   journey2: "/images/gallery/track2.webp",
@@ -24,21 +25,21 @@ export const BRAND_PHOTOS = {
   journey4: "/images/gallery/track4.webp",
   journey5: "/images/gallery/track5.webp",
   journey6: "/images/gallery/track6.webp",
-  bike: "/images/pic-4.webp",
-  eAuto: "/images/pic-5.webp",
-  travelStay: "/images/pic-6.webp",
+  bike: "/images/pic-4.png",
+  eAuto: "/images/pic-5.png",
+  travelStay: "/images/pic-6.png",
   bestFares: "/images/pic-best-fare.webp",
   quickFare: "/images/pic-8.webp",
   neverTooFar: "/images/pic-9.webp",
   promoAnytime: "/images/pic-12.png",
   streetCab: "/images/pic-11.webp",
   heroAnytime: "/images/pic-12.png",
-  studioCab: "/images/pic-13.webp",
-  studioBike: "/images/pic-14.webp",
+  studioCab: "/images/services/car.webp",
+  studioBike: "/images/pic-14.png",
   /** Captains section — driver at night (public/images/img15). */
-  captainsHero: "/images/img15.webp?v=1",
-  captainsHeroPng: "/images/img15.png?v=1",
-  captainsHero2x: "/images/img15-2x.webp?v=1",
+  captainsHero: "/images/img15.png",
+  captainsHeroPng: "/images/img15.png",
+  captainsHero2x: "/images/img15-2x.webp",
   /** Legacy captain partner assets (other pages). */
   captain: "/images/landing/captain-partner.png",
   captainWebp: "/images/landing/captain-partner.webp",
@@ -51,7 +52,6 @@ export const BRAND_PHOTOS = {
 /** Captains hero fallback — img15 webp/png twins. */
 export const CAPTAINS_HERO_FALLBACKS = [
   BRAND_PHOTOS.captainsHeroPng,
-  BRAND_PHOTOS.captainsHero,
   BRAND_PHOTOS.captainsHero2x,
   BRAND_PHOTOS.streetCab,
 ] as const;
@@ -147,13 +147,7 @@ export function brandPhotoFit(src: string): "contain" | "cover" {
     path.includes("pic-10") ||
     path.includes("pic-12") ||
     path.includes("pic-14") ||
-    path.includes("img-7") ||
-    path.includes("img-8") ||
-    path.includes("img-9") ||
-    path.includes("img-10") ||
-    path.includes("img-11") ||
-    path.includes("img-12") ||
-    path.includes("img-13")
+    path.includes("/services/")
   ) {
     return "contain";
   }

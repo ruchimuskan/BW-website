@@ -13,6 +13,7 @@ import {
 } from "@/constants/services";
 import { transitions } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
 
 const welcomePanelBg: Record<
   (typeof landingWelcomeGallery)[number]["panel"],
@@ -218,11 +219,11 @@ export function LandingWelcomeSection({ onBookNow }: LandingWelcomeSectionProps)
   return (
     <section
       id="welcome"
-      className="relative scroll-mt-24 overflow-hidden bw-section-glow px-4 py-12 sm:px-5 md:px-6 lg:px-8 sm:py-20 lg:py-28"
+      className={cn("relative scroll-mt-24 overflow-hidden bw-section-glow", LANDING_SECTION_PY)}
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
-      <div className="relative z-10 mx-auto max-w-[90rem]">
+      <div className={landingShell("relative z-10")}>
         {/* Stats ribbon — dark luxury, animated, responsive */}
         <div className="relative overflow-hidden rounded-xl border border-[#C8E84A]/20 bg-[#38471B] shadow-[0_28px_56px_-28px_rgba(32,42,16,0.65)] sm:rounded-2xl">
           <div
