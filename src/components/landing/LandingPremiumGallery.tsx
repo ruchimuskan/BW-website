@@ -14,14 +14,18 @@ import {
   useRef,
   useState,
 } from "react";
+import { PremiumSectionBackdrop } from "@/components/landing/PremiumSectionBackdrop";
+import { SectionHeading } from "@/components/landing/SectionHeading";
 import { landingPremiumGallery } from "@/constants/services";
-import { landingShell } from "@/lib/landing-shell";
+import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
+import { transitions } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const items = landingPremiumGallery;
 const AUTO_MS = 3800;
 const TOTAL = items.length;
-const SNAP_MS = 0.18;
+const SNAP_MS = 0.22;
+const STACK_MQ = "(max-width: 1023px)";
 
 function circularOffset(index: number, active: number, length: number) {
   let offset = index - active;
@@ -55,11 +59,13 @@ function GallerySlideImage({
   src,
   alt,
   className,
+  style,
   priority,
 }: {
   src: string;
   alt: string;
   className?: string;
+  style?: React.CSSProperties;
   priority?: boolean;
 }) {
   const chain = useMemo(() => gallerySrcChain(src), [src]);
@@ -87,11 +93,12 @@ function GallerySlideImage({
       width={1260}
       height={978}
       className={className}
+      style={style}
       draggable={false}
       loading={priority ? "eager" : "lazy"}
       fetchPriority={priority ? "high" : "auto"}
       decoding="async"
-      sizes="(max-width: 767px) 88vw, 460px"
+      sizes="(max-width: 639px) 92vw, (max-width: 1023px) min(520px, 88vw), 480px"
       onError={() => {
         setIndex((i) => (i < chain.length - 1 ? i + 1 : i));
       }}
@@ -99,20 +106,22 @@ function GallerySlideImage({
   );
 }
 
+const navBtnClass =
+  "flex shrink-0 items-center justify-center rounded-full border border-primary/20 bg-white text-primary shadow-[0_8px_24px_-8px_rgba(27,58,34,0.28)] transition hover:bg-primary hover:text-white active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40";
+
 /**
- * Overlapping cover-flow — compact, sharp assets, snappy touch.
- * Side cards use left/right inset (no translate -50%) so photos stay crisp.
+ * Overlapping cover-flow gallery — responsive stack on mobile/tablet, 3-card flow on desktop.
  */
 export function LandingPremiumGallery() {
   const reduceMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
-  const inView = useInView(sectionRef, { once: false, amount: 0.2 });
+  const inView = useInView(sectionRef, { once: false, amount: 0.18 });
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
   const [hasEntered, setHasEntered] = useState(false);
-  const [compact, setCompact] = useState(true);
+  const [stacked, setStacked] = useState(true);
   const [progressKey, setProgressKey] = useState(0);
 
   const activeRef = useRef(active);
@@ -130,7 +139,6 @@ export function LandingPremiumGallery() {
   }, []);
 
   useEffect(() => {
-    // Warm every slide for instant swipe.
     for (const slide of items) {
       const href = gallerySrcChain(slide.src)[0];
       if (!href) continue;
@@ -141,8 +149,8 @@ export function LandingPremiumGallery() {
   }, []);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const sync = () => setCompact(mq.matches);
+    const mq = window.matchMedia(STACK_MQ);
+    const sync = () => setStacked(mq.matches);
     sync();
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
@@ -193,7 +201,6 @@ export function LandingPremiumGallery() {
     pauseReasons.current.drag = false;
     setDragging(false);
     syncPaused();
-    // Fast touch thresholds
     if (info.offset.x < -28 || info.velocity.x < -280) go(1);
     else if (info.offset.x > 28 || info.velocity.x > 280) go(-1);
   };
@@ -203,15 +210,15 @@ export function LandingPremiumGallery() {
       .map((item, i) => {
         const offset = circularOffset(i, active, TOTAL);
         const abs = Math.abs(offset);
-        if (compact && offset !== 0) return null;
-        if (!compact && abs > 1) return null;
+        if (stacked && offset !== 0) return null;
+        if (!stacked && abs > 1) return null;
         return { item, i, offset };
       })
       .filter(
         (s): s is { item: (typeof items)[number]; i: number; offset: number } =>
           Boolean(s),
       );
-  }, [active, compact]);
+  }, [active, stacked]);
 
   const autoplayActive =
     hasEntered && inView && !reduceMotion && !paused && pageVisible;
@@ -219,35 +226,34 @@ export function LandingPremiumGallery() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-x-clip bw-section-band border-y border-primary/10 py-8 sm:py-12 lg:py-14"
+      className={cn(
+        "relative overflow-x-clip border-y border-primary/10",
+        LANDING_SECTION_PY,
+      )}
       aria-label="Visual journey gallery"
     >
+      <PremiumSectionBackdrop side="center" opacity={0.85} showOrbs={false} />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_80%,rgba(200,232,74,0.1),transparent_60%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_100%,rgba(200,232,74,0.11),transparent_62%)]"
       />
 
       <div className={landingShell("relative z-10")}>
         <motion.div
-          className="mx-auto max-w-xl text-center"
-          initial={reduceMotion ? false : { y: 12 }}
-          animate={hasEntered ? { y: 0 } : undefined}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          initial={reduceMotion ? false : { y: 14, opacity: 0.96 }}
+          animate={hasEntered ? { y: 0, opacity: 1 } : undefined}
+          transition={transitions.reveal}
         >
-          <p className="text-[10px] font-semibold tracking-[0.24em] uppercase text-[#5A7A5E] sm:text-xs">
-            Visual journey
-          </p>
-          <h2 className="mt-2 font-heading text-[1.35rem] font-semibold tracking-tight text-[#1B3A22] sm:text-2xl md:text-3xl">
-            From book to support
-          </h2>
-          <p className="mt-2 text-[13px] font-light text-[#5A6158] sm:text-sm">
-            Book, track, ride, pay, rate, and get help — every step designed for
-            a calm BW Rides trip.
-          </p>
+          <SectionHeading
+            align="center"
+            eyebrow="Visual journey"
+            title="From book to support"
+            description="Book, track, ride, pay, rate, and get help — every step designed for a calm BW Rides trip."
+          />
         </motion.div>
 
         <div
-          className="mx-auto mt-5 flex w-full max-w-xs items-center gap-1.5 sm:mt-6 sm:max-w-sm"
+          className="mx-auto mt-6 flex w-full max-w-md items-center gap-1.5 sm:mt-8 sm:max-w-lg sm:gap-2 lg:max-w-xl"
           role="tablist"
           aria-label="Gallery slides"
         >
@@ -262,7 +268,7 @@ export function LandingPremiumGallery() {
                 aria-label={`Show ${slide.label}`}
                 onClick={() => goTo(i)}
                 className={cn(
-                  "relative h-1 flex-1 overflow-hidden rounded-full transition-colors",
+                  "relative h-1.5 flex-1 overflow-hidden rounded-full transition-colors sm:h-[7px]",
                   isActive ? "bg-primary/25" : "bg-primary/15 hover:bg-primary/30",
                 )}
               >
@@ -288,7 +294,7 @@ export function LandingPremiumGallery() {
         </div>
 
         <div
-          className="relative mx-auto mt-5 w-full max-w-[840px] sm:mt-7"
+          className="relative mx-auto mt-6 w-full max-w-[min(100%,920px)] sm:mt-8"
           onMouseEnter={() => {
             pauseReasons.current.hover = true;
             syncPaused();
@@ -310,18 +316,17 @@ export function LandingPremiumGallery() {
         >
           <div
             className={cn(
-              compact
-                ? "mx-auto max-w-[420px]"
-                : "flex items-center gap-3 md:gap-4 lg:gap-5",
+              stacked
+                ? "mx-auto w-full max-w-[min(100%,520px)]"
+                : "flex items-center gap-2 md:gap-3 lg:gap-4 xl:gap-5",
             )}
           >
-            {/* Large screens: arrows sit outside the image stack */}
-            {!compact ? (
+            {!stacked ? (
               <button
                 type="button"
                 aria-label="Previous slide"
                 onClick={() => go(-1)}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-white text-primary shadow-md transition active:scale-95 hover:bg-primary hover:text-white md:h-11 md:w-11"
+                className={cn(navBtnClass, "h-10 w-10 md:h-11 md:w-11")}
               >
                 <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
               </button>
@@ -330,9 +335,9 @@ export function LandingPremiumGallery() {
             <motion.div
               className={cn(
                 "relative min-w-0 touch-pan-y select-none",
-                compact
+                stacked
                   ? "w-full overflow-hidden"
-                  : "h-[280px] flex-1 overflow-visible md:h-[300px] lg:h-[320px]",
+                  : "h-[clamp(240px,30vw,360px)] flex-1 overflow-visible [perspective:1200px]",
               )}
               drag={reduceMotion ? false : "x"}
               dragConstraints={{ left: 0, right: 0 }}
@@ -363,29 +368,42 @@ export function LandingPremiumGallery() {
                       if (!isFront) goTo(i);
                     }}
                     className={cn(
-                      "overflow-hidden border bg-[#EEF4E8] text-left",
-                      compact
-                        ? "relative flex w-full flex-col rounded-2xl"
+                      "overflow-hidden border bg-[#EEF4E8] text-left will-change-transform",
+                      stacked
+                        ? "relative flex w-full flex-col rounded-2xl sm:rounded-[1.15rem]"
                         : cn(
-                            "absolute top-[6%] bottom-[6%] rounded-[1.15rem]",
+                            "absolute top-[4%] bottom-[4%] rounded-[1.15rem] sm:rounded-2xl",
                             isFront
-                              ? "left-0 right-0 z-40 mx-auto w-[min(68%,440px)]"
+                              ? "left-0 right-0 z-40 mx-auto w-[min(72%,480px)]"
                               : cn(
-                                  "z-20 w-[44%] max-w-[300px]",
+                                  "z-20 w-[42%] max-w-[320px]",
                                   isLeft ? "left-0" : "right-0",
                                 ),
                           ),
                       isFront
                         ? cn(
-                            "border-[#C6E31A]/50 shadow-[0_18px_40px_-16px_rgba(27,58,34,0.34)]",
+                            "border-[#C6E31A]/55 shadow-[0_22px_48px_-18px_rgba(27,58,34,0.38)]",
                             dragging ? "cursor-grabbing" : "cursor-grab",
                           )
-                        : "cursor-pointer border-[#D4D8D0]/80 shadow-[0_12px_28px_-14px_rgba(27,58,34,0.28)]",
+                        : "cursor-pointer border-[#D4D8D0]/85 shadow-[0_14px_32px_-16px_rgba(27,58,34,0.3)]",
                       dragging && !isFront && "pointer-events-none",
                     )}
+                    style={
+                      stacked
+                        ? undefined
+                        : {
+                            transformOrigin: isFront
+                              ? "center center"
+                              : isLeft
+                                ? "right center"
+                                : "left center",
+                          }
+                    }
                     initial={false}
                     animate={{
-                      opacity: isFront ? 1 : 0.78,
+                      opacity: isFront ? 1 : 0.68,
+                      scale: stacked ? 1 : isFront ? 1 : 0.84,
+                      y: stacked ? 0 : isFront ? 0 : 6,
                     }}
                     transition={
                       reduceMotion
@@ -400,27 +418,39 @@ export function LandingPremiumGallery() {
                     <div
                       className={cn(
                         "relative w-full overflow-hidden bg-[#E8ECE4]",
-                        compact ? "aspect-[630/440]" : "absolute inset-0",
+                        stacked
+                          ? "aspect-[1260/978]"
+                          : "absolute inset-0",
                       )}
                     >
                       <GallerySlideImage
                         src={item.src}
                         alt={item.alt}
                         priority={isFront || Math.abs(offset) <= 1}
-                        className="absolute inset-0 h-full w-full select-none object-cover object-center"
+                        className={cn(
+                          "absolute inset-0 h-full w-full select-none",
+                          item.fit === "cover" ? "object-cover" : "object-contain",
+                        )}
+                        style={{ objectPosition: item.position }}
                       />
+                      {!stacked && !isFront ? (
+                        <div
+                          aria-hidden
+                          className="pointer-events-none absolute inset-0 bg-white/10 backdrop-blur-[0.5px]"
+                        />
+                      ) : null}
                     </div>
                     {isFront ? (
                       <div
                         className={cn(
-                          "border-t border-[#D5E0C8] bg-[#E7F0D8] px-3.5 py-2",
-                          !compact && "absolute inset-x-0 bottom-0",
+                          "border-t border-[#C6E31A]/35 bg-[#E7F0D8] px-3.5 py-2.5 sm:px-4 sm:py-3",
+                          !stacked && "absolute inset-x-0 bottom-0",
                         )}
                       >
-                        <p className="font-heading text-[12px] font-semibold tracking-[0.14em] uppercase text-[#1B3A22] sm:text-[13px]">
+                        <p className="font-heading text-[11px] font-semibold tracking-[0.14em] uppercase text-[#1B3A22] sm:text-[13px]">
                           {String(active + 1).padStart(2, "0")} /{" "}
                           {String(TOTAL).padStart(2, "0")}
-                          <span className="ml-2 tracking-[0.18em]">
+                          <span className="ml-2 tracking-[0.18em] text-[#2D4A32]">
                             {item.label}
                           </span>
                         </p>
@@ -431,36 +461,40 @@ export function LandingPremiumGallery() {
               })}
             </motion.div>
 
-            {!compact ? (
+            {!stacked ? (
               <button
                 type="button"
                 aria-label="Next slide"
                 onClick={() => go(1)}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-white text-primary shadow-md transition active:scale-95 hover:bg-primary hover:text-white md:h-11 md:w-11"
+                className={cn(navBtnClass, "h-10 w-10 md:h-11 md:w-11")}
               >
                 <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
               </button>
             ) : null}
           </div>
 
-          {/* Mobile: arrows below the card (outside the image) */}
-          {compact ? (
-            <div className="mt-3 flex items-center justify-between px-0.5">
+          {stacked ? (
+            <div className="mt-4 flex items-center justify-between sm:mt-5">
               <button
                 type="button"
                 aria-label="Previous slide"
                 onClick={() => go(-1)}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-primary/20 bg-white text-primary shadow-md transition active:scale-95 hover:bg-primary hover:text-white"
+                className={cn(navBtnClass, "h-10 w-10 sm:h-11 sm:w-11")}
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
+
+              <p className="text-[11px] font-medium tracking-[0.12em] uppercase text-[#5A6158] sm:text-xs">
+                Swipe or tap arrows
+              </p>
+
               <button
                 type="button"
                 aria-label="Next slide"
                 onClick={() => go(1)}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-primary/20 bg-white text-primary shadow-md transition active:scale-95 hover:bg-primary hover:text-white"
+                className={cn(navBtnClass, "h-10 w-10 sm:h-11 sm:w-11")}
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
             </div>
           ) : null}

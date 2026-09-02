@@ -144,6 +144,8 @@ function isStaticAssetPath(pathname: string): boolean {
   if (
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/images/") ||
+    pathname.startsWith("/gallery/") ||
+    pathname.startsWith("/landing/") ||
     pathname.startsWith("/uploads/") ||
     pathname.startsWith("/api/") ||
     pathname.startsWith("/fonts/")
@@ -248,6 +250,6 @@ export const config = {
      * App routes only — skip Next internals, /images, /uploads, /api, and
      * any path with a static file extension (see isStaticAssetPath too).
      */
-    "/((?!_next|images|uploads|api|fonts|favicon\\.ico|robots\\.txt|sitemap\\.xml|manifest\\.webmanifest|opengraph-image|twitter-image|icon|apple-icon|.*\\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm)$).*)",
+    "/((?!_next|images|gallery|landing|uploads|api|fonts|favicon\\.ico|robots\\.txt|sitemap\\.xml|manifest\\.webmanifest|opengraph-image|twitter-image|icon|apple-icon|.*\\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm)$).*)",
   ],
 };

@@ -17,11 +17,9 @@ import { AppFooter } from "@/components/layout/AppFooter";
 import { BottomNav } from "@/components/layout/BottomNav";
 import {
   buildRentalContinueUrl,
-  SELF_DRIVE_LOCATIONS,
   type SelfDriveLocation,
 } from "@/constants/home-booking";
 import { ROUTES } from "@/constants/routes";
-import { allowDemoDataFallbacks } from "@/lib/app-env";
 import { BRAND_CTA_LIME } from "@/lib/brand-cta";
 import { getSelfDriveLocations } from "@/lib/home-api";
 import { cn } from "@/lib/utils";
@@ -53,28 +51,14 @@ export function SelfDriveLocationsView() {
           return;
         }
 
-        if (allowDemoDataFallbacks()) {
-          setLocations([...SELF_DRIVE_LOCATIONS]);
-          const nearest =
-            SELF_DRIVE_LOCATIONS.find((l) => l.nearest) ?? SELF_DRIVE_LOCATIONS[0];
-          setSelectedId(nearest.id);
-        } else {
-          setLocations([]);
-          setLoadError("No self-drive pickup hubs are available right now.");
-        }
+        setLocations([]);
+        setLoadError("No self-drive pickup hubs are available right now.");
       } catch (err) {
         if (cancelled) return;
-        if (allowDemoDataFallbacks()) {
-          setLocations([...SELF_DRIVE_LOCATIONS]);
-          const nearest =
-            SELF_DRIVE_LOCATIONS.find((l) => l.nearest) ?? SELF_DRIVE_LOCATIONS[0];
-          setSelectedId(nearest.id);
-        } else {
-          setLocations([]);
-          setLoadError(
-            err instanceof Error ? err.message : "Unable to load pickup hubs",
-          );
-        }
+        setLocations([]);
+        setLoadError(
+          err instanceof Error ? err.message : "Unable to load pickup hubs",
+        );
       } finally {
         if (!cancelled) setIsLoading(false);
       }

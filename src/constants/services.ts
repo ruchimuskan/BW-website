@@ -246,25 +246,37 @@ export const landingServiceLifestyle: Record<string, string> = {
   ambulance: BRAND_PHOTOS.ambulance,
 };
 
-/** Book section + luxury hero — tab-synced premium lime-theme photos */
+/** Book section + luxury hero — 3D service cutouts (contained, same style as ride cab). */
 export const landingBookImages = {
   rides: {
-    src: landingAssets.heroPremiumRides,
-    alt: "Premium Bull Wave Rides lime cab",
-    objectPosition: "center center",
+    src: landingAssets.serviceCab,
+    fallback: "/images/services/car.png",
+    alt: "Bull Wave Rides premium cab",
+    objectPosition: "50% 100%",
+    offsetY: "0%",
     accent: "from-transparent via-transparent to-transparent",
+    glow: "rgba(198,227,26,0.42)",
+    scale: 1.26,
   },
   parcel: {
-    src: landingAssets.heroPremiumParcel,
+    src: landingAssets.serviceParcel,
+    fallback: "/images/services/parcel.png",
     alt: "Bull Wave Rides secure parcel delivery",
-    objectPosition: "center center",
+    objectPosition: "50% 88%",
+    offsetY: "16%",
     accent: "from-transparent via-transparent to-transparent",
+    glow: "rgba(198,227,26,0.36)",
+    scale: 1.34,
   },
   ambulance: {
-    src: landingAssets.heroPremiumAmbulance,
+    src: landingAssets.serviceAmbulance,
+    fallback: "/images/services/ambulance.png",
     alt: "Bull Wave Rides emergency ambulance SOS",
-    objectPosition: "center center",
+    objectPosition: "50% 90%",
+    offsetY: "12%",
     accent: "from-transparent via-transparent to-transparent",
+    glow: "rgba(248,113,113,0.32)",
+    scale: 1.28,
   },
 } as const;
 
@@ -278,50 +290,14 @@ export const landingBookingTabs = [
 
 export type LandingBookingTab = (typeof landingBookingTabs)[number]["id"];
 
-export const landingFeatures = [
-  {
-    title: "Quick Pickup",
-    desc: "Captains nearby, matched in seconds — not minutes.",
-    body: "Bull Wave Rides uses smart routing to connect you with the closest available captain the moment you confirm your ride. Whether you're heading to work, catching a flight, or rushing to an appointment, you spend less time waiting on the curb and more time moving.",
-    points: [
-      "Live captain matching across bike, auto, and cab",
-      "Average pickup under 5 minutes in active zones",
-      "Real-time ETA updates from booking to arrival",
-    ],
-    image: BRAND_IMAGES.featurePickup,
-  },
-  {
-    title: "Best Fares",
-    desc: "Upfront pricing with no surprises at the end of your trip.",
-    body: "Know your fare before you ride. Bull Wave Rides shows a clear price estimate based on distance, time, and demand — so there are no awkward surprises when you reach your destination. What you see is what you pay.",
-    points: [
-      "Transparent fare breakdown before every trip",
-      "No hidden charges or last-minute add-ons",
-      "Wallet credits and offers applied automatically",
-    ],
-    image: BRAND_IMAGES.featureFares,
-  },
-  {
-    title: "Never Too Far",
-    desc: "Dense city coverage that keeps you connected wherever you go.",
-    body: "From busy city centres to growing suburbs, Bull Wave Rides is built to keep you connected. Our captain network spans across neighbourhoods, highways, and key landmarks — so a reliable ride is never more than a few taps away.",
-    points: [
-      "Wide coverage across 50+ cities and counting",
-      "Airport, hospital, and office routes supported",
-      "24/7 availability including late-night safety rides",
-    ],
-    image: BRAND_IMAGES.featureCoverage,
-  },
-] as const;
-
 export const landingNavLinks = [
   { label: "Home", shortLabel: "Home", href: ROUTES.landing },
   { label: "Book a Ride", shortLabel: "Book", href: ROUTES.ride },
   { label: "About Us", shortLabel: "About", href: ROUTES.about },
   { label: "Safety", shortLabel: "Safety", href: ROUTES.safety },
-  { label: "Business", shortLabel: "Business", href: ROUTES.corporateRegister },
+  { label: "Business", shortLabel: "Biz", href: ROUTES.corporateRegister },
   { label: "SOS", shortLabel: "SOS", href: ROUTES.sos },
-  { label: "Captains", shortLabel: "Captains", href: ROUTES.captains },
+  { label: "Captains", shortLabel: "Drive", href: ROUTES.captains },
   { label: "Blogs", shortLabel: "Blogs", href: ROUTES.blogs },
 ] as const;
 

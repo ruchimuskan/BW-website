@@ -22,9 +22,8 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { WaveGoLogo } from "@/components/layout/WaveGoLogo";
-import { helpTopics, supportTrips, type HelpTopic } from "@/data/mock/support";
+import { helpTopics, type HelpTopic } from "@/data/help-topics";
 import { ROUTES } from "@/constants/routes";
-import { allowDemoDataFallbacks } from "@/lib/app-env";
 import { helpSectionPath } from "@/lib/help-routes";
 import { helpShell } from "@/lib/help-shell";
 import { getRideHistory, type Ride } from "@/lib/ride-api";
@@ -116,19 +115,6 @@ function mapRideToRow(ride: Ride): HelpTripRow {
   };
 }
 
-function mapMockToRow(trip: (typeof supportTrips)[number]): HelpTripRow {
-  return {
-    id: `mock-${trip.id}`,
-    title: trip.service,
-    address: trip.address,
-    date: trip.date,
-    status: trip.status,
-    price: trip.price,
-    href: tripHelpHref(`mock-${trip.id}`),
-    imageSrc: vehicleImageForSlug(trip.service),
-  };
-}
-
 interface HelpViewProps {
   onBack?: () => void;
 }
@@ -160,26 +146,14 @@ export function HelpView({ onBack }: HelpViewProps) {
       .then((res) => {
         if (cancelled) return;
         const rows = res.items.slice(0, 5).map(mapRideToRow);
-        if (rows.length > 0) {
-          setRecentTrips(rows);
-          return;
-        }
-        if (allowDemoDataFallbacks()) {
-          setRecentTrips(supportTrips.map(mapMockToRow));
-        } else {
-          setRecentTrips([]);
-        }
+        setRecentTrips(rows);
       })
       .catch((err) => {
         if (cancelled) return;
-        if (allowDemoDataFallbacks()) {
-          setRecentTrips(supportTrips.map(mapMockToRow));
-        } else {
-          setRecentTrips([]);
-          setTripsError(
-            err instanceof Error ? err.message : "Unable to load recent trips",
-          );
-        }
+        setRecentTrips([]);
+        setTripsError(
+          err instanceof Error ? err.message : "Unable to load recent trips",
+        );
       })
       .finally(() => {
         if (!cancelled) setTripsLoading(false);

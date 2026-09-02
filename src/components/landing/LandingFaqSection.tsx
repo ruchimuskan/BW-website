@@ -10,16 +10,32 @@ import { buttonVariants } from "@/components/ui/button";
 import { landingFaqItems } from "@/constants/landing-faq";
 import { ROUTES } from "@/constants/routes";
 import { getProtectedPath } from "@/lib/auth-session";
+import { fetchLandingFaqs, type LandingFaq } from "@/lib/landing-api";
 import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 
 export function LandingFaqSection() {
   const reduceMotion = useReducedMotion();
+  const [faqItems, setFaqItems] = useState<LandingFaq[]>(() =>
+    landingFaqItems.map(({ id, question, answer }) => ({ id, question, answer })),
+  );
   const [openId, setOpenId] = useState<string | null>(landingFaqItems[0]?.id ?? null);
   const [helpHref, setHelpHref] = useState<string>(ROUTES.login);
 
   useEffect(() => {
     setHelpHref(getProtectedPath(ROUTES.profileHelp));
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchLandingFaqs().then((items) => {
+      if (cancelled || items.length === 0) return;
+      setFaqItems(items);
+      setOpenId(items[0]?.id ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -83,7 +99,7 @@ export function LandingFaqSection() {
         </AnimateIn>
 
         <Stagger className="flex flex-col gap-3">
-          {landingFaqItems.map((item, index) => {
+          {faqItems.map((item, index) => {
             const isOpen = openId === item.id;
 
             return (

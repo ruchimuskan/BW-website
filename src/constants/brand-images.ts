@@ -115,6 +115,16 @@ export const BRAND_IMAGES = {
   blogCommunity: BRAND_PHOTOS.parcelDelivery,
 } as const;
 
+/** Marlin-style hero cutouts — matched 3D set (cab · parcel · ambulance). */
+export const HERO_STAGE_ASSETS = {
+  rides: "/images/services/car.webp",
+  ridesFallback: "/images/landing/brand/lime-cab.png",
+  parcel: "/images/landing/brand/parcel-delivery.png",
+  parcelFallback: "/images/services/parcel.webp",
+  ambulance: "/images/landing/brand/ambulance.png",
+  ambulanceFallback: "/images/services/ambulance.webp",
+} as const;
+
 export const BRAND_IMAGE_SIZES = {
   hero: "(max-width: 640px) 100vw, (max-width: 1024px) 92vw, (max-width: 1536px) 52vw, 900px",
   bookPanel: "(max-width: 1024px) 100vw, 50vw",
@@ -147,7 +157,8 @@ export function brandPhotoFit(src: string): "contain" | "cover" {
     path.includes("pic-10") ||
     path.includes("pic-12") ||
     path.includes("pic-14") ||
-    path.includes("/services/")
+    path.includes("/services/") ||
+    path.includes("/landing/brand/")
   ) {
     return "contain";
   }

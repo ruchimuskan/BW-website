@@ -7,7 +7,6 @@ import { VehicleOptionImage } from "@/components/booking/VehicleOptionImage";
 import { ROUTES } from "@/constants/routes";
 import { getProtectedPath, isAuthenticated } from "@/lib/auth-session";
 import { getRentalCategories, type VehicleCategory } from "@/lib/home-api";
-import { allowDemoDataFallbacks } from "@/lib/app-env";
 import {
   ActiveRideBlockError,
   assertNoBlockingActiveRide,
@@ -17,29 +16,6 @@ import { vehicleImageForCategory } from "@/lib/vehicle-map";
 import { BRAND_CTA_LIME } from "@/lib/brand-cta";
 import { cn } from "@/lib/utils";
 import { useActiveRideGuard } from "@/hooks/useActiveRideGuard";
-
-const FALLBACK_RENTALS: VehicleCategory[] = [
-  {
-    id: "rental-bike",
-    slug: "rental-bike",
-    name: "Rental Bike",
-    description: "Rent a bike by the day",
-    base_fare: 199,
-    per_km_rate: 8,
-    icon_url: null,
-    service_group: "rental",
-  },
-  {
-    id: "rental-car",
-    slug: "rental-car",
-    name: "Rental Car",
-    description: "Flexible car rental packages",
-    base_fare: 999,
-    per_km_rate: 12,
-    icon_url: null,
-    service_group: "rental",
-  },
-];
 
 export function RentalView() {
   const router = useRouter();
@@ -76,8 +52,6 @@ export function RentalView() {
         if (!cancelled) {
           if (items.length > 0) {
             setCategories(items);
-          } else if (allowDemoDataFallbacks()) {
-            setCategories(FALLBACK_RENTALS);
           } else {
             setCategories([]);
             setError("No rental vehicles are available right now. Please try again later.");
@@ -85,11 +59,7 @@ export function RentalView() {
         }
       } catch (err) {
         if (!cancelled) {
-          if (allowDemoDataFallbacks()) {
-            setCategories(FALLBACK_RENTALS);
-          } else {
-            setCategories([]);
-          }
+          setCategories([]);
           setError(err instanceof Error ? err.message : "Unable to load rental options");
         }
       } finally {
@@ -112,19 +82,11 @@ export function RentalView() {
           setCategories(items);
           return;
         }
-        if (allowDemoDataFallbacks()) {
-          setCategories(FALLBACK_RENTALS);
-        } else {
-          setCategories([]);
-          setError("No rental vehicles are available right now.");
-        }
+        setCategories([]);
+        setError("No rental vehicles are available right now.");
       })
       .catch((err) => {
-        if (allowDemoDataFallbacks()) {
-          setCategories(FALLBACK_RENTALS);
-        } else {
-          setCategories([]);
-        }
+        setCategories([]);
         setError(err instanceof Error ? err.message : "Unable to load rental options");
       })
       .finally(() => setIsLoading(false));

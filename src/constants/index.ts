@@ -6,7 +6,6 @@ export { paymentMethods } from "./wallet";
 export {
   homeServices,
   landingServices,
-  landingFeatures,
   landingNavLinks,
   landingStats,
   landingHeroCtas,

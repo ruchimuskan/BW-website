@@ -18,6 +18,7 @@ import { LandingHeader } from "@/components/landing/LandingHeader";
 import { APP_DOWNLOAD } from "@/constants/app-download";
 import { ROUTES } from "@/constants/routes";
 import { landingAssets } from "@/constants/services";
+import { landingShell } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
 
@@ -56,12 +57,12 @@ export function CaptainsView() {
           className="pointer-events-none absolute -left-16 top-20 z-0 h-48 w-48 rounded-full bg-[#C6E31A]/12 blur-3xl"
         />
 
-        <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-6 px-4 py-10 sm:gap-8 sm:px-6 sm:py-14 lg:grid-cols-2 lg:gap-12 lg:py-16">
-          <AnimateIn direction="right" delay={0.08} className="order-1 lg:order-2">
+        <div className={landingShell("relative z-10 grid grid-cols-1 items-center gap-6 py-10 sm:gap-8 sm:py-14 lg:grid-cols-2 lg:gap-12 lg:py-16")}>
+          <AnimateIn direction="right" delay={0.08} className="order-2 min-w-0 lg:order-2">
             <CaptainsShowcaseGallery priority />
           </AnimateIn>
 
-          <div className="order-2 min-w-0 lg:order-1">
+          <div className="order-1 min-w-0 lg:order-1">
             <AnimateIn>
               <p className="font-heading text-2xl font-semibold tracking-tight text-[#111411] sm:text-3xl">
                 Bull Wave Rides

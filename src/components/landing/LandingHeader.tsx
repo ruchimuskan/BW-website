@@ -99,6 +99,17 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  /** Close drawer when viewport crosses desktop breakpoint. */
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => {
+      if (mq.matches) setMobileMenuOpen(false);
+    };
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
     return () => {
@@ -133,7 +144,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
       />
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-[80] border-b pt-[env(safe-area-inset-top)] transition-[background-color,box-shadow,border-color] duration-200",
+          "fixed inset-x-0 top-0 z-[80] overflow-x-clip border-b pt-[env(safe-area-inset-top)] transition-[background-color,box-shadow,border-color] duration-200",
           luxury
             ? scrolled
               ? "border-white/10 bg-[#1B3A22] shadow-[0_12px_28px_-18px_rgba(20,48,26,0.65)]"
@@ -168,17 +179,18 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
               priority
               withWordmark
               variant={luxury ? "light" : "default"}
-              className="[&>span:first-child]:h-10 [&>span:first-child]:w-10 sm:[&>span:first-child]:h-11 sm:[&>span:first-child]:w-11 md:[&>span:first-child]:h-12 md:[&>span:first-child]:w-12"
+              className="[&>span:first-child]:h-10 [&>span:first-child]:w-10 sm:[&>span:first-child]:h-11 sm:[&>span:first-child]:w-11 lg:[&>span:first-child]:h-10 lg:[&>span:first-child]:w-10 xl:[&>span:first-child]:h-11 xl:[&>span:first-child]:w-11"
             />
           </Link>
 
+          {/* Desktop / tablet landscape — inline nav (never scrollable) */}
           <nav
-            className="mx-auto hidden min-w-0 flex-1 items-center justify-center lg:flex"
+            className="mx-auto hidden min-w-0 flex-1 items-center justify-center px-0.5 lg:flex"
             aria-label="Primary"
           >
             <div
               className={cn(
-                "flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border px-1.5 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+                "flex max-w-full items-center justify-center gap-px rounded-full border px-1 py-0.5 xl:gap-0.5 xl:px-1.5 xl:py-1",
                 luxury
                   ? "border-white/12 bg-white/8"
                   : "border-[#D4D8D0] bg-white/90 shadow-[0_6px_18px_-14px_rgba(27,58,34,0.2)]",
@@ -194,7 +206,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                     href={resolveHref(href)}
                     onClick={() => handleNavClick(link.href)}
                     className={cn(
-                      "whitespace-nowrap rounded-full px-2.5 py-1.5 text-[12px] font-semibold tracking-tight transition-colors xl:px-3.5 xl:text-[13px]",
+                      "whitespace-nowrap rounded-full px-1.5 py-1 text-[10px] font-semibold tracking-tight transition-colors lg:px-2 lg:py-1.5 lg:text-[11px] xl:px-2.5 xl:text-[12px] 2xl:px-3.5 2xl:text-[13px]",
                       luxury
                         ? active
                           ? "bg-[#C6E31A] text-[#1B3A22]"
@@ -212,91 +224,59 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
             </div>
           </nav>
 
-          {/* Tablet: compact horizontal nav (md–lg) */}
-          <nav
-            className="mx-auto hidden min-w-0 max-w-[min(100%,28rem)] flex-1 items-center justify-center md:flex lg:hidden"
-            aria-label="Primary compact"
-          >
-            <div
-              className={cn(
-                "flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border px-1 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-                luxury
-                  ? "border-white/12 bg-white/8"
-                  : "border-[#D4D8D0] bg-white/90",
-              )}
-            >
-              {landingNavLinks.map((link) => {
-                const href =
-                  link.href === ROUTES.ride ? bookRideHref : link.href;
-                const active = isActive(link.href);
-                return (
-                  <Link
-                    key={link.label}
-                    href={resolveHref(href)}
-                    onClick={() => handleNavClick(link.href)}
-                    className={cn(
-                      "whitespace-nowrap rounded-full px-2 py-1.5 text-[11px] font-semibold tracking-tight transition-colors",
-                      luxury
-                        ? active
-                          ? "bg-[#C6E31A] text-[#1B3A22]"
-                          : "text-white/75 hover:bg-white/10 hover:text-white"
-                        : active
-                          ? "bg-[#C6E31A] text-[#1B3A22]"
-                          : "text-[#1B3A22]/70 hover:bg-[#F4F5F2] hover:text-[#1B3A22]",
-                    )}
-                  >
-                    {link.shortLabel}
-                  </Link>
-                );
-              })}
-            </div>
-          </nav>
-
           <div
-            className="ml-auto flex min-w-0 shrink-0 items-center gap-1 sm:gap-1.5 md:gap-2"
+            className="ml-auto flex min-w-0 shrink-0 items-center gap-1 sm:gap-1.5 lg:gap-1.5 xl:gap-2"
             suppressHydrationWarning
           >
             {loggedIn ? (
-              <Link
-                href={ROUTES.home}
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "sm" }),
-                  "hidden h-9 gap-1.5 px-3 font-semibold text-[#1B3A22] hover:bg-[#C6E31A]/15 hover:text-[#1B3A22] xl:inline-flex",
-                  luxury && "text-white hover:bg-white/10 hover:text-[#C6E31A]",
-                )}
-              >
-                <LayoutDashboard className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-                Dashboard
-              </Link>
-            ) : null}
-
-            <LandingAccountChip
-              luxury={luxury}
-              className="hidden sm:inline-flex"
-            />
-            <LandingAccountChip
-              luxury={luxury}
-              layout="icon"
-              className="sm:hidden"
-            />
+              <>
+                <LandingAccountChip
+                  luxury={luxury}
+                  layout="icon"
+                  className="hidden lg:inline-flex xl:hidden"
+                />
+                <LandingAccountChip
+                  luxury={luxury}
+                  compact
+                  className="hidden xl:inline-flex"
+                />
+              </>
+            ) : (
+              <>
+                <LandingAccountChip
+                  luxury={luxury}
+                  className="hidden sm:inline-flex lg:hidden"
+                />
+                <LandingAccountChip
+                  luxury={luxury}
+                  className="hidden lg:inline-flex"
+                />
+                <LandingAccountChip
+                  luxury={luxury}
+                  layout="icon"
+                  className="sm:hidden"
+                />
+              </>
+            )}
 
             <DownloadAppMenu
               compact
-              className="lg:hidden"
+              className="inline-flex xl:hidden"
               buttonClassName={downloadButtonClass}
             />
             <DownloadAppMenu
-              className="hidden lg:inline-flex"
+              className="hidden xl:inline-flex"
               buttonClassName={cn(
                 downloadButtonClass,
-                "h-9 px-4 text-[12px] xl:h-10 xl:px-5 xl:text-[13px]",
+                "h-9 px-4 text-[12px] 2xl:h-10 2xl:px-5 2xl:text-[13px]",
               )}
             />
 
+            {/* Mobile / small tablet — sidebar menu only below lg */}
             <button
               type="button"
               className={cn(
-                "inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors active:scale-95 sm:h-10 sm:w-10 md:hidden",
+                "inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors active:scale-95 sm:h-10 sm:w-10 lg:hidden",
                 luxury
                   ? "border border-white/25 bg-white/10 text-white hover:border-[#C6E31A]"
                   : "border border-[#D4D8D0] bg-white text-[#1B3A22] hover:border-[#C6E31A] hover:bg-[#C6E31A]/15",

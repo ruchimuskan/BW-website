@@ -13,6 +13,8 @@ type LandingAccountChipProps = {
   className?: string;
   onNavigate?: () => void;
   layout?: "chip" | "card" | "icon";
+  /** Tighter chip for crowded headers (logged-in marketing pages). */
+  compact?: boolean;
 };
 
 export function LandingAccountChip({
@@ -20,6 +22,7 @@ export function LandingAccountChip({
   className,
   onNavigate,
   layout = "chip",
+  compact = false,
 }: LandingAccountChipProps) {
   const { loggedIn } = useIsAuthenticated();
   const user = useAuthUser();
@@ -142,7 +145,10 @@ export function LandingAccountChip({
       href={ROUTES.home}
       onClick={onNavigate}
       className={cn(
-        "group flex min-w-0 max-w-[10.5rem] items-center gap-2 rounded-full border px-2 py-1.5 shadow-sm transition-all duration-300 sm:max-w-[12.5rem] sm:gap-2.5 sm:px-2.5 sm:py-2",
+        "group flex min-w-0 items-center rounded-full border shadow-sm transition-all duration-300",
+        compact
+          ? "max-w-[8.75rem] gap-1.5 px-1.5 py-1 sm:max-w-[9.5rem]"
+          : "max-w-[10.5rem] gap-2 px-2 py-1.5 sm:max-w-[12.5rem] sm:gap-2.5 sm:px-2.5 sm:py-2",
         "hover:shadow-[0_10px_28px_-18px_rgba(184,217,38,0.45)] active:scale-[0.98]",
         luxury
           ? "border-white/20 bg-white/10 hover:border-white/35 hover:bg-white/15"
@@ -155,23 +161,26 @@ export function LandingAccountChip({
       <div className="min-w-0 flex-1 leading-tight">
         <p
           className={cn(
-            "truncate text-xs font-semibold sm:text-sm",
+            "truncate font-semibold",
+            compact ? "text-[11px] sm:text-xs" : "text-xs sm:text-sm",
             luxury ? "text-white" : "text-[#38471B]",
           )}
           suppressHydrationWarning
         >
           {firstName}
         </p>
-        <p
-          className={cn(
-            "hidden truncate text-[10px] font-medium sm:block",
-            luxury ? "text-white/70" : "text-[#4a5228]/75",
-          )}
-        >
-          Dashboard
-        </p>
+        {!compact ? (
+          <p
+            className={cn(
+              "hidden truncate text-[10px] font-medium sm:block",
+              luxury ? "text-white/70" : "text-[#4a5228]/75",
+            )}
+          >
+            Dashboard
+          </p>
+        ) : null}
       </div>
-      {!user.isLoading && user.rating > 0 ? (
+      {!compact && !user.isLoading && user.rating > 0 ? (
         <span
           className={cn(
             "hidden shrink-0 items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold sm:inline-flex",
@@ -182,13 +191,15 @@ export function LandingAccountChip({
           {user.rating}
         </span>
       ) : null}
-      <ChevronRight
-        className={cn(
-          "h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-0.5",
-          luxury ? "text-white/50 group-hover:text-white/80" : "text-primary/40 group-hover:text-primary/70",
-        )}
-        aria-hidden
-      />
+      {!compact ? (
+        <ChevronRight
+          className={cn(
+            "h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-0.5",
+            luxury ? "text-white/50 group-hover:text-white/80" : "text-primary/40 group-hover:text-primary/70",
+          )}
+          aria-hidden
+        />
+      ) : null}
     </Link>
   );
 }
