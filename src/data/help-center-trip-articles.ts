@@ -23,7 +23,7 @@ export const fareReviewArticles: HelpArticle[] = [
     ],
     toggles: [
       "I was not ready",
-      "My Bull Wave Rides arrived too quickly",
+      "My BW Rides arrived too quickly",
       "My captain made me walk to the location",
       "I could not connect or find my captain",
       "My captain made me wait",
@@ -33,7 +33,7 @@ export const fareReviewArticles: HelpArticle[] = [
     id: "intercity-tolls-cash",
     title: "Captain asked to pay cash for tolls on intercity trip",
     kind: "content",
-    paragraphs: ["When you request an Intercity Trip on Bull Wave Rides, please note:"],
+    paragraphs: ["When you request an Intercity Trip on BW Rides, please note:"],
     numberedList: [
       "Toll and State taxes are to be paid by you over and above the fare shown on the app when you requested the trip.",
       "Some vehicles might have FASTag enabled. The toll for such vehicles will be paid automatically through the captain's account. It should still be paid by the rider in cash to the captain.",
@@ -55,7 +55,7 @@ export const fareReviewArticles: HelpArticle[] = [
     title: "I did not use my whole package but was charged the whole amount",
     kind: "content",
     paragraphs: [
-      "Rental trips allow you to rent a Bull Wave Rides for multiple hours, according to the package chosen by you. The pricing for an Hourly Rental trip depends on the package that you choose.",
+      "Rental trips allow you to rent a BW Rides for multiple hours, according to the package chosen by you. The pricing for an Hourly Rental trip depends on the package that you choose.",
       "Please note that if the time or distance covered during the trip is less than the specifications of the selected package, you will be charged for the entire package fare, as selected by you.",
       "If you still feel that you were charged a higher fare for this trip, please do let us know by selecting the link below:",
     ],
@@ -66,8 +66,8 @@ export const fareReviewArticles: HelpArticle[] = [
     title: "I was charged more than my Rental package",
     kind: "content",
     paragraphs: [
-      "Rental trips allow you to rent a Bull Wave Rides for multiple hours, according to the package chosen by you.",
-      "When you request a Rental Trip on Bull Wave Rides, please note:",
+      "Rental trips allow you to rent a BW Rides for multiple hours, according to the package chosen by you.",
+      "When you request a Rental Trip on BW Rides, please note:",
     ],
     numberedList: [
       "Tolls are included in the package fare shown for the trip and should be paid over and above the final fare.",
@@ -92,7 +92,7 @@ export const fareReviewArticles: HelpArticle[] = [
     title: "My captain didn't end the trip at the destination",
     kind: "report-form",
     paragraphs: [
-      "This form is for reporting cases when your captain didn't complete the trip at the intended drop-off point entered by you in the Bull Wave Rides app.",
+      "This form is for reporting cases when your captain didn't complete the trip at the intended drop-off point entered by you in the BW Rides app.",
       "This may happen if the captain continues driving after drop-off, or stays at the location without ending the trip.",
       "If you feel that the fare was higher than expected due to any of these reasons, please let us know by filling the form below:",
     ],
@@ -103,7 +103,7 @@ export const fareReviewArticles: HelpArticle[] = [
     title: "My captain ended my Rental trip before it was complete",
     kind: "content",
     paragraphs: [
-      "Rental trips allow you to rent a Bull Wave Rides for multiple hours, according to the package chosen by you.",
+      "Rental trips allow you to rent a BW Rides for multiple hours, according to the package chosen by you.",
       "If your captain ended the trip before the package time or distance was complete, please contact us via Help & Support with your trip details.",
     ],
   },
@@ -256,7 +256,7 @@ export const lostItemHub: HelpArticle = {
       kind: "trip-form",
       paragraphs: [
         "Select the trip during which you lost your item. We'll help connect you with your captain.",
-        "Bull Wave Rides cannot guarantee item recovery but will assist with contact details.",
+        "BW Rides cannot guarantee item recovery but will assist with contact details.",
       ],
     },
     {
@@ -316,7 +316,7 @@ export const coRiderHub: HelpArticle = {
       title: "Report co-rider behaviour",
       kind: "content",
       paragraphs: [
-        "Bull Wave Rides Pool trips may include other riders along your route.",
+        "BW Rides Pool trips may include other riders along your route.",
         "Report inappropriate behaviour immediately. Our team reviews all co-rider reports within 48 hours.",
       ],
     },
@@ -374,7 +374,7 @@ export const otherPaymentHub: HelpArticle = {
   children: [
     {
       id: "wallet-issues",
-      title: "Bull Wave Rides Wallet issues",
+      title: "BW Rides Wallet issues",
       kind: "content",
       paragraphs: [
         "Check Wallet for transaction history and pending balances.",
@@ -388,7 +388,7 @@ export const otherPaymentHub: HelpArticle = {
       kind: "content",
       paragraphs: [
         "Failed payments are usually reversed within 5–7 business days by your bank.",
-        "Try an alternate payment method or Bull Wave Rides Cash to complete your booking.",
+        "Try an alternate payment method or BW Rides Cash to complete your booking.",
       ],
     },
     {
@@ -439,7 +439,7 @@ export const employeeTransportHub: HelpArticle = {
       title: "Corporate commute programs",
       kind: "content",
       paragraphs: [
-        "Bull Wave Rides for Business offers centralized billing, route management, and employee dashboards.",
+        "BW Rides for Business offers centralized billing, route management, and employee dashboards.",
         "Contact business@wavego.in to set up a corporate account.",
       ],
     },
@@ -461,7 +461,7 @@ export const tripSafetyHub: HelpArticle = {
   children: [
     {
       id: "safety-policy-link",
-      title: "Bull Wave Rides Safety Policy",
+      title: "BW Rides Safety Policy",
       kind: "content",
       paragraphs: ["Read how we keep every trip and emergency request safe."],
       link: { label: "Open Safety Policy", href: ROUTES.safety },
@@ -472,7 +472,7 @@ export const tripSafetyHub: HelpArticle = {
       kind: "content",
       paragraphs: [
         "Use in-app SOS and live tracking during active rides.",
-        "For medical emergencies, call 112 in addition to using Bull Wave Rides ambulance services.",
+        "For medical emergencies, call 112 in addition to using BW Rides ambulance services.",
       ],
       link: { label: "Request ambulance", href: ROUTES.ambulanceBook },
     },

@@ -65,7 +65,7 @@ const alsoAvailable = [
   },
   {
     href: ROUTES.corporateRegister,
-    label: "Bull Wave Rides for Business",
+    label: "BW Rides for Business",
     detail: "Employee travel billed to your company.",
   },
   {
@@ -129,7 +129,7 @@ export function RideView() {
                 </span>
               </h1>
               <p className="mt-4 max-w-2xl text-[14px] font-light leading-relaxed text-white/72 sm:mt-5 sm:text-base">
-                Book Bull Wave Rides online or in the app. See upfront fares, get
+                Book BW Rides online or in the app. See upfront fares, get
                 matched with verified captains, and track your trip live across
                 India.
               </p>

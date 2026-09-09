@@ -34,7 +34,7 @@ export const accountProfileHub: HelpArticle = {
     },
     {
       id: "lost-phone",
-      title: "I lost my phone in Bull Wave Rides",
+      title: "I lost my phone in BW Rides",
       kind: "content",
       paragraphs: [
         "Select the relevant trip in Bookings and report a lost phone.",
@@ -54,7 +54,7 @@ export const accountPaymentsHub: HelpArticle = {
       title: "Payment methods",
       kind: "content",
       paragraphs: [
-        "Add or manage cash, UPI, cards, and Bull Wave Rides Wallet from the Wallet page.",
+        "Add or manage cash, UPI, cards, and BW Rides Wallet from the Wallet page.",
       ],
       link: { label: "Open Wallet", href: ROUTES.wallet },
     },
@@ -72,7 +72,7 @@ export const accountPaymentsHub: HelpArticle = {
       title: "Gift cards and vouchers",
       kind: "content",
       paragraphs: [
-        "Redeem gift cards in Wallet. Enter the code under Bull Wave Rides Cash to add balance.",
+        "Redeem gift cards in Wallet. Enter the code under BW Rides Cash to add balance.",
       ],
     },
     {
@@ -86,10 +86,10 @@ export const accountPaymentsHub: HelpArticle = {
     },
     {
       id: "wavego-cash",
-      title: "Bull Wave Rides Cash",
+      title: "BW Rides Cash",
       kind: "content",
       paragraphs: [
-        "Bull Wave Rides Cash is your in-app wallet balance for rides and deliveries.",
+        "BW Rides Cash is your in-app wallet balance for rides and deliveries.",
         "Top up, view history, and manage refunds from the Wallet tab.",
       ],
       link: { label: "Open Wallet", href: ROUTES.wallet },
@@ -181,7 +181,7 @@ export const safetyEmergencyArticles: HelpArticle[] = [
     ],
     relatedLinks: [
       { label: "Open Safety Policy", href: ROUTES.safety },
-      { label: "Legal safety policy", href: ROUTES.legalSafety },
+      { label: "Safety policy", href: ROUTES.safety },
     ],
   },
 ];
@@ -251,7 +251,7 @@ export const guidesPoliciesHub: HelpArticle = {
 
 export const guidesServicesHub: HelpArticle = {
   id: "wavego-services",
-  title: "Bull Wave Rides services",
+  title: "BW Rides services",
   kind: "hub",
   children: [
     { id: "wavego-delivery", title: "Parcel delivery", kind: "faq", faqCategory: "Parcel" },
@@ -281,12 +281,12 @@ export const guidesSupportHub: HelpArticle = {
 
 export const membershipOverviewHub: HelpArticle = {
   id: "membership-overview",
-  title: "Bull Wave Rides Plus",
+  title: "BW Rides Plus",
   kind: "hub",
   children: [
     {
       id: "wavego-plus",
-      title: "Bull Wave Rides Plus membership",
+      title: "BW Rides Plus membership",
       kind: "content",
       paragraphs: [
         "Plus is for frequent riders who want lower fares and faster help.",
@@ -353,7 +353,7 @@ export const accessibilityResourcesHub: HelpArticle = {
       title: "Using TalkBack and VoiceOver",
       kind: "content",
       paragraphs: [
-        "Bull Wave Rides works with TalkBack on Android and VoiceOver on iPhone.",
+        "BW Rides works with TalkBack on Android and VoiceOver on iPhone.",
       ],
       numberedList: [
         "Turn on your device screen reader before opening the app.",
@@ -367,7 +367,7 @@ export const accessibilityResourcesHub: HelpArticle = {
 
 export const reportMapProblemHelp: HelpArticle = {
   id: "report-map-problem",
-  title: "Report a problem in the Bull Wave Rides map",
+  title: "Report a problem in the BW Rides map",
   kind: "report-form",
   paragraphs: [
     "Use this when the in-app map shows the wrong pickup pin, drop pin, or suggested route.",
@@ -383,7 +383,7 @@ export const reportMapProblemHelp: HelpArticle = {
 
 export const businessLandmarkHelp: HelpArticle = {
   id: "business-landmark",
-  title: "Fix a business or landmark issue on Bull Wave Rides Maps",
+  title: "Fix a business or landmark issue on BW Rides Maps",
   kind: "report-form",
   paragraphs: [
     "Use this when a shop, office, hospital, or landmark is missing, misspelled, or pinned in the wrong place.",
@@ -399,7 +399,7 @@ export const businessLandmarkHelp: HelpArticle = {
 
 export const incorrectAddressHelp: HelpArticle = {
   id: "incorrect-address",
-  title: "Fix an incorrect address on Bull Wave Rides Maps",
+  title: "Fix an incorrect address on BW Rides Maps",
   kind: "report-form",
   paragraphs: [
     "Use this when a saved or searched address does not match the building, plot, or entrance on the ground.",
@@ -415,7 +415,7 @@ export const incorrectAddressHelp: HelpArticle = {
 
 export const roadInfoHelp: HelpArticle = {
   id: "road-info",
-  title: "Fix road information on Bull Wave Rides Maps",
+  title: "Fix road information on BW Rides Maps",
   kind: "report-form",
   paragraphs: [
     "Use this for closed roads, one-way mistakes, missing streets, or routes that send captains the wrong way.",
@@ -450,7 +450,7 @@ export const delhiMetroHelp: HelpArticle = {
   title: "Delhi Metro",
   kind: "content",
   paragraphs: [
-    "Use Bull Wave Rides for first- and last-mile trips to metro stations across Delhi NCR.",
+    "Use BW Rides for first- and last-mile trips to metro stations across Delhi NCR.",
   ],
   numberedList: [
     "Open Home and set your pickup near your current location.",
@@ -488,7 +488,7 @@ export const intercityBusHelp: HelpArticle = {
   title: "Intercity Bus",
   kind: "content",
   paragraphs: [
-    "Reach intercity bus terminals with a reliable last-mile ride from Bull Wave Rides.",
+    "Reach intercity bus terminals with a reliable last-mile ride from BW Rides.",
   ],
   numberedList: [
     "Search your bus terminal as the drop location (for example Kashmere Gate or Anand Vihar ISBT).",

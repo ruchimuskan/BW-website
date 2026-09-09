@@ -30,7 +30,7 @@ const openAreas = [
   {
     title: "Growth & Partnerships",
     description:
-      "Tell the Bull Wave Rides story and grow trusted mobility across India.",
+      "Tell the BW Rides story and grow trusted mobility across India.",
   },
 ] as const;
 
@@ -63,7 +63,7 @@ export function CareersView() {
             </AnimateIn>
             <AnimateIn delay={0.12}>
               <p className="mt-5 max-w-lg text-sm font-light leading-relaxed text-[#4a5228] sm:text-lg">
-                Join Bull Wave Rides and help millions move with confidence —
+                Join BW Rides and help millions move with confidence —
                 through rides, parcels, and emergency care across India.
               </p>
             </AnimateIn>
@@ -91,7 +91,7 @@ export function CareersView() {
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl sm:aspect-[5/4] sm:rounded-[1.4rem] lg:aspect-[4/5]">
               <Image
                 src={landingAssets.slideFleet}
-                alt="Bull Wave Rides team and fleet"
+                alt="BW Rides team and fleet"
                 fill
                 priority
                 quality={85}

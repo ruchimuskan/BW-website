@@ -67,7 +67,7 @@ export function LandingAccountChip({
 
   const displayName = getDisplayName({ name: user.name });
   const firstName =
-    displayName === "Bull Wave Rides User"
+    displayName === "BW Rides User"
       ? "My account"
       : displayName.split(/\s+/).filter(Boolean)[0] || "My account";
 

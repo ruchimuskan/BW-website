@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     description: DEFAULT_SITE_DESCRIPTION,
     path: "/",
     keywords: [
-      "Bull Wave Rides",
+      "BW Rides",
       "book a ride online",
       "bike taxi India",
       "auto rickshaw booking",

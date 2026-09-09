@@ -12,6 +12,7 @@ import { BrandImageOverlay, BRAND_PHOTO_CLASS } from "@/components/brand/BrandIm
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
 import { getProtectedPath } from "@/lib/auth-session";
 import { cn } from "@/lib/utils";
+import { landingShell } from "@/lib/landing-shell";
 
 export const SAFETY_BRAND = "#B8D926";
 export const SAFETY_OLIVE = "#38471B";
@@ -368,7 +369,7 @@ export function SafetySectionBand({
       id={id}
       aria-labelledby={ariaLabelledBy}
       className={cn(
-        "relative scroll-mt-28 px-4 py-12 sm:px-6 sm:py-16 lg:py-20",
+        "relative scroll-mt-28 py-10 sm:py-14 lg:py-16 xl:py-20",
         tinted &&
           "border-t border-primary/10 bg-gradient-to-b from-[#f6f9ec] via-white to-white",
         accent &&
@@ -382,7 +383,7 @@ export function SafetySectionBand({
           className="pointer-events-none absolute inset-0 opacity-[0.35] [background-image:radial-gradient(circle_at_1px_1px,rgba(56,71,27,0.06)_1px,transparent_0)] [background-size:24px_24px]"
         />
       ) : null}
-      <div className="relative">{children}</div>
+      <div className={landingShell("relative")}>{children}</div>
     </section>
   );
 }

@@ -247,7 +247,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             onClick={onClose}
             className="mt-3 block text-center text-[11px] font-medium text-[#4a5228] hover:text-primary"
           >
-            Bull Wave Rides website
+            BW Rides website
           </Link>
         </div>
       </aside>

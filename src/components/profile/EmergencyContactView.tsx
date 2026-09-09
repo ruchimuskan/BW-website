@@ -265,7 +265,7 @@ export function EmergencyContactView() {
                   Contact details
                 </h3>
                 <p className="mt-1 text-sm text-[#5a6330]">
-                  Saved securely on your Bull Wave Rides account.
+                  Saved securely on your BW Rides account.
                 </p>
               </div>
               {isConfigured ? (

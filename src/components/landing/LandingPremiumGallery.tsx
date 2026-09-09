@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  AnimatePresence,
   motion,
   useInView,
   useReducedMotion,
@@ -13,8 +14,8 @@ import {
   useMemo,
   useRef,
   useState,
+  type KeyboardEvent,
 } from "react";
-import { PremiumSectionBackdrop } from "@/components/landing/PremiumSectionBackdrop";
 import { SectionHeading } from "@/components/landing/SectionHeading";
 import { landingPremiumGallery } from "@/constants/services";
 import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
@@ -22,83 +23,59 @@ import { transitions } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const items = landingPremiumGallery;
-const AUTO_MS = 3800;
+const AUTO_MS = 4500;
 const TOTAL = items.length;
-const SNAP_MS = 0.22;
-const STACK_MQ = "(max-width: 1023px)";
+const PANEL_ID = "visual-journey-panel";
 
-function circularOffset(index: number, active: number, length: number) {
-  let offset = index - active;
-  const half = length / 2;
-  if (offset > half) offset -= length;
-  if (offset <= -half) offset += length;
-  return offset;
+function gallerySrcChain(src: string, fallback?: string): string[] {
+  const png = src.replace(/\.webp$/i, ".png");
+  return [...new Set([src, png, fallback].filter(Boolean))] as string[];
 }
 
-function galleryNum(src: string): string | null {
-  return src.split("/").pop()?.match(/track(\d+)/i)?.[1] ?? null;
-}
-
-function gallerySrcChain(src: string): string[] {
-  const num = galleryNum(src);
-  if (!num) {
-    const png = src.replace(/\.webp(\?.*)?$/i, ".png$1");
-    const webp = png.replace(/\.png(\?.*)?$/i, ".webp$1");
-    return [...new Set([src, webp, png].filter(Boolean))];
-  }
-  return [
-    `/images/gallery/track${num}-sm.webp`,
-    `/images/gallery/track${num}.webp`,
-    `/images/gallery/track${num}.png`,
-    `/images/track${num}.png`,
-    `/images/track${num}.webp`,
-  ];
-}
-
-function GallerySlideImage({
+function GalleryStill({
   src,
+  fallback,
   alt,
   className,
   style,
   priority,
+  sizes,
+  width,
+  height,
 }: {
   src: string;
+  fallback?: string;
   alt: string;
   className?: string;
   style?: React.CSSProperties;
   priority?: boolean;
+  sizes: string;
+  width: number;
+  height: number;
 }) {
-  const chain = useMemo(() => gallerySrcChain(src), [src]);
+  const chain = useMemo(() => gallerySrcChain(src, fallback), [src, fallback]);
   const [index, setIndex] = useState(0);
-  const num = galleryNum(src);
 
   useEffect(() => {
     setIndex(0);
   }, [src]);
 
   const current = chain[Math.min(index, chain.length - 1)] ?? src;
-  const srcSet = num
-    ? [
-        `/images/gallery/track${num}-sm.webp 960w`,
-        `/images/gallery/track${num}.webp 1260w`,
-      ].join(", ")
-    : undefined;
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={current}
-      srcSet={index === 0 ? srcSet : undefined}
       alt={alt}
-      width={1260}
-      height={978}
+      width={width}
+      height={height}
       className={className}
       style={style}
       draggable={false}
       loading={priority ? "eager" : "lazy"}
       fetchPriority={priority ? "high" : "auto"}
       decoding="async"
-      sizes="(max-width: 639px) 92vw, (max-width: 1023px) min(520px, 88vw), 480px"
+      sizes={sizes}
       onError={() => {
         setIndex((i) => (i < chain.length - 1 ? i + 1 : i));
       }}
@@ -106,11 +83,12 @@ function GallerySlideImage({
   );
 }
 
-const navBtnClass =
-  "flex shrink-0 items-center justify-center rounded-full border border-primary/20 bg-white text-primary shadow-[0_8px_24px_-8px_rgba(27,58,34,0.28)] transition hover:bg-primary hover:text-white active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40";
+function slideTabId(label: string) {
+  return `visual-journey-tab-${label.toLowerCase()}`;
+}
 
 /**
- * Overlapping cover-flow gallery — responsive stack on mobile/tablet, 3-card flow on desktop.
+ * Contained, semantic visual journey — photograph sized to the page, not the viewport.
  */
 export function LandingPremiumGallery() {
   const reduceMotion = useReducedMotion();
@@ -118,43 +96,20 @@ export function LandingPremiumGallery() {
   const inView = useInView(sectionRef, { once: false, amount: 0.18 });
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [dragging, setDragging] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
   const [hasEntered, setHasEntered] = useState(false);
-  const [stacked, setStacked] = useState(true);
   const [progressKey, setProgressKey] = useState(0);
 
   const activeRef = useRef(active);
   activeRef.current = active;
 
-  const pauseReasons = useRef({
-    hover: false,
-    focus: false,
-    drag: false,
-  });
-
-  const syncPaused = useCallback(() => {
-    const { hover, focus, drag } = pauseReasons.current;
-    setPaused(hover || focus || drag);
-  }, []);
-
   useEffect(() => {
-    for (const slide of items) {
-      const href = gallerySrcChain(slide.src)[0];
-      if (!href) continue;
-      const img = new window.Image();
-      img.decoding = "async";
-      img.src = href;
-    }
-  }, []);
-
-  useEffect(() => {
-    const mq = window.matchMedia(STACK_MQ);
-    const sync = () => setStacked(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
+    const next = items[(active + 1) % TOTAL];
+    if (!next) return;
+    const img = new window.Image();
+    img.decoding = "async";
+    img.src = next.src;
+  }, [active]);
 
   useEffect(() => {
     const onVisibility = () => {
@@ -176,12 +131,20 @@ export function LandingPremiumGallery() {
     [goTo],
   );
 
+  const focusStep = (index: number) => {
+    const next = ((index % TOTAL) + TOTAL) % TOTAL;
+    goTo(next);
+    requestAnimationFrame(() => {
+      document.getElementById(slideTabId(items[next].label))?.focus();
+    });
+  };
+
   useEffect(() => {
     if (inView) setHasEntered(true);
   }, [inView]);
 
   useEffect(() => {
-    if (!hasEntered || !inView || reduceMotion || paused || !pageVisible) {
+    if (!inView || paused || !pageVisible || TOTAL < 2) {
       return;
     }
     setProgressKey((k) => k + 1);
@@ -189,316 +152,238 @@ export function LandingPremiumGallery() {
       setActive((current) => (current + 1) % TOTAL);
     }, AUTO_MS);
     return () => window.clearTimeout(timer);
-  }, [hasEntered, inView, reduceMotion, paused, pageVisible, active]);
+  }, [inView, paused, pageVisible, active]);
+
+  const onTabListKeyDown = (event: KeyboardEvent<HTMLOListElement>) => {
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      event.preventDefault();
+      focusStep(activeRef.current + 1);
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      event.preventDefault();
+      focusStep(activeRef.current - 1);
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      focusStep(0);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      focusStep(TOTAL - 1);
+    }
+  };
 
   const onDragStart = () => {
-    pauseReasons.current.drag = true;
-    setDragging(true);
-    syncPaused();
+    setPaused(true);
   };
 
   const onDragEnd = (_: unknown, info: PanInfo) => {
-    pauseReasons.current.drag = false;
-    setDragging(false);
-    syncPaused();
-    if (info.offset.x < -28 || info.velocity.x < -280) go(1);
-    else if (info.offset.x > 28 || info.velocity.x > 280) go(-1);
+    setPaused(false);
+    if (info.offset.x < -36 || info.velocity.x < -280) go(1);
+    else if (info.offset.x > 36 || info.velocity.x > 280) go(-1);
   };
 
-  const slots = useMemo(() => {
-    return items
-      .map((item, i) => {
-        const offset = circularOffset(i, active, TOTAL);
-        const abs = Math.abs(offset);
-        if (stacked && offset !== 0) return null;
-        if (!stacked && abs > 1) return null;
-        return { item, i, offset };
-      })
-      .filter(
-        (s): s is { item: (typeof items)[number]; i: number; offset: number } =>
-          Boolean(s),
-      );
-  }, [active, stacked]);
-
-  const autoplayActive =
-    hasEntered && inView && !reduceMotion && !paused && pageVisible;
+  const current = items[active] ?? items[0];
+  const autoplayActive = Boolean(inView && !paused && pageVisible && TOTAL > 1);
 
   return (
     <section
       ref={sectionRef}
-      className={cn(
-        "relative overflow-x-clip border-y border-primary/10",
-        LANDING_SECTION_PY,
-      )}
-      aria-label="Visual journey gallery"
+      id="visual-journey"
+      aria-labelledby="visual-journey-title"
+      className={cn("relative overflow-x-clip bg-white", LANDING_SECTION_PY)}
     >
-      <PremiumSectionBackdrop side="center" opacity={0.85} showOrbs={false} />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_100%,rgba(200,232,74,0.11),transparent_62%)]"
-      />
-
       <div className={landingShell("relative z-10")}>
         <motion.div
+          className="flex items-end justify-between gap-6"
           initial={reduceMotion ? false : { y: 14, opacity: 0.96 }}
           animate={hasEntered ? { y: 0, opacity: 1 } : undefined}
           transition={transitions.reveal}
         >
           <SectionHeading
-            align="center"
+            titleId="visual-journey-title"
             eyebrow="Visual journey"
             title="From book to support"
-            description="Book, track, ride, pay, rate, and get help — every step designed for a calm BW Rides trip."
+            description="Book, track, ride, pay, rate, and get help — plus parcel and SOS when you need them."
+            className="max-w-xl"
           />
+          <p
+            aria-hidden
+            className="hidden font-heading text-5xl font-semibold leading-none tracking-tight text-[#111411]/10 sm:block lg:text-6xl"
+          >
+            {String(active + 1).padStart(2, "0")}
+          </p>
         </motion.div>
 
-        <div
-          className="mx-auto mt-6 flex w-full max-w-md items-center gap-1.5 sm:mt-8 sm:max-w-lg sm:gap-2 lg:max-w-xl"
-          role="tablist"
-          aria-label="Gallery slides"
-        >
-          {items.map((slide, i) => {
-            const isActive = i === active;
-            return (
-              <button
-                key={slide.label}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                aria-label={`Show ${slide.label}`}
-                onClick={() => goTo(i)}
-                className={cn(
-                  "relative h-1.5 flex-1 overflow-hidden rounded-full transition-colors sm:h-[7px]",
-                  isActive ? "bg-primary/25" : "bg-primary/15 hover:bg-primary/30",
-                )}
-              >
-                {isActive ? (
-                  <span
-                    key={progressKey}
-                    className={cn(
-                      "absolute inset-y-0 left-0 rounded-full bg-primary",
-                      autoplayActive ? "origin-left" : "w-full",
-                    )}
-                    style={
-                      autoplayActive
-                        ? {
-                            animation: `bw-gallery-progress ${AUTO_MS}ms linear forwards`,
-                          }
-                        : undefined
-                    }
-                  />
-                ) : null}
-              </button>
-            );
-          })}
-        </div>
-
-        <div
-          className="relative mx-auto mt-6 w-full max-w-[min(100%,920px)] sm:mt-8"
-          onMouseEnter={() => {
-            pauseReasons.current.hover = true;
-            syncPaused();
-          }}
-          onMouseLeave={() => {
-            pauseReasons.current.hover = false;
-            syncPaused();
-          }}
-          onFocusCapture={() => {
-            pauseReasons.current.focus = true;
-            syncPaused();
-          }}
-          onBlurCapture={(e) => {
-            if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
-              pauseReasons.current.focus = false;
-              syncPaused();
-            }
-          }}
-        >
-          <div
-            className={cn(
-              stacked
-                ? "mx-auto w-full max-w-[min(100%,520px)]"
-                : "flex items-center gap-2 md:gap-3 lg:gap-4 xl:gap-5",
-            )}
+        <nav className="mt-6 sm:mt-7" aria-label="Journey steps">
+          <ol
+            role="tablist"
+            aria-orientation="horizontal"
+            className="grid grid-cols-4 gap-x-0 gap-y-1 sm:grid-cols-8 sm:gap-0"
+            onKeyDown={onTabListKeyDown}
           >
-            {!stacked ? (
-              <button
-                type="button"
-                aria-label="Previous slide"
-                onClick={() => go(-1)}
-                className={cn(navBtnClass, "h-10 w-10 md:h-11 md:w-11")}
-              >
-                <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
-              </button>
-            ) : null}
+            {items.map((slide, i) => {
+              const isActive = i === active;
+              return (
+                <li key={slide.label} role="presentation" className="min-w-0">
+                  <button
+                    type="button"
+                    role="tab"
+                    id={slideTabId(slide.label)}
+                    aria-selected={isActive}
+                    aria-controls={PANEL_ID}
+                    tabIndex={isActive ? 0 : -1}
+                    onClick={() => goTo(i)}
+                    className={cn(
+                      "relative w-full px-1 py-1.5 text-center text-[10px] font-semibold tracking-[0.12em] uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6E31A]/60 sm:px-2 sm:text-[11px] sm:tracking-[0.16em] md:text-xs",
+                      isActive
+                        ? "text-[#111411]"
+                        : "text-[#8a9184] hover:text-[#111411]",
+                    )}
+                  >
+                    {slide.label}
+                    {isActive ? (
+                      <span
+                        key={progressKey}
+                        className="absolute inset-x-2 bottom-0 h-[2px] bg-[#C6E31A] sm:inset-x-2.5"
+                        style={
+                          autoplayActive
+                            ? {
+                                animation: `bw-gallery-progress ${AUTO_MS}ms linear forwards`,
+                              }
+                            : { width: "calc(100% - 1.25rem)" }
+                        }
+                      />
+                    ) : (
+                      <span
+                        aria-hidden
+                        className="absolute inset-x-2.5 bottom-0 h-px bg-[#e4e8da]"
+                      />
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
 
+        <figure className="mt-5 sm:mt-6">
+          <div className="flex justify-center">
             <motion.div
-              className={cn(
-                "relative min-w-0 touch-pan-y select-none",
-                stacked
-                  ? "w-full overflow-hidden"
-                  : "h-[clamp(240px,30vw,360px)] flex-1 overflow-visible [perspective:1200px]",
-              )}
+              id={PANEL_ID}
+              role="tabpanel"
+              aria-labelledby={slideTabId(current.label)}
+              aria-roledescription="carousel"
+              aria-label={`${current.label}, ${active + 1} of ${TOTAL}`}
+              aria-live="polite"
+              className="relative mx-auto aspect-[3/2] w-full max-w-[45rem] overflow-hidden bg-[#eef2e0]"
               drag={reduceMotion ? false : "x"}
               dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.06}
+              dragElastic={0.05}
               dragTransition={{ bounceStiffness: 600, bounceDamping: 40 }}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
-              aria-roledescription="carousel"
-              aria-label={`${items[active].label}, ${active + 1} of ${TOTAL}`}
-              aria-live="polite"
             >
-              {slots.map(({ item, i, offset }) => {
-                const isFront = offset === 0;
-                const isLeft = offset < 0;
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={current.src}
+                  className="absolute inset-0"
+                  initial={reduceMotion ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={reduceMotion ? undefined : { opacity: 0 }}
+                  transition={{
+                    duration: reduceMotion ? 0.12 : 0.4,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  <GalleryStill
+                    src={current.src}
+                    fallback={current.fallback}
+                    alt={current.alt}
+                    priority
+                    width={1536}
+                    height={1024}
+                    sizes="(max-width: 639px) 94vw, min(720px, 70vw)"
+                    className="absolute inset-0 h-full w-full select-none object-contain object-center"
+                  />
+                </motion.div>
+              </AnimatePresence>
 
-                return (
-                  <motion.button
-                    key={item.label}
-                    type="button"
-                    tabIndex={isFront ? 0 : -1}
-                    aria-label={
-                      isFront
-                        ? `${item.label} — current`
-                        : `Show ${item.label}`
-                    }
-                    aria-current={isFront ? "true" : undefined}
-                    onClick={() => {
-                      if (!isFront) goTo(i);
-                    }}
-                    className={cn(
-                      "overflow-hidden border bg-[#EEF4E8] text-left will-change-transform",
-                      stacked
-                        ? "relative flex w-full flex-col rounded-2xl sm:rounded-[1.15rem]"
-                        : cn(
-                            "absolute top-[4%] bottom-[4%] rounded-[1.15rem] sm:rounded-2xl",
-                            isFront
-                              ? "left-0 right-0 z-40 mx-auto w-[min(72%,480px)]"
-                              : cn(
-                                  "z-20 w-[42%] max-w-[320px]",
-                                  isLeft ? "left-0" : "right-0",
-                                ),
-                          ),
-                      isFront
-                        ? cn(
-                            "border-[#C6E31A]/55 shadow-[0_22px_48px_-18px_rgba(27,58,34,0.38)]",
-                            dragging ? "cursor-grabbing" : "cursor-grab",
-                          )
-                        : "cursor-pointer border-[#D4D8D0]/85 shadow-[0_14px_32px_-16px_rgba(27,58,34,0.3)]",
-                      dragging && !isFront && "pointer-events-none",
-                    )}
-                    style={
-                      stacked
-                        ? undefined
-                        : {
-                            transformOrigin: isFront
-                              ? "center center"
-                              : isLeft
-                                ? "right center"
-                                : "left center",
-                          }
-                    }
-                    initial={false}
-                    animate={{
-                      opacity: isFront ? 1 : 0.68,
-                      scale: stacked ? 1 : isFront ? 1 : 0.84,
-                      y: stacked ? 0 : isFront ? 0 : 6,
-                    }}
-                    transition={
-                      reduceMotion
-                        ? { duration: 0.12 }
-                        : {
-                            type: "tween",
-                            duration: SNAP_MS,
-                            ease: [0.25, 1, 0.5, 1],
-                          }
-                    }
-                  >
-                    <div
-                      className={cn(
-                        "relative w-full overflow-hidden bg-[#E8ECE4]",
-                        stacked
-                          ? "aspect-[1260/978]"
-                          : "absolute inset-0",
-                      )}
-                    >
-                      <GallerySlideImage
-                        src={item.src}
-                        alt={item.alt}
-                        priority={isFront || Math.abs(offset) <= 1}
-                        className={cn(
-                          "absolute inset-0 h-full w-full select-none",
-                          item.fit === "cover" ? "object-cover" : "object-contain",
-                        )}
-                        style={{ objectPosition: item.position }}
-                      />
-                      {!stacked && !isFront ? (
-                        <div
-                          aria-hidden
-                          className="pointer-events-none absolute inset-0 bg-white/10 backdrop-blur-[0.5px]"
-                        />
-                      ) : null}
-                    </div>
-                    {isFront ? (
-                      <div
-                        className={cn(
-                          "border-t border-[#C6E31A]/35 bg-[#E7F0D8] px-3.5 py-2.5 sm:px-4 sm:py-3",
-                          !stacked && "absolute inset-x-0 bottom-0",
-                        )}
-                      >
-                        <p className="font-heading text-[11px] font-semibold tracking-[0.14em] uppercase text-[#1B3A22] sm:text-[13px]">
-                          {String(active + 1).padStart(2, "0")} /{" "}
-                          {String(TOTAL).padStart(2, "0")}
-                          <span className="ml-2 tracking-[0.18em] text-[#2D4A32]">
-                            {item.label}
-                          </span>
-                        </p>
-                      </div>
-                    ) : null}
-                  </motion.button>
-                );
-              })}
-            </motion.div>
-
-            {!stacked ? (
               <button
                 type="button"
-                aria-label="Next slide"
-                onClick={() => go(1)}
-                className={cn(navBtnClass, "h-10 w-10 md:h-11 md:w-11")}
-              >
-                <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
-              </button>
-            ) : null}
-          </div>
-
-          {stacked ? (
-            <div className="mt-4 flex items-center justify-between sm:mt-5">
-              <button
-                type="button"
-                aria-label="Previous slide"
+                aria-label="Previous still"
+                onPointerDown={(event) => event.stopPropagation()}
                 onClick={() => go(-1)}
-                className={cn(navBtnClass, "h-10 w-10 sm:h-11 sm:w-11")}
+                className="absolute top-1/2 left-2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/92 text-[#111411] transition hover:bg-[#C6E31A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6E31A] sm:left-3 sm:h-10 sm:w-10"
               >
                 <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
-
-              <p className="text-[11px] font-medium tracking-[0.12em] uppercase text-[#5A6158] sm:text-xs">
-                Swipe or tap arrows
-              </p>
-
               <button
                 type="button"
-                aria-label="Next slide"
+                aria-label="Next still"
+                onPointerDown={(event) => event.stopPropagation()}
                 onClick={() => go(1)}
-                className={cn(navBtnClass, "h-10 w-10 sm:h-11 sm:w-11")}
+                className="absolute top-1/2 right-2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-[#C6E31A] text-[#111411] transition hover:bg-[#d4f04a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111411]/30 sm:right-3 sm:h-10 sm:w-10"
               >
                 <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
-            </div>
-          ) : null}
-        </div>
+            </motion.div>
+          </div>
+
+          <figcaption className="mt-3 flex flex-col gap-1 sm:mt-3.5 sm:flex-row sm:items-baseline sm:gap-3">
+            <span className="font-heading text-[11px] font-semibold tracking-[0.2em] text-[#5A6158] uppercase sm:text-xs">
+              {String(active + 1).padStart(2, "0")} / {String(TOTAL).padStart(2, "0")}
+              <span className="ml-2 text-[#111411]">{current.label}</span>
+            </span>
+            <span className="hidden h-3 w-px bg-[#d5dcc0] sm:block" aria-hidden />
+            <span className="font-heading text-[15px] font-semibold leading-snug tracking-tight text-[#111411] sm:text-lg">
+              {current.line}
+            </span>
+          </figcaption>
+        </figure>
+
+        <nav className="mt-4 sm:mt-5" aria-label="Journey stills">
+          <ol className="grid grid-cols-4 gap-2 sm:grid-cols-8 sm:gap-2.5">
+            {items.map((slide, i) => {
+              const isActive = i === active;
+              return (
+                <li key={slide.label}>
+                  <button
+                    type="button"
+                    aria-label={`Show ${slide.label}`}
+                    aria-current={isActive ? "true" : undefined}
+                    onClick={() => goTo(i)}
+                    className="group flex w-full flex-col gap-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6E31A]/60"
+                  >
+                    <span
+                      className={cn(
+                        "relative block aspect-[3/2] w-full overflow-hidden bg-[#eef2e0]",
+                        isActive
+                          ? "ring-2 ring-[#C6E31A] ring-offset-2 ring-offset-white"
+                          : "opacity-55 transition-opacity group-hover:opacity-90",
+                      )}
+                    >
+                      <GalleryStill
+                        src={slide.src}
+                        fallback={slide.fallback}
+                        alt=""
+                        width={240}
+                        height={160}
+                        sizes="(max-width: 639px) 22vw, 12vw"
+                        className="h-full w-full object-contain object-center"
+                      />
+                    </span>
+                    <span
+                      className={cn(
+                        "text-[9px] font-semibold tracking-[0.14em] uppercase sm:text-[10px]",
+                        isActive ? "text-[#111411]" : "text-[#8a9184]",
+                      )}
+                    >
+                      {slide.label}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
       </div>
     </section>
   );

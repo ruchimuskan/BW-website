@@ -100,7 +100,7 @@ export function EmailSettingsView() {
           </h2>
           <p className="relative mt-2 text-sm leading-relaxed text-white/85">
             Use this email for messages, sign-in support, and recovering your
-            Bull Wave Rides account.
+            BW Rides account.
           </p>
 
           <ul className="relative mt-5 space-y-3">

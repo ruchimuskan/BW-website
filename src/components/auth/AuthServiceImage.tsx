@@ -11,6 +11,8 @@ interface AuthServiceImageProps {
   variant?: "default" | "ambulance";
   className?: string;
   size?: "sm" | "md";
+  /** Glass tiles on dark auth panels. */
+  tone?: "light" | "dark";
 }
 
 export function AuthServiceImage({
@@ -19,11 +21,13 @@ export function AuthServiceImage({
   variant = "default",
   className,
   size = "md",
+  tone = "light",
 }: AuthServiceImageProps) {
   const isAmbulance = variant === "ambulance";
   const blend = brandPhotoBlend(src);
   const cover = brandPhotoFit(src) === "cover" && blend === "none";
   const compact = size === "sm";
+  const dark = tone === "dark";
 
   return (
     <div className={cn("relative shrink-0", className)}>
@@ -31,7 +35,13 @@ export function AuthServiceImage({
         className={cn(
           "absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full blur-md",
           compact ? "h-1.5 w-[70%]" : "h-2.5 w-[72%]",
-          isAmbulance ? "bg-destructive/20" : "bg-primary/15",
+          isAmbulance
+            ? dark
+              ? "bg-red-400/25"
+              : "bg-destructive/20"
+            : dark
+              ? "bg-[#C6E31A]/20"
+              : "bg-primary/15",
         )}
         aria-hidden
       />
@@ -41,7 +51,13 @@ export function AuthServiceImage({
         className={cn(
           "relative flex items-center justify-center overflow-hidden transition-transform",
           compact ? "h-10 w-10 rounded-xl" : "h-12 w-12 rounded-2xl sm:h-14 sm:w-14",
-          isAmbulance ? "bg-destructive/10" : "bg-secondary/30",
+          isAmbulance
+            ? dark
+              ? "bg-red-400/15"
+              : "bg-destructive/10"
+            : dark
+              ? "bg-white/10"
+              : "bg-secondary/30",
         )}
       >
         <ServiceImage

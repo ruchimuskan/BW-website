@@ -16,6 +16,7 @@ import {
 import { captainSafetyPage } from "@/constants/safety-content";
 import { APP_DOWNLOAD } from "@/constants/app-download";
 import { ROUTES } from "@/constants/routes";
+import { landingShell } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 
 export function CaptainSafetyView() {
@@ -25,12 +26,12 @@ export function CaptainSafetyView() {
   return (
     <>
       <section
-        className="relative overflow-hidden px-4 py-14 sm:px-6 sm:py-20 lg:py-24"
+        className="relative overflow-hidden py-10 sm:py-14 lg:py-16 xl:py-20"
         aria-labelledby="captain-safety-heading"
       >
         <SafetyAtmosphere />
 
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className={landingShell("relative grid items-center gap-10 lg:grid-cols-2 lg:gap-16")}>
           <div>
             <AnimateIn>
               <SafetyEyebrow>Captains</SafetyEyebrow>
@@ -93,7 +94,7 @@ export function CaptainSafetyView() {
         id="captain-safety-measures"
         aria-labelledby="captain-measures-heading"
       >
-        <div className="mx-auto max-w-6xl">
+        <div className="w-full min-w-0">
           <div className="overflow-hidden rounded-2xl border border-primary/15 bg-white shadow-[0_28px_64px_-36px_rgba(184,217,38,0.45)] sm:rounded-3xl">
             <div className="grid sm:grid-cols-2">
               <AnimateIn className="relative flex flex-col justify-center border-b border-primary/10 bg-[#38471B] p-6 text-white sm:border-r sm:p-8 lg:p-10">
@@ -132,7 +133,7 @@ export function CaptainSafetyView() {
       </SafetySectionBand>
 
       <SafetySectionBand aria-labelledby="captain-cta-heading">
-        <AnimateIn className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-primary/12 bg-white px-6 py-10 shadow-[0_24px_56px_-32px_rgba(184,217,38,0.4)] sm:rounded-3xl sm:px-10 sm:py-12">
+        <AnimateIn className="relative w-full min-w-0 overflow-hidden rounded-2xl border border-primary/12 bg-white px-6 py-10 shadow-[0_24px_56px_-32px_rgba(184,217,38,0.4)] sm:rounded-3xl sm:px-10 sm:py-12">
           <div
             aria-hidden
             className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-secondary/15 blur-3xl"

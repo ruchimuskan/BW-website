@@ -7,7 +7,7 @@ import { ArrowLeft, Clock } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { MarketingPageShell } from "@/components/landing/MarketingPageShell";
 import { LandingHeader } from "@/components/landing/LandingHeader";
-import { BrandImageOverlay, BRAND_PHOTO_CLASS } from "@/components/brand/BrandImageOverlay";
+import { BrandImageOverlay } from "@/components/brand/BrandImageOverlay";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
 import { getBlogPost, blogPosts } from "@/data/blogs";
 import { ROUTES } from "@/constants/routes";
@@ -69,17 +69,18 @@ export function BlogArticleView({ slug }: BlogArticleViewProps) {
             </span>
           </div>
 
-          <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-xl border border-[#e8eed8] bg-[#f4f6ee] shadow-[0_20px_48px_-28px_rgba(40,54,20,0.28)] sm:rounded-2xl">
+          <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-xl border border-[#e8edd8] bg-[#eef2e0] shadow-[0_20px_48px_-28px_rgba(40,54,20,0.28)] sm:rounded-2xl">
             <Image
               src={post.image}
               alt={post.imageAlt}
               fill
               quality={90}
-              className={BRAND_PHOTO_CLASS}
+              className="object-cover"
+              style={{ objectPosition: post.imagePosition ?? "center center" }}
               sizes="(max-width: 768px) 100vw, 768px"
               priority
             />
-            <BrandImageOverlay variant="premium" />
+            <BrandImageOverlay variant="subtle" />
           </div>
 
           <div className="mt-10 space-y-5 text-sm font-light leading-relaxed text-[#4a5228] sm:text-base lg:text-lg">

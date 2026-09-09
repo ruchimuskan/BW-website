@@ -49,6 +49,7 @@ import {
   isValidLatLng,
 } from "@/lib/ride-booking";
 import { formatScheduleLabel } from "@/lib/schedule-api";
+import { WhenToGoDialog } from "@/components/home/WhenToGoDialog";
 import { saveLastBookedRide } from "@/lib/last-booked-ride";
 import {
   categoryVehicleId,
@@ -71,7 +72,8 @@ interface BookableOption {
   vehicleId: string;
   name: string;
   capacity: number;
-  etaAwayMin: number;
+  /** Trip duration from directions / fare estimate — not a fabricated captain ETA. */
+  durationMin: number;
   distanceKm: number;
   price: number;
   originalPrice?: number | null;
@@ -126,20 +128,6 @@ function findQuote(
   );
 }
 
-function toDatetimeLocalValue(iso: string) {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function datetimeLocalToIso(value: string) {
-  if (!value) return "";
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return "";
-  return parsed.toISOString();
-}
-
 export function RideBookingView() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -170,6 +158,8 @@ export function RideBookingView() {
   const [offersOpen, setOffersOpen] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const [scheduledAt, setScheduledAt] = useState(scheduledParam);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [confirmingSchedule, setConfirmingSchedule] = useState(false);
   const [notes, setNotes] = useState(notesParam);
   const [reloadKey, setReloadKey] = useState(0);
   const [isBooking, setIsBooking] = useState(false);
@@ -286,6 +276,7 @@ export function RideBookingView() {
           duration_min: directions.duration_min,
           service_group: tab === "ambulance" ? "ambulance" : "ride",
           stops: tripCoords.stops,
+          ...(scheduledAt ? { scheduled_at: scheduledAt } : {}),
         });
 
         if (cancelled) return;
@@ -313,7 +304,6 @@ export function RideBookingView() {
         const pushOption = (
           category: VehicleCategory,
           quote: { estimated_fare: number; original_fare?: number | null },
-          index: number,
         ) => {
           if (seen.has(category.id)) return;
           seen.add(category.id);
@@ -322,7 +312,7 @@ export function RideBookingView() {
             vehicleId: String(categoryVehicleId(category)),
             name: displayVehicleName(category.name, category.slug),
             capacity: vehicleCapacityForCategory(category),
-            etaAwayMin: Math.max(2, 3 + index),
+            durationMin: Math.max(1, Math.round(durationMin || 1)),
             distanceKm,
             price: quote.estimated_fare,
             originalPrice: quote.original_fare ?? null,
@@ -330,10 +320,10 @@ export function RideBookingView() {
           });
         };
 
-        for (const [index, category] of categories.entries()) {
+        for (const category of categories) {
           const quote = findQuote(fareResult.quotes, category);
           if (!quote) continue;
-          pushOption(category, quote, index);
+          pushOption(category, quote);
         }
 
         if (apiOptions.length === 0) {
@@ -344,7 +334,6 @@ export function RideBookingView() {
           for (const quote of Object.values(fareResult.quotes)) {
             uniqueQuotes.set(quote.vehicle_type_id.toLowerCase(), quote);
           }
-          let index = 0;
           for (const quote of uniqueQuotes.values()) {
             const match =
               allCategories.find(
@@ -380,8 +369,7 @@ export function RideBookingView() {
             if (tab !== "ambulance" && tab !== "parcel" && !isListedRideCategory(category)) {
               continue;
             }
-            pushOption(category, quote, index);
-            index += 1;
+            pushOption(category, quote);
           }
         }
 
@@ -425,6 +413,7 @@ export function RideBookingView() {
     tab,
     reloadKey,
     stopsSignature,
+    scheduledAt,
   ]);
 
   const rideOptions = useMemo(() => {
@@ -711,10 +700,24 @@ export function RideBookingView() {
               </button>
 
               <div className={cn("mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm font-semibold", theme.ink)}>
-                <span className="inline-flex items-center gap-1.5">
-                  <Clock3 className="h-4 w-4 shrink-0" strokeWidth={1.85} />
-                  {scheduleLabel || "Leave now"}
-                </span>
+                {tab !== "ambulance" ? (
+                  <button
+                    type="button"
+                    onClick={() => setScheduleOpen(true)}
+                    className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-[#e8eed8] bg-[#f8faf2] px-2.5 py-1.5 text-left transition hover:border-[#C6E31A]/55 hover:bg-white"
+                  >
+                    <Clock3 className="h-4 w-4 shrink-0 text-[#5a7a12]" strokeWidth={1.85} />
+                    <span className="min-w-0 truncate">
+                      {scheduledAt ? scheduleLabel : "When to go"}
+                    </span>
+                    <ChevronRight className="h-3.5 w-3.5 shrink-0 text-[#5a7a12]/60" />
+                  </button>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5">
+                    <Clock3 className="h-4 w-4 shrink-0" strokeWidth={1.85} />
+                    Leave now
+                  </span>
+                )}
                 {routeMeta.distanceKm != null ? (
                   <span className={theme.ink}>
                     {routeMeta.distanceKm.toFixed(1)} km
@@ -836,7 +839,7 @@ export function RideBookingView() {
                           </div>
                           <p className={cn("mt-0.5 text-[12px] font-medium sm:text-[13px]", theme.muted)}>
                             {option.distanceKm.toFixed(1)} km ·{" "}
-                            {option.etaAwayMin} min away
+                            {option.durationMin} min trip
                           </p>
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
@@ -910,20 +913,25 @@ export function RideBookingView() {
             </button>
           </div>
 
-          {scheduledAt ? (
-            <label className="mb-2 flex min-w-0 items-center justify-between gap-2 rounded-xl border border-primary/10 bg-[#ffffff] px-3 py-2 text-xs text-[#4a5228]">
-              <span className="shrink-0 font-semibold text-[#B8D926]">
-                Scheduled
+          {tab !== "ambulance" ? (
+            <button
+              type="button"
+              onClick={() => setScheduleOpen(true)}
+              className="mb-2 flex min-h-11 w-full min-w-0 items-center justify-between gap-2 rounded-xl border border-[#e8eed8] bg-[#f8faf2] px-3 py-2.5 text-left transition hover:border-[#C6E31A]/55 hover:bg-white"
+            >
+              <span className="inline-flex min-w-0 items-center gap-2">
+                <Clock3 className="h-4 w-4 shrink-0 text-[#5a7a12]" strokeWidth={1.85} />
+                <span className="min-w-0">
+                  <span className="block text-[10px] font-semibold tracking-[0.14em] uppercase text-[#5a7a12]">
+                    {scheduledAt ? "Reschedule" : "When to go"}
+                  </span>
+                  <span className="block truncate text-sm font-semibold text-[#111411]">
+                    {scheduledAt ? scheduleLabel || "Scheduled" : "Leave now"}
+                  </span>
+                </span>
               </span>
-              <input
-                type="datetime-local"
-                value={toDatetimeLocalValue(scheduledAt)}
-                onChange={(e) => {
-                  setScheduledAt(datetimeLocalToIso(e.target.value));
-                }}
-                className="min-w-0 max-w-[13.5rem] rounded-lg border border-primary/15 bg-white px-2 py-1 text-xs text-[#38471B] outline-none focus:border-primary/40"
-              />
-            </label>
+              <ChevronRight className="h-4 w-4 shrink-0 text-[#5a7a12]/55" />
+            </button>
           ) : null}
 
           <Button
@@ -977,6 +985,28 @@ export function RideBookingView() {
         onEnable={() => handleWomenSafetyChoice(true)}
         onSkip={() => handleWomenSafetyChoice(false)}
       />
+
+      {tab !== "ambulance" ? (
+        <WhenToGoDialog
+          open={scheduleOpen}
+          initialIso={scheduledAt || null}
+          confirming={confirmingSchedule}
+          onCancel={() => setScheduleOpen(false)}
+          onConfirm={(iso) => {
+            setConfirmingSchedule(true);
+            try {
+              setScheduledAt(iso);
+              setScheduleOpen(false);
+            } finally {
+              setConfirmingSchedule(false);
+            }
+          }}
+          onLeaveNow={() => {
+            setScheduledAt("");
+            setScheduleOpen(false);
+          }}
+        />
+      ) : null}
 
       {blockDialog}
 

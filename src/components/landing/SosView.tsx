@@ -87,7 +87,7 @@ export function SosView() {
             </AnimateIn>
             <AnimateIn delay={0.12}>
               <p className="mt-5 max-w-lg text-sm font-light leading-relaxed text-[#4a5228] sm:text-lg">
-                When every second counts, Bull Wave Rides helps you request verified
+                When every second counts, BW Rides helps you request verified
                 medical transport, track live ETA, and keep your family informed.
               </p>
             </AnimateIn>
@@ -136,7 +136,7 @@ export function SosView() {
             <div className="relative aspect-[5/4] overflow-hidden rounded-xl border border-primary/15 bg-[#f7fbe8] shadow-[0_24px_48px_-28px_rgba(184,217,38,0.45)] sm:rounded-2xl">
               <Image
                 src={landingAssets.slideAmbulance}
-                alt="Bull Wave Rides emergency ambulance"
+                alt="BW Rides emergency ambulance"
                 fill
                 priority
                 quality={90}
@@ -228,7 +228,7 @@ export function SosView() {
             Every second matters
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm font-light text-white/75">
-            Request medical transport now, or learn how Bull Wave Rides protects every trip.
+            Request medical transport now, or learn how BW Rides protects every trip.
           </p>
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
             <Link

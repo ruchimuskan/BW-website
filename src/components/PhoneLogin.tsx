@@ -2,14 +2,21 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowLeft, Loader2, ShieldCheck, Smartphone } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { BRAND_CTA_LIME } from "@/lib/brand-cta";
-import { cn } from "@/lib/utils";
-import { OTPInput } from "@/components/OTPInput";
-import { PhoneInput, toE164Phone, isValidPhoneNumber } from "@/components/PhoneInput";
+import { AuthFormCard } from "@/components/auth/AuthFormCard";
 import { LoginSceneDecor } from "@/components/auth/LoginSceneDecor";
+import { LoginServicesPanel } from "@/components/auth/LoginServicesPanel";
+import { OTPInput } from "@/components/OTPInput";
+import {
+  PhoneInput,
+  toE164Phone,
+  isValidPhoneNumber,
+} from "@/components/PhoneInput";
 import { ROUTES } from "@/constants/routes";
+import { SITE_BRAND } from "@/constants/seo";
 import {
   needsProfileSetup,
   resolvePostAuthDestination,
@@ -18,6 +25,9 @@ import {
 } from "@/lib/auth-session";
 import { sendLoginOtp, verifyOtp } from "@/lib/auth-api";
 import { defaultCountry, type Country } from "@/lib/countries";
+import { BRAND_CTA_LIME } from "@/lib/brand-cta";
+import { transitions } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 type Step = "phone" | "verify";
 
@@ -50,8 +60,29 @@ export function PhoneLogin() {
     return () => window.clearTimeout(timer);
   }, [resendSeconds]);
 
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const apply = () => {
+      document.body.style.overflow = mq.matches ? "hidden" : "";
+    };
+    apply();
+    mq.addEventListener("change", apply);
+    return () => {
+      mq.removeEventListener("change", apply);
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   const finishLogin = useCallback(
-    (phoneDisplay: string, tokens: { accessToken: string; refreshToken?: string; name?: string; email?: string }) => {
+    (
+      phoneDisplay: string,
+      tokens: {
+        accessToken: string;
+        refreshToken?: string;
+        name?: string;
+        email?: string;
+      },
+    ) => {
       const profileComplete = !needsProfileSetup(tokens.name);
       setAuthSession({
         phone: phoneDisplay,
@@ -70,7 +101,7 @@ export function PhoneLogin() {
 
       router.push(resolvePostAuthDestination());
     },
-    [router]
+    [router],
   );
 
   const handleSendOtp = async () => {
@@ -98,7 +129,9 @@ export function PhoneLogin() {
       setSuccessMessage("OTP sent to your mobile number.");
     } catch (error) {
       setPhoneError(
-        error instanceof Error ? error.message : "Unable to send OTP. Please try again.",
+        error instanceof Error
+          ? error.message
+          : "Unable to send OTP. Please try again.",
       );
     } finally {
       setIsSending(false);
@@ -128,7 +161,9 @@ export function PhoneLogin() {
       });
     } catch (error) {
       setOtpError(
-        error instanceof Error ? error.message : "Invalid OTP. Please try again.",
+        error instanceof Error
+          ? error.message
+          : "Invalid OTP. Please try again.",
       );
       verifyLock.current = false;
     } finally {
@@ -143,125 +178,174 @@ export function PhoneLogin() {
     await handleSendOtp();
   };
 
+  const passwordHref = (() => {
+    const next = searchParams.get("next") ?? searchParams.get("redirect");
+    const params = new URLSearchParams({ mode: "password" });
+    if (next) params.set("next", next);
+    return `${ROUTES.login}?${params.toString()}`;
+  })();
+
   return (
-    <div className="relative flex min-h-[100dvh] min-w-0 overflow-x-clip overflow-y-auto bg-background font-sans">
+    <div className="relative min-h-[100dvh] overflow-x-hidden overflow-y-auto font-sans lg:h-[100dvh] lg:overflow-hidden">
       <LoginSceneDecor />
 
-      <div className="relative z-10 flex w-full flex-col items-center justify-center px-4 py-10 sm:px-6">
-        <div className="w-full max-w-md rounded-[28px] border border-border bg-card/95 p-6 shadow-xl backdrop-blur-sm sm:p-8">
-          <header className="mb-6">
-            {step === "verify" && (
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-stretch justify-center gap-4 px-3 py-4 sm:px-5 sm:py-5 lg:flex-row lg:items-stretch lg:gap-7 lg:px-8 lg:py-6 xl:gap-10">
+        <aside className="hidden min-h-0 w-full flex-1 lg:flex lg:max-w-[52%]">
+          <LoginServicesPanel compact className="w-full" />
+        </aside>
+
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={transitions.reveal}
+          className="mx-auto flex w-full max-w-[420px] flex-col justify-center lg:mx-0 lg:max-w-[430px] lg:flex-none xl:max-w-[450px]"
+        >
+          <AuthFormCard
+            title={step === "phone" ? "Login with mobile" : "Enter OTP"}
+            subtitle={
+              step === "phone"
+                ? `We'll send a one-time code from ${SITE_BRAND} to your number.`
+                : `Code sent to ${e164Phone}`
+            }
+            hideBrandOnDesktop
+            eyebrow={
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#e4e8da] bg-[#f5f7f0] px-2.5 py-1 text-[11px] font-semibold tracking-wide text-[#5a7a12]">
+                <ShieldCheck className="h-3.5 w-3.5 text-[#C6E31A]" strokeWidth={2.25} />
+                Secure OTP verification
+              </span>
+            }
+            footer={
+              <p className="text-center text-xs text-[#5A6158] sm:text-sm">
+                Prefer password?{" "}
+                <Link
+                  href={passwordHref}
+                  className="font-semibold text-[#5a7a12] underline-offset-2 hover:text-[#111411] hover:underline"
+                >
+                  Sign in with password
+                </Link>
+              </p>
+            }
+          >
+            {step === "verify" ? (
               <button
                 type="button"
                 onClick={() => {
                   setStep("phone");
                   setOtp("");
                   setOtpError("");
+                  setSuccessMessage("");
                 }}
-                className="mb-4 flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+                className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#5A6158] transition hover:text-[#111411]"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Change number
               </button>
-            )}
-            <h1 className="font-heading text-2xl font-bold text-foreground">
-              {step === "phone" ? "Login with mobile" : "Enter OTP"}
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {step === "phone"
-                ? "We'll send an OTP from Bull Wave Rides to your mobile number."
-                : `Code sent to ${e164Phone}`}
-            </p>
-          </header>
+            ) : null}
 
-          {step === "phone" ? (
-            <div className="space-y-5">
-              <PhoneInput
-                country={country}
-                phone={phone}
-                onCountryChange={setCountry}
-                onPhoneChange={(value) => {
-                  setPhone(value);
-                  if (phoneError) setPhoneError("");
-                }}
-                error={phoneError}
-                disabled={isSending}
-              />
+            {step === "phone" ? (
+              <div className="flex flex-col gap-4 sm:gap-5">
+                <PhoneInput
+                  country={country}
+                  phone={phone}
+                  onCountryChange={setCountry}
+                  onPhoneChange={(value) => {
+                    setPhone(value);
+                    if (phoneError) setPhoneError("");
+                  }}
+                  error={phoneError}
+                  disabled={isSending}
+                />
 
-              {successMessage ? (
-                <p className="text-sm font-medium text-success">{successMessage}</p>
-              ) : null}
+                {successMessage ? (
+                  <p className="text-sm font-medium text-[#3d6b2e]">
+                    {successMessage}
+                  </p>
+                ) : null}
 
-              <Button
-                type="button"
-                className={cn("h-12 w-full rounded-[16px] text-base", BRAND_CTA_LIME)}
-                disabled={isSending}
-                onClick={() => void handleSendOtp()}
-              >
-                {isSending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending OTP…
-                  </>
-                ) : (
-                  "Send OTP"
-                )}
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-5">
-              <OTPInput value={otp} onChange={setOtp} error={!!otpError} length={6} />
-
-              {otpError ? <p className="text-sm text-destructive">{otpError}</p> : null}
-
-              <Button
-                type="button"
-                className={cn("h-12 w-full rounded-[16px] text-base", BRAND_CTA_LIME)}
-                disabled={isVerifying || otp.length < 4}
-                onClick={() => void handleVerifyOtp()}
-              >
-                {isVerifying ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Verifying…
-                  </>
-                ) : (
-                  "Verify OTP"
-                )}
-              </Button>
-
-              <div className="text-center text-sm text-muted-foreground">
-                {resendSeconds > 0 ? (
-                  <span>Resend OTP in {resendSeconds}s</span>
-                ) : (
-                  <button
+                <div className="space-y-3 pt-1">
+                  <Button
                     type="button"
-                    onClick={() => void handleResend()}
-                    className="font-semibold text-primary hover:underline"
+                    className={cn(
+                      "h-11 w-full rounded-xl text-sm font-bold tracking-wide sm:h-12 sm:rounded-[14px] sm:text-[15px]",
+                      BRAND_CTA_LIME,
+                    )}
+                    disabled={isSending}
+                    onClick={() => void handleSendOtp()}
                   >
-                    Resend OTP
-                  </button>
-                )}
+                    {isSending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending OTP…
+                      </>
+                    ) : (
+                      <>
+                        <Smartphone className="mr-2 h-4 w-4" />
+                        Send OTP
+                      </>
+                    )}
+                  </Button>
+                  <p className="text-center text-[11px] leading-relaxed text-[#8a9184]">
+                    By continuing you agree to receive a one-time SMS from{" "}
+                    {SITE_BRAND}.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="flex flex-col gap-4 sm:gap-5">
+                <OTPInput
+                  value={otp}
+                  onChange={setOtp}
+                  error={!!otpError}
+                  length={6}
+                />
 
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Prefer password?{" "}
-            <button
-              type="button"
-              onClick={() => {
-                const next = searchParams.get("next") ?? searchParams.get("redirect");
-                const params = new URLSearchParams({ mode: "password" });
-                if (next) params.set("next", next);
-                router.push(`${ROUTES.login}?${params.toString()}`);
-              }}
-              className="font-semibold text-primary hover:underline"
-            >
-              Sign in with password
-            </button>
-          </p>
-        </div>
+                {otpError ? (
+                  <p className="text-sm text-destructive">{otpError}</p>
+                ) : null}
+
+                <div className="space-y-3 pt-1">
+                  <Button
+                    type="button"
+                    className={cn(
+                      "h-11 w-full rounded-xl text-sm font-bold tracking-wide sm:h-12 sm:rounded-[14px] sm:text-[15px]",
+                      BRAND_CTA_LIME,
+                    )}
+                    disabled={isVerifying || otp.length < 4}
+                    onClick={() => void handleVerifyOtp()}
+                  >
+                    {isVerifying ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Verifying…
+                      </>
+                    ) : (
+                      "Verify OTP"
+                    )}
+                  </Button>
+
+                  <div className="text-center text-sm text-[#5A6158]">
+                    {resendSeconds > 0 ? (
+                      <span>
+                        Resend OTP in{" "}
+                        <span className="font-semibold text-[#111411]">
+                          {resendSeconds}s
+                        </span>
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => void handleResend()}
+                        className="font-semibold text-[#5a7a12] hover:text-[#111411] hover:underline"
+                      >
+                        Resend OTP
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </AuthFormCard>
+        </motion.div>
       </div>
     </div>
   );

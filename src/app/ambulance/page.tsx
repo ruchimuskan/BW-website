@@ -69,7 +69,7 @@ export default function AmbulanceLandingPage() {
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-[#7a4545]">
             Book verified medical transport with live tracking. Types and prices
-            come from Bull Wave Rides — no estimated dummy fares.
+            come from BW Rides — no estimated dummy fares.
           </p>
           <button
             type="button"

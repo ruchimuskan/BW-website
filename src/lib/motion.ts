@@ -1,4 +1,4 @@
-/** Shared Bull Wave Rides motion tokens — professional, snappy, ease-out */
+/** Shared BW Rides motion tokens — professional, snappy, ease-out */
 
 export const easeOut = [0.22, 1, 0.36, 1] as const;
 export const easeSoft = [0.16, 1, 0.3, 1] as const;

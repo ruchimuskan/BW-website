@@ -1,5 +1,10 @@
-import { SafetyPolicyView } from "@/components/legal/SafetyPolicyView";
+import { redirect } from "next/navigation";
+import { ROUTES } from "@/constants/routes";
 
-export default function SafetyPage() {
-  return <SafetyPolicyView />;
+/**
+ * Legacy URL — Safety policy lives on the main Safety page (`/safety`).
+ * Keep this route so old footer/bookmarks still resolve without a duplicate page.
+ */
+export default function LegalSafetyRedirectPage() {
+  redirect(ROUTES.safety);
 }

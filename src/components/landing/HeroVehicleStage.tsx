@@ -115,7 +115,7 @@ export function HeroVehicleStage({
           aria-hidden
           className={cn(
             "pointer-events-none absolute bottom-[6%] left-1/2 h-[14%] w-[68%] -translate-x-1/2 rounded-[100%] blur-xl",
-            isEmergency ? "bg-red-400/22" : "bg-[#C6E31A]/28",
+            isEmergency ? "bg-[#C6E31A]/22" : "bg-[#C6E31A]/28",
           )}
         />
 

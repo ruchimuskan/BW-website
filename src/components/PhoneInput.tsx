@@ -32,7 +32,12 @@ export function PhoneInput({
 }: PhoneInputProps) {
   return (
     <div className="space-y-2">
-      <Label htmlFor="phone-input">Mobile number</Label>
+      <Label
+        htmlFor="phone-input"
+        className="text-xs font-semibold text-[#111411] sm:text-sm"
+      >
+        Mobile number
+      </Label>
       <div className="flex gap-2">
         <CountryCodeSelector
           value={country}
@@ -40,6 +45,7 @@ export function PhoneInput({
             onCountryChange(selected);
             onPhoneChange(sanitizePhoneInput(phone, selected));
           }}
+          className="h-11 rounded-xl border-[#d7e0c0] bg-[#f7f8f3] px-2 shadow-sm sm:h-12 sm:rounded-2xl"
         />
         <Input
           id="phone-input"
@@ -49,10 +55,13 @@ export function PhoneInput({
           placeholder={getPhonePlaceholder(country)}
           value={formatPhoneDisplay(phone, country)}
           disabled={disabled}
-          onChange={(e) => onPhoneChange(sanitizePhoneInput(e.target.value, country))}
+          onChange={(e) =>
+            onPhoneChange(sanitizePhoneInput(e.target.value, country))
+          }
           className={cn(
-            "h-12 flex-1 rounded-[16px] text-base",
-            error && "border-destructive focus-visible:ring-destructive/30"
+            "h-11 min-w-0 flex-1 rounded-xl border-[#d7e0c0] bg-[#f7f8f3] text-base text-[#111411] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-colors placeholder:text-[#8a9184] focus-visible:border-[#C6E31A] focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-[#C6E31A]/25 sm:h-12 sm:rounded-2xl",
+            error &&
+              "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/30",
           )}
         />
       </div>

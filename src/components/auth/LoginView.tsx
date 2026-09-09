@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Eye, EyeOff, Loader2, Lock, Smartphone } from "lucide-react";
+import { Eye, EyeOff, Loader2, Lock, ShieldCheck, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,7 +36,7 @@ import { cn } from "@/lib/utils";
 
 const fieldClass = (hasError: boolean) =>
   cn(
-    "h-10 rounded-xl border-[#d7e0c0] bg-[#fbfcf6] text-sm text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-all placeholder:text-muted-foreground/55 focus-visible:border-[#9BB820] focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-[#B8D926]/25 sm:h-11 sm:rounded-2xl sm:text-base",
+    "h-11 rounded-xl border-[#d4dbc8] bg-[#f5f7f0] text-sm text-[#111411] shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] transition-all placeholder:text-[#8a9184] focus-visible:border-[#C6E31A] focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-[#C6E31A]/30 sm:h-12 sm:rounded-[14px] sm:text-[15px]",
     hasError &&
       "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20",
   );
@@ -188,6 +188,14 @@ export function LoginView() {
     }
   };
 
+  const otpHref = (() => {
+    const next = searchParams.get("next") ?? searchParams.get("redirect");
+    const params = new URLSearchParams();
+    if (next) params.set("next", next);
+    const qs = params.toString();
+    return qs ? `${ROUTES.login}?${qs}` : ROUTES.login;
+  })();
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -197,7 +205,7 @@ export function LoginView() {
     >
       <LoginSceneDecor />
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-stretch justify-center px-3 py-3 sm:px-5 sm:py-4 lg:flex-row lg:items-stretch lg:gap-6 lg:overflow-hidden lg:px-8 lg:py-5 xl:gap-10">
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-stretch justify-center gap-4 px-3 py-4 sm:px-5 sm:py-5 lg:flex-row lg:items-stretch lg:gap-7 lg:overflow-hidden lg:px-8 lg:py-6 xl:gap-10">
         <aside className="hidden min-h-0 w-full flex-1 lg:flex lg:max-w-[52%]">
           <LoginServicesPanel compact className="w-full" />
         </aside>
@@ -206,28 +214,36 @@ export function LoginView() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...transitions.reveal, delay: 0.05 }}
-          className="mx-auto flex w-full max-w-[420px] flex-col lg:mx-0 lg:min-h-0 lg:max-w-[420px] lg:flex-1 lg:flex-none xl:max-w-[440px]"
+          className="mx-auto flex w-full max-w-[420px] flex-col justify-center lg:mx-0 lg:max-w-[430px] lg:flex-none xl:max-w-[450px]"
         >
           <AuthFormCard
             title="Welcome back"
             subtitle="Sign in to book rides, deliveries, and more."
             hideBrandOnDesktop
-            className="min-h-0 flex-1 lg:flex-1"
+            eyebrow={
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#e4e8da] bg-[#f5f7f0] px-2.5 py-1 text-[11px] font-semibold tracking-wide text-[#5a7a12]">
+                <ShieldCheck className="h-3.5 w-3.5 text-[#C6E31A]" strokeWidth={2.25} />
+                Secure account access
+              </span>
+            }
             footer={
-              <p className="text-center text-xs text-muted-foreground sm:text-sm">
+              <p className="text-center text-xs text-[#5A6158] sm:text-sm">
                 Don&apos;t have an account?{" "}
                 <Link
                   href={ROUTES.signup}
-                  className="font-bold text-[#6B7A14] underline-offset-2 hover:text-[#38471B] hover:underline"
+                  className="font-bold text-[#5a7a12] underline-offset-2 hover:text-[#111411] hover:underline"
                 >
                   Sign up
                 </Link>
               </p>
             }
           >
-            <form onSubmit={handleSubmit} className="flex h-full flex-col gap-2.5 sm:gap-3">
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="phone" className="text-xs font-semibold text-[#38471B] sm:text-sm">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3.5 sm:gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label
+                  htmlFor="phone"
+                  className="text-xs font-semibold text-[#111411] sm:text-[13px]"
+                >
                   Phone number
                 </Label>
                 <div className="flex gap-2">
@@ -236,14 +252,14 @@ export function LoginView() {
                     onChange={handleCountryChange}
                     size="default"
                     showDialCode
-                    className="h-10 max-w-[7.5rem] rounded-xl border-[#d7e0c0] bg-[#fbfcf6] px-2 shadow-sm sm:h-11 sm:max-w-none sm:rounded-2xl sm:px-2.5"
+                    className="h-11 max-w-[7.5rem] rounded-xl border-[#d4dbc8] bg-[#f5f7f0] px-2 shadow-sm sm:h-12 sm:max-w-none sm:rounded-[14px] sm:px-2.5"
                   />
                   <Input
                     id="phone"
                     type="tel"
                     inputMode="numeric"
                     autoComplete="tel-national"
-                    placeholder="Phone number"
+                    placeholder="00000 00000"
                     maxLength={country.maxLength + 1}
                     value={formatPhoneDisplay(mobileNumber, country)}
                     onChange={(e) => {
@@ -268,12 +284,15 @@ export function LoginView() {
                 </AnimatePresence>
               </div>
 
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="password" className="text-xs font-semibold text-[#38471B] sm:text-sm">
+              <div className="flex flex-col gap-1.5">
+                <Label
+                  htmlFor="password"
+                  className="text-xs font-semibold text-[#111411] sm:text-[13px]"
+                >
                   Password
                 </Label>
                 <div className="relative">
-                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#5a6330]/70 sm:h-4 sm:w-4" />
+                  <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a9184]" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -285,15 +304,19 @@ export function LoginView() {
                       if (passwordError) setPasswordError("");
                     }}
                     aria-invalid={!!passwordError}
-                    className={cn(fieldClass(!!passwordError), "pl-9 pr-10 sm:pl-10")}
+                    className={cn(fieldClass(!!passwordError), "pl-10 pr-11")}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground hover:bg-[#f0f5dc] hover:text-[#38471B]"
+                    className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-[#8a9184] hover:bg-[#eef2e3] hover:text-[#111411]"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
                 <AnimatePresence>
@@ -310,32 +333,32 @@ export function LoginView() {
                 </AnimatePresence>
               </div>
 
-              <div className="flex items-center justify-between gap-2 text-xs sm:text-sm">
-                <label className="flex cursor-pointer items-center gap-1.5 text-[#5a6330]">
+              <div className="flex items-center justify-between gap-2 text-xs sm:text-[13px]">
+                <label className="flex cursor-pointer items-center gap-2 text-[#5A6158]">
                   <input
                     type="checkbox"
                     checked={remember}
                     onChange={(e) => setRemember(e.target.checked)}
-                    className="h-3.5 w-3.5 rounded border-[#d7e0c0] accent-[#9BB820]"
+                    className="h-3.5 w-3.5 rounded border-[#d4dbc8] accent-[#9BB820]"
                   />
                   Remember me
                 </label>
                 <Link
                   href="#"
-                  className="shrink-0 font-medium text-[#5a6330] transition-colors hover:text-[#38471B]"
+                  className="shrink-0 font-semibold text-[#5a7a12] transition-colors hover:text-[#111411]"
                   onClick={(e) => e.preventDefault()}
                 >
                   Forgot password?
                 </Link>
               </div>
 
-              <div className="mt-auto space-y-2 pt-1 sm:space-y-2.5">
+              <div className="space-y-3 pt-1">
                 <motion.div whileTap={{ scale: 0.985 }} transition={transitions.fast}>
                   <Button
                     type="submit"
                     disabled={isSubmitting}
                     className={cn(
-                      "h-10 w-full rounded-xl text-sm font-bold tracking-wide sm:h-11 sm:rounded-2xl sm:text-base",
+                      "h-11 w-full rounded-xl text-sm font-bold tracking-wide sm:h-12 sm:rounded-[14px] sm:text-[15px]",
                       BRAND_CTA_LIME,
                     )}
                   >
@@ -352,10 +375,10 @@ export function LoginView() {
 
                 <div className="relative py-0.5">
                   <div className="absolute inset-0 flex items-center" aria-hidden>
-                    <div className="w-full border-t border-[#e4ecc8]" />
+                    <div className="w-full border-t border-[#e8ecdf]" />
                   </div>
-                  <p className="relative mx-auto w-fit bg-white px-3 text-[10px] font-medium uppercase tracking-[0.14em] text-[#5a6330]/75">
-                    or continue with
+                  <p className="relative mx-auto w-fit bg-white px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8a9184]">
+                    or
                   </p>
                 </div>
 
@@ -364,7 +387,7 @@ export function LoginView() {
                   variant="outline"
                   disabled={isSendingOtp || isSubmitting}
                   onClick={() => void handleOtpContinue()}
-                  className="h-10 w-full rounded-xl border-[#d7e0c0] bg-white text-sm font-semibold text-[#38471B] shadow-sm transition-colors hover:border-[#B8D926] hover:bg-[#fbfcf6] sm:h-11 sm:rounded-2xl"
+                  className="h-11 w-full rounded-xl border-[#d4dbc8] bg-[#fafbf7] text-sm font-semibold text-[#111411] shadow-sm transition-colors hover:border-[#C6E31A] hover:bg-white sm:h-12 sm:rounded-[14px]"
                 >
                   {isSendingOtp ? (
                     <>
@@ -373,11 +396,21 @@ export function LoginView() {
                     </>
                   ) : (
                     <>
-                      <Smartphone className="mr-1.5 h-4 w-4 text-[#9BB820]" />
+                      <Smartphone className="mr-1.5 h-4 w-4 text-[#5a7a12]" />
                       Continue with OTP
                     </>
                   )}
                 </Button>
+
+                <p className="text-center text-[11px] text-[#8a9184]">
+                  Prefer the OTP screen?{" "}
+                  <Link
+                    href={otpHref}
+                    className="font-semibold text-[#5a7a12] hover:text-[#111411] hover:underline"
+                  >
+                    Start with mobile
+                  </Link>
+                </p>
               </div>
             </form>
           </AuthFormCard>

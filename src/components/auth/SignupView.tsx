@@ -194,7 +194,7 @@ export function SignupView() {
           className="mx-auto flex h-full w-full max-w-[420px] flex-col lg:mx-0 lg:min-h-0 lg:max-w-[420px] lg:flex-1 lg:flex-none xl:max-w-[440px]"
         >
           <AuthFormCard
-            title="Join Bull Wave Rides"
+            title="Join BW Rides"
             subtitle="Create your account to start riding in minutes."
             hideBrandOnDesktop
             className="min-h-0 flex-1"
@@ -454,7 +454,7 @@ export function SignupView() {
                     className="mt-0.5 h-3.5 w-3.5 shrink-0 rounded border-[#d7e0c0] accent-[#9BB820]"
                   />
                   <span>
-                    I agree to Bull Wave Rides&apos;s{" "}
+                    I agree to BW Rides&apos;s{" "}
                     <Link href={ROUTES.terms} className="font-semibold text-[#6B7A14] hover:underline">
                       Terms
                     </Link>

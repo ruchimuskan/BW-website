@@ -8,5 +8,5 @@ export const profileMenuItems = [
   { id: "refer-earn", label: "Refer & Earn", icon: Gift, route: ROUTES.profileReferEarn },
   { id: "student-pass", label: "Student Pass", icon: GraduationCap, route: ROUTES.profileStudentPass },
   { id: "help", label: "Help & Support", icon: HelpCircle, route: ROUTES.profileHelp },
-  { id: "about", label: "About Bull Wave Rides", icon: Info, route: ROUTES.profileAbout },
+  { id: "about", label: "About BW Rides", icon: Info, route: ROUTES.profileAbout },
 ] as const;

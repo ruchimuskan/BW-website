@@ -16,7 +16,7 @@ const AUTO_MS = 5500;
 const experiences = [
   {
     src: BRAND_IMAGES.limeCab,
-    alt: "Premium lime Bull Wave Rides sedan",
+    alt: "Premium lime BW Rides sedan",
     title: "Polished rides",
     tagline: "Premium cab experience",
     description:
@@ -34,7 +34,7 @@ const experiences = [
   },
   {
     src: BRAND_IMAGES.ambulanceBrand,
-    alt: "Bull Wave Rides emergency ambulance",
+    alt: "BW Rides emergency ambulance",
     title: "Safety first",
     tagline: "Emergency SOS",
     description:
@@ -43,7 +43,7 @@ const experiences = [
   },
   {
     src: BRAND_IMAGES.cityBike,
-    alt: "Bull Wave Rides premium bike",
+    alt: "BW Rides premium bike",
     title: "Live tracking",
     tagline: "Every mile, visible",
     description:

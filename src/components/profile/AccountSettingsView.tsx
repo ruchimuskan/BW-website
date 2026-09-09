@@ -226,7 +226,7 @@ export function AccountSettingsView() {
 
   const profileCompletion = useMemo(() => {
     let score = 0;
-    if (user.name && user.name !== "Bull Wave Rides User") score += 25;
+    if (user.name && user.name !== "BW Rides User") score += 25;
     if (user.phone) score += 25;
     if (hasEmail) score += 25;
     if (hasEmergencyContact) score += 25;

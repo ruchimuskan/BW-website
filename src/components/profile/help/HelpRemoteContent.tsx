@@ -12,10 +12,18 @@ import {
 import { getFaqs, type FaqItem } from "@/lib/support-api";
 import { cn } from "@/lib/utils";
 
-export function HelpLegalDocument({ source }: { source: "privacy" | "terms" }) {
+export function HelpLegalDocument({
+  source,
+  variant = "default",
+}: {
+  source: "privacy" | "terms";
+  /** Public marketing page — larger padding, no app-shell card chrome. */
+  variant?: "default" | "public";
+}) {
   const [doc, setDoc] = useState<LegalDocument | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isPublic = variant === "public";
 
   const load = () => {
     setLoading(true);
@@ -41,23 +49,37 @@ export function HelpLegalDocument({ source }: { source: "privacy" | "terms" }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center gap-2 rounded-2xl border border-[#e5e7df] bg-white px-4 py-12 text-sm text-[#5a6330]">
+      <div
+        className={cn(
+          "flex items-center justify-center gap-2 border bg-white px-4 py-12 text-sm text-[#5a6330]",
+          isPublic
+            ? "rounded-xl border-[#E4E7E0] shadow-sm sm:py-14"
+            : "rounded-2xl border-[#e5e7df]",
+        )}
+      >
         <Loader2 className="h-4 w-4 animate-spin text-[#9BB820]" />
-        Loading from Bull Wave Rides…
+        Loading from BW Rides…
       </div>
     );
   }
 
   if (error || !html) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#d9dece] bg-white px-4 py-8 text-center">
+      <div
+        className={cn(
+          "border border-dashed bg-white px-4 py-8 text-center",
+          isPublic
+            ? "rounded-xl border-[#D4D8D0] shadow-sm sm:px-6 sm:py-10"
+            : "rounded-2xl border-[#d9dece]",
+        )}
+      >
         <p className="text-sm text-[#5a6330]">
           {error || "This document is not published on the server yet."}
         </p>
         <Button
           type="button"
           variant="outline"
-          className="mt-4 h-10 gap-1.5 rounded-xl border-[#d9dece]"
+          className="mt-4 h-10 gap-1.5 rounded-lg border-[#d9dece]"
           onClick={load}
         >
           <RefreshCw className="h-3.5 w-3.5" />
@@ -70,15 +92,19 @@ export function HelpLegalDocument({ source }: { source: "privacy" | "terms" }) {
   return (
     <article
       className={cn(
-        "help-legal-html overflow-hidden rounded-2xl border border-[#e5e7df] bg-white px-4 py-5 sm:px-6 sm:py-6",
+        "help-legal-html overflow-hidden border bg-white",
         "text-sm leading-relaxed text-[#4a5228] sm:text-[15px]",
-        "[&_h1]:mb-3 [&_h1]:font-heading [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-[#1f2912] sm:[&_h1]:text-2xl",
-        "[&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:font-heading [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-[#283614]",
-        "[&_h3]:mt-4 [&_h3]:mb-1.5 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-[#283614]",
-        "[&_p]:mt-2 [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5",
-        "[&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5",
+        "[&_h1]:mb-2.5 [&_h1]:font-heading [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-[#1f2912] sm:[&_h1]:text-[1.35rem]",
+        "[&_h2]:mt-5 [&_h2]:mb-2 [&_h2]:font-heading [&_h2]:text-[15px] [&_h2]:font-semibold [&_h2]:text-[#283614] sm:[&_h2]:text-base",
+        "[&_h3]:mt-3.5 [&_h3]:mb-1.5 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-[#283614]",
+        "[&_p]:mt-2 [&_p]:leading-[1.7]",
+        "[&_ul]:mt-2 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5",
+        "[&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:space-y-1.5 [&_ol]:pl-5",
         "[&_a]:font-semibold [&_a]:text-[#38471B] [&_a]:underline-offset-2 hover:[&_a]:underline",
         "[&_li]:break-words",
+        isPublic
+          ? "rounded-xl border-[#E4E7E0] px-4 py-5 shadow-[0_8px_24px_-16px_rgba(27,58,34,0.22)] sm:px-6 sm:py-6 md:px-8 md:py-7 lg:px-10 lg:py-8"
+          : "rounded-2xl border-[#e5e7df] px-4 py-5 sm:px-6 sm:py-6",
       )}
       dangerouslySetInnerHTML={{ __html: html }}
     />

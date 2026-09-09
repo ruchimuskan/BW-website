@@ -98,7 +98,7 @@ export async function openSubscriptionCheckout(
       key: checkout.key_id,
       amount: checkout.amount,
       currency: checkout.currency || "INR",
-      name: checkout.name || "Bull Wave Rides",
+      name: checkout.name || "BW Rides",
       description: checkout.description || checkout.plan?.name || "Payment",
       order_id: checkout.order_id,
       prefill: checkout.prefill || {},

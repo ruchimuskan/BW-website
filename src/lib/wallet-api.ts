@@ -125,6 +125,7 @@ export function addWalletMoney(amount: number): Promise<WalletBalance> {
   });
 }
 
+/** Product payment options for wallet top-up UI (Cash / Wallet). Not fabricated balances. */
 export function getPaymentMethods(): Promise<PaymentMethod[]> {
   return Promise.resolve([
     { id: "cash", type: "cash", label: "Cash", last_four: null },

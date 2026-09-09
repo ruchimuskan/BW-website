@@ -25,8 +25,23 @@ export const BRAND_PHOTOS = {
   journey4: "/images/gallery/track4.webp",
   journey5: "/images/gallery/track5.webp",
   journey6: "/images/gallery/track6.webp",
+  journeyBike: "/images/gallery/track7.jpg",
+  journeyAuto: "/images/gallery/track8.jpg",
+  journeyParcel: "/images/gallery/track9.jpg",
+  journeySos: "/images/gallery/track10.jpg",
+  /** Cinematic campaign stills — no baked UI overlays. */
+  shootBook: "/images/gallery/shoot-book.webp",
+  shootTrack: "/images/gallery/shoot-track.webp",
+  shootRide: "/images/gallery/shoot-ride.webp",
+  shootBike: "/images/gallery/shoot-bike.webp",
+  shootAuto: "/images/gallery/shoot-auto.webp",
+  shootPay: "/images/gallery/shoot-pay.webp",
+  shootRate: "/images/gallery/shoot-rate.webp",
+  shootParcel: "/images/gallery/shoot-parcel.webp",
+  shootSos: "/images/gallery/shoot-sos.webp",
+  shootSupport: "/images/gallery/shoot-support.webp",
   bike: "/images/pic-4.png",
-  eAuto: "/images/pic-5.png",
+  eAuto: "/images/services/e-rickshaw.png",
   travelStay: "/images/pic-6.png",
   bestFares: "/images/pic-best-fare.webp",
   quickFare: "/images/pic-8.webp",
@@ -120,9 +135,9 @@ export const HERO_STAGE_ASSETS = {
   rides: "/images/services/car.webp",
   ridesFallback: "/images/landing/brand/lime-cab.png",
   parcel: "/images/landing/brand/parcel-delivery.png",
-  parcelFallback: "/images/services/parcel.webp",
+  parcelFallback: "/images/services/parcel.png",
   ambulance: "/images/landing/brand/ambulance.png",
-  ambulanceFallback: "/images/services/ambulance.webp",
+  ambulanceFallback: "/images/services/ambulance.png",
 } as const;
 
 export const BRAND_IMAGE_SIZES = {
@@ -157,6 +172,8 @@ export function brandPhotoFit(src: string): "contain" | "cover" {
     path.includes("pic-10") ||
     path.includes("pic-12") ||
     path.includes("pic-14") ||
+    path.includes("e-rickshaw") ||
+    path.includes("cab-lime") ||
     path.includes("/services/") ||
     path.includes("/landing/brand/")
   ) {

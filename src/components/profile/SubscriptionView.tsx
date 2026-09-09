@@ -292,7 +292,7 @@ export function SubscriptionView() {
                             Membership
                           </p>
                           <h2 className="mt-1 font-heading text-2xl font-semibold tracking-tight sm:text-[1.7rem]">
-                            Bull Wave Rides Membership
+                            BW Rides Membership
                           </h2>
                           <p className="mt-1.5 max-w-md text-sm leading-relaxed text-white/70">
                             Unlock discounts, priority matching, and faster
@@ -387,7 +387,7 @@ export function SubscriptionView() {
                     </h3>
                     <p className="mt-1 text-sm text-[#5a6330]">
                       {plans.length === 0
-                        ? "Plans load from Bull Wave Rides. Paid checkout opens only for live catalog entries."
+                        ? "Plans load from BW Rides. Paid checkout opens only for live catalog entries."
                         : "Pick a plan. Paid plans open Razorpay, then the server activates membership."}
                     </p>
                   </div>

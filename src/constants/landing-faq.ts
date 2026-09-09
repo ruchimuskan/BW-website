@@ -1,50 +1,63 @@
 export const landingFaqItems = [
   {
     id: "book-ride",
-    question: "How do I book a ride on Bull Wave Rides?",
+    question: "How do I book a ride?",
     answer:
-      "Enter your pickup and dropoff on the home page or open the app, choose Rides, Parcel, or Emergency, and confirm. You will see upfront pricing before you book and can track your captain live from pickup to destination.",
+      "Set pickup and drop, choose a vehicle, confirm the fare, and tap Book. Track your captain live until you arrive.",
+  },
+  {
+    id: "schedule",
+    question: "Can I schedule for later?",
+    answer:
+      "Yes. Open When to go, pick a time, and confirm. We’ll match a captain closer to your scheduled pickup.",
   },
   {
     id: "payment",
-    question: "What payment methods does Bull Wave Rides accept?",
+    question: "What payments work?",
     answer:
-      "Pay with Bull Wave Rides Wallet, UPI, debit or credit cards, and cash on select trips. Wallet top-ups and ride receipts are available in the app under Wallet and Activity.",
-  },
-  {
-    id: "cities",
-    question: "Is Bull Wave Rides available in my city?",
-    answer:
-      "Bull Wave Rides operates in 50+ cities across India and is expanding every month. Download the app or enter a location on the landing page to see available services in your area.",
-  },
-  {
-    id: "ambulance",
-    question: "How does Ambulance SOS work?",
-    answer:
-      "Tap Emergency on the booking widget or home screen, enter pickup and hospital or destination details, and confirm. Bull Wave Rides matches you with verified medical transport and shares live trip updates with your emergency contacts.",
-  },
-  {
-    id: "parcel",
-    question: "Can I send parcels through Bull Wave Rides?",
-    answer:
-      "Yes. Switch to the Parcel tab, set pickup and delivery addresses, and book same-day intra-city delivery with live tracking and photo proof at pickup and drop-off on eligible trips.",
-  },
-  {
-    id: "safety",
-    question: "How does Bull Wave Rides keep rides safe?",
-    answer:
-      "Every captain is document-verified before going online. Riders get live GPS tracking, in-app SOS, trip sharing with family, and 24×7 support. Read more on our Safety page.",
-  },
-  {
-    id: "captain",
-    question: "How do I become a Bull Wave Rides captain?",
-    answer:
-      "Scroll to the Captains section on this page or tap Sign up to drive. Submit your ID, license, and vehicle documents through the partner app. Once verified, you can set your own hours and receive weekly payouts.",
+      "Wallet, UPI, cards, and cash on select trips. Receipts stay in Wallet and Activity.",
   },
   {
     id: "cancel",
-    question: "Is there a cancellation fee?",
+    question: "How do I cancel?",
     answer:
-      "You can cancel free of charge within a short window after booking. If a captain is already on the way, a small cancellation fee may apply — the exact amount is shown in the app before you confirm cancellation.",
+      "Cancel free in the short window after booking. If a captain is already en route, any fee is shown before you confirm.",
+  },
+  {
+    id: "pin",
+    question: "What is the ride PIN?",
+    answer:
+      "Share the PIN with your captain at pickup so only the right rider starts the trip.",
+  },
+  {
+    id: "parcel",
+    question: "How do I send a parcel?",
+    answer:
+      "Open Parcel, set pickup and drop, then book. Track delivery live with photo proof on eligible trips.",
+  },
+  {
+    id: "ambulance",
+    question: "How does SOS ambulance work?",
+    answer:
+      "Tap Emergency, enter pickup and hospital, and confirm. We match verified medical transport and share live updates.",
+  },
+  {
+    id: "safety",
+    question: "Is my ride safe?",
+    answer:
+      "Captains are verified. You get live tracking, trip share, in-app SOS, and support on every journey.",
   },
 ] as const;
+
+/** Trim CMS/API question fluff for compact landing accordion labels. */
+export function shortenLandingFaqQuestion(question: string): string {
+  return question
+    .replace(/\s+on (?:BW Rides|Bull Wave Rides)\??/gi, "?")
+    .replace(/\s+through (?:BW Rides|Bull Wave Rides)\??/gi, "?")
+    .replace(/\s+with (?:BW Rides|Bull Wave Rides)\??/gi, "?")
+    .replace(/\s+does (?:BW Rides|Bull Wave Rides)\s+/gi, " ")
+    .replace(/(?:BW Rides|Bull Wave Rides)\s+/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/\?+/g, "?")
+    .trim();
+}

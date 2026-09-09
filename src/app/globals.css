@@ -1274,6 +1274,15 @@ body {
   }
 }
 
+@keyframes bw-gallery-kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.03);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   @keyframes bw-gallery-progress {
     from {
@@ -1281,6 +1290,15 @@ body {
     }
     to {
       width: 100%;
+    }
+  }
+
+  @keyframes bw-gallery-kenburns {
+    from {
+      transform: none;
+    }
+    to {
+      transform: none;
     }
   }
 }

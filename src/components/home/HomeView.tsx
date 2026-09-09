@@ -379,7 +379,7 @@ export function HomeView() {
                       <div className="min-w-0 flex-1">
                         <p className="font-heading text-base font-semibold tracking-tight sm:text-lg">
                           {dashboard?.banners[0]?.title ??
-                            "Ride smarter with Bull Wave Rides"}
+                            "Ride smarter with BW Rides"}
                         </p>
                         <p className="mt-2 text-sm leading-relaxed text-white/80">
                           {dashboard?.banners[0]?.subtitle ??
@@ -490,7 +490,7 @@ export function HomeView() {
             }
             alt={
               dashboard?.banners[0]?.title ??
-              "Ride anytime, anywhere with the Bull Wave Rides app"
+              "Ride anytime, anywhere with the BW Rides app"
             }
             href={dashboard?.banners[0]?.cta_url ?? ROUTES.start}
             fallbackSrc={BRAND_PHOTOS.promoAnytime}

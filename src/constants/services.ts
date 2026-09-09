@@ -10,7 +10,9 @@ export interface ServiceItem {
 
 export const homeServices: ServiceItem[] = [
   { name: "Bike", description: "Beat the traffic, save money", image: BRAND_PHOTOS.studioBike, route: `${ROUTES.start}?tab=rides&vehicle=bike` },
-  { name: "Electric Auto", description: "No haggling, just easy rides", image: BRAND_IMAGES.cityAuto, route: `${ROUTES.start}?tab=rides&vehicle=auto` },
+  { name: "Electric Auto", description: "No haggling, just easy rides",     image: "/images/services/auto.png",
+    route: `${ROUTES.start}?tab=rides&vehicle=auto`,
+  },
   { name: "Cab", description: "Comfortable rides for you", image: BRAND_PHOTOS.studioCab, route: `${ROUTES.start}?tab=rides&vehicle=cab` },
   { name: "Parcel", description: "Quick, secure & insured deliveries", image: BRAND_IMAGES.slideParcel, route: `${ROUTES.start}?tab=parcel&vehicle=parcel` },
   { name: "Travel and Stay", description: "One app, all solutions", image: BRAND_IMAGES.mobility, route: `${ROUTES.start}?tab=rides&vehicle=travel` },
@@ -55,13 +57,13 @@ export const landingServices: ServiceItem[] = [
   {
     name: "Auto",
     description: "Everyday rides",
-    image: BRAND_PHOTOS.eAuto,
+    image: "/images/services/auto.png",
     route: `${ROUTES.start}?tab=rides&vehicle=auto`,
   },
   {
     name: "Cab",
     description: "Comfort on the go",
-    image: BRAND_PHOTOS.studioCab,
+    image: "/images/services/cab-lime.png",
     route: `${ROUTES.start}?tab=rides&vehicle=cab`,
   },
   {
@@ -109,10 +111,11 @@ export const landingAssets = {
   bestFares: BRAND_IMAGES.featureFares,
   neverTooFar: BRAND_IMAGES.featureCoverage,
   serviceBike: "/images/services/bike.webp",
-  serviceAuto: "/images/services/auto.webp",
+  serviceAuto: "/images/services/auto.png",
+  serviceERickshaw: "/images/services/e-rickshaw.png",
   serviceCab: "/images/services/car.webp",
-  serviceParcel: "/images/services/parcel.webp",
-  serviceAmbulance: "/images/services/ambulance.webp",
+  serviceParcel: "/images/services/parcel.png",
+  serviceAmbulance: "/images/services/ambulance.png",
 } as const;
 
 export const landingHeroImage = landingAssets.cityCab;
@@ -124,19 +127,19 @@ export const landingHeroImage = landingAssets.cityCab;
 export const landingHeroSlides = [
   {
     src: BRAND_PHOTOS.heroAnytime,
-    alt: "Bull Wave Rides — rides anytime, anywhere",
+    alt: "BW Rides — rides anytime, anywhere",
   },
   {
     src: BRAND_PHOTOS.streetCab,
-    alt: "Premium Bull Wave Rides lime cab on city streets",
+    alt: "Premium BW Rides lime cab on city streets",
   },
   {
     src: BRAND_PHOTOS.studioBike,
-    alt: "Premium Bull Wave Rides bike",
+    alt: "Premium BW Rides bike",
   },
   {
     src: BRAND_PHOTOS.studioCab,
-    alt: "Studio Bull Wave Rides lime sedan",
+    alt: "Studio BW Rides lime sedan",
   },
 ] as const;
 
@@ -145,19 +148,19 @@ export const landingHeroSlides = [
 export const landingWelcomeGallery = [
   {
     src: BRAND_PHOTOS.streetCab,
-    alt: "Premium Bull Wave Rides lime cab on city streets",
+    alt: "Premium BW Rides lime cab on city streets",
     fit: "cover" as const,
     panel: "dark" as const,
   },
   {
     src: BRAND_PHOTOS.studioBike,
-    alt: "Premium Bull Wave Rides lime motorcycle",
+    alt: "Premium BW Rides lime motorcycle",
     fit: "cover" as const,
     panel: "lime" as const,
   },
   {
     src: BRAND_PHOTOS.eAuto,
-    alt: "Bull Wave Rides electric auto",
+    alt: "BW Rides electric auto",
     fit: "cover" as const,
     panel: "sage" as const,
   },
@@ -167,70 +170,91 @@ export const landingWelcomeGallery = [
 export const landingWelcomeDetails = [
   {
     src: landingAssets.quickPickup,
-    alt: "Punctual Bull Wave Rides pickup",
+    alt: "Punctual BW Rides pickup",
     label: "Punctual",
     description: "Captains matched fast with live ETAs you can trust.",
   },
   {
     src: landingAssets.bestFares,
-    alt: "Comfortable Bull Wave Rides journey",
+    alt: "Comfortable BW Rides journey",
     label: "Comfort",
     description: "Clean vehicles and calm journeys across every ride type.",
   },
   {
     src: BRAND_PHOTOS.ambulance,
-    alt: "Reliable Bull Wave Rides emergency SOS",
+    alt: "Reliable BW Rides emergency SOS",
     label: "Reliable",
     description: "Rides, parcels, and SOS — always available when you need them.",
   },
 ] as const;
 
 /**
- * Cover-flow gallery — BW Rides journey (track1…track6).
- * WebP primary (small); PNG twins as fallback for production.
+ * Visual journey stills — Book → Support (cab trip + parcel + SOS).
  */
 export const landingPremiumGallery = [
   {
-    src: BRAND_PHOTOS.journey1,
-    alt: "Book a BW Rides trip from the app",
+    src: BRAND_PHOTOS.shootBook,
+    fallback: BRAND_PHOTOS.journey1,
+    alt: "Booking a BW Rides trip from home",
     label: "Book",
-    position: "center",
-    fit: "cover" as const,
+    line: "One tap. Your captain is already on the way.",
+    position: "center center",
   },
   {
-    src: BRAND_PHOTOS.journey2,
-    alt: "Track your BW Rides captain live on the map",
+    src: BRAND_PHOTOS.shootTrack,
+    fallback: BRAND_PHOTOS.journey2,
+    alt: "Lime BW Rides cab arriving on a city street",
     label: "Track",
-    position: "center",
-    fit: "cover" as const,
+    line: "Watch the car come to you — live, street-level.",
+    position: "center center",
   },
   {
-    src: BRAND_PHOTOS.journey3,
-    alt: "Ride with a verified BW Rides captain",
+    src: BRAND_PHOTOS.shootRide,
+    fallback: BRAND_PHOTOS.journey3,
+    alt: "Verified BW Rides captain beside a lime sedan",
     label: "Ride",
-    position: "center",
-    fit: "cover" as const,
+    line: "A verified captain. A quiet, lime cab. Your city.",
+    position: "center center",
   },
   {
-    src: BRAND_PHOTOS.journey4,
-    alt: "Pay securely in the BW Rides app",
+    src: BRAND_PHOTOS.shootPay,
+    fallback: BRAND_PHOTOS.journey4,
+    alt: "Paying for a BW Rides trip from the back seat",
     label: "Pay",
-    position: "center",
-    fit: "cover" as const,
+    line: "Settle in the back seat. No cash scramble.",
+    position: "center center",
   },
   {
-    src: BRAND_PHOTOS.journey5,
-    alt: "Rate your BW Rides trip",
+    src: BRAND_PHOTOS.shootRate,
+    fallback: BRAND_PHOTOS.journey5,
+    alt: "Passenger after a BW Rides trip",
     label: "Rate",
-    position: "center",
-    fit: "cover" as const,
+    line: "A good trip should be easy to say so.",
+    position: "center center",
   },
   {
-    src: BRAND_PHOTOS.journey6,
-    alt: "24×7 BW Rides support and SOS help",
+    src: BRAND_PHOTOS.shootParcel,
+    fallback: BRAND_PHOTOS.journeyParcel,
+    alt: "Parcel handed over at the door with BW Rides",
+    label: "Parcel",
+    line: "Door to door, still in the same lime.",
+    position: "center center",
+  },
+  {
+    src: BRAND_PHOTOS.shootSos,
+    fallback: BRAND_PHOTOS.journeySos,
+    alt: "BW Rides emergency medical transport",
+    label: "SOS",
+    line: "When it matters, the fleet is already dressed for it.",
+    position: "center center",
+  },
+  {
+    src: BRAND_PHOTOS.shootSupport,
+    fallback: BRAND_PHOTOS.journey6,
+    alt: "BW Rides support specialist ready to help",
     label: "Support",
-    position: "center",
-    fit: "cover" as const,
+    line: "A real person. Any hour. Any trip.",
+    position: "center center",
   },
 ] as const;
 
@@ -249,9 +273,9 @@ export const landingServiceLifestyle: Record<string, string> = {
 /** Book section + luxury hero — 3D service cutouts (contained, same style as ride cab). */
 export const landingBookImages = {
   rides: {
-    src: landingAssets.serviceCab,
-    fallback: "/images/services/car.png",
-    alt: "Bull Wave Rides premium cab",
+    src: "/images/services/car.webp",
+    fallback: "/images/landing/brand/lime-cab.png",
+    alt: "BW Rides premium cab",
     objectPosition: "50% 100%",
     offsetY: "0%",
     accent: "from-transparent via-transparent to-transparent",
@@ -261,7 +285,7 @@ export const landingBookImages = {
   parcel: {
     src: landingAssets.serviceParcel,
     fallback: "/images/services/parcel.png",
-    alt: "Bull Wave Rides secure parcel delivery",
+    alt: "BW Rides secure parcel delivery",
     objectPosition: "50% 88%",
     offsetY: "16%",
     accent: "from-transparent via-transparent to-transparent",
@@ -271,11 +295,11 @@ export const landingBookImages = {
   ambulance: {
     src: landingAssets.serviceAmbulance,
     fallback: "/images/services/ambulance.png",
-    alt: "Bull Wave Rides emergency ambulance SOS",
+    alt: "BW Rides emergency ambulance SOS",
     objectPosition: "50% 90%",
     offsetY: "12%",
     accent: "from-transparent via-transparent to-transparent",
-    glow: "rgba(248,113,113,0.32)",
+    glow: "rgba(198,227,26,0.34)",
     scale: 1.28,
   },
 } as const;

@@ -39,7 +39,7 @@ export function PageHeader({ title, subtitle, className }: PageHeaderProps) {
         ) : null}
         <div className="min-w-0">
           <p className={cn(brandTheme.eyebrow, "text-[#D4E88A]/90")}>
-            Bull Wave Rides
+            BW Rides
           </p>
           <h1 className="truncate font-heading text-xl font-semibold tracking-tight sm:text-2xl">
             {title}

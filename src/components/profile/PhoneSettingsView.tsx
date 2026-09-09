@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CountryCodeSelector } from "@/components/auth/CountryCodeSelector";
 import { ROUTES } from "@/constants/routes";
-import { setPendingContactVerify } from "@/lib/auth-session";
+import { getAuthSession, setPendingContactVerify } from "@/lib/auth-session";
 import {
   defaultCountry,
   formatPhoneDisplay,
@@ -25,6 +25,15 @@ import {
   type Country,
 } from "@/lib/countries";
 import { cn } from "@/lib/utils";
+
+function digitsFromSessionPhone(): string {
+  const raw = getAuthSession()?.phone?.trim() ?? "";
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length > 10 && digits.startsWith("91")) {
+    return digits.slice(-10);
+  }
+  return digits.slice(-defaultCountry.maxLength);
+}
 
 const benefits = [
   {
@@ -47,7 +56,7 @@ const benefits = [
 export function PhoneSettingsView() {
   const router = useRouter();
   const [country, setCountry] = useState<Country>(defaultCountry);
-  const [phoneNumber, setPhoneNumber] = useState("9876543210");
+  const [phoneNumber, setPhoneNumber] = useState(() => digitsFromSessionPhone());
   const [error, setError] = useState("");
 
   const valid = isValidPhoneNumber(phoneNumber, country);

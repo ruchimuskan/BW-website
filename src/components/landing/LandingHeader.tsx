@@ -61,6 +61,13 @@ function getActiveFromUrl(pathname: string) {
   if (pathname === ROUTES.blogs || pathname.startsWith(`${ROUTES.blogs}/`)) {
     return ROUTES.blogs;
   }
+  if (
+    pathname === ROUTES.privacy ||
+    pathname === ROUTES.terms ||
+    pathname.startsWith("/legal/")
+  ) {
+    return "";
+  }
   if (pathname === ROUTES.landing) {
     const hash = typeof window !== "undefined" ? window.location.hash : "";
     if (hash && landingNavLinks.some((link) => link.href === hash)) {
@@ -68,7 +75,7 @@ function getActiveFromUrl(pathname: string) {
     }
     return ROUTES.landing;
   }
-  return ROUTES.landing;
+  return "";
 }
 
 type LandingHeaderProps = {
@@ -78,7 +85,7 @@ type LandingHeaderProps = {
 export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeNav, setActiveNav] = useState<string>(ROUTES.landing);
+  const [activeNav, setActiveNav] = useState<string>(() => getActiveFromUrl(pathname));
   const [scrolled, setScrolled] = useState(false);
   const { loggedIn } = useIsAuthenticated();
   const luxury = variant === "luxury";
@@ -334,7 +341,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                     luxury ? "text-white/65" : "text-[#5A7A5E]",
                   )}
                 >
-                  Explore Bull Wave Rides
+                  Explore BW Rides
                 </SheetDescription>
               </div>
               <button

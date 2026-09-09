@@ -165,7 +165,7 @@ export function HelpTopicShell({
               Help &amp; support
             </p>
             <p className="truncate text-[11px] text-white/60 sm:text-xs">
-              Bull Wave Rides
+              BW Rides
             </p>
           </div>
         </div>

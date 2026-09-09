@@ -36,7 +36,7 @@ const captainImages = {
 
 const safetyCollageCaptain = {
   src: BRAND_PHOTOS.captainsHero,
-  alt: "Bull Wave Rides captain on the road at night",
+  alt: "BW Rides captain on the road at night",
   label: "Captain",
   fallbackSrc: BRAND_PHOTOS.captainsHeroPng,
   imageClassName: "object-[center_42%]",
@@ -45,12 +45,12 @@ const safetyCollageCaptain = {
 export const safetyHeroImages = [
   {
     src: BRAND_PHOTOS.streetCab,
-    alt: "Bull Wave Rides customer in a street cab",
+    alt: "BW Rides customer in a street cab",
     label: "Street Cab",
   },
   {
     src: BRAND_PHOTOS.studioBike,
-    alt: "Bull Wave Rides rider on a bike taxi",
+    alt: "BW Rides rider on a bike taxi",
     label: "Bike Taxi",
     featured: true,
     fallbackSrc: "/images/pic-14.png",
@@ -65,7 +65,7 @@ export const coversEveryoneCards = [
     description:
       "Every ride is protected through live tracking, verified captain information, emergency support, and trip-sharing features designed to keep you safe.",
     image: customerImages.quickPickup,
-    alt: "Bull Wave Rides customer safety",
+    alt: "BW Rides customer safety",
     imageFallbackSrc: "/images/pic-12.png",
     tab: "customer" as const,
   },
@@ -73,9 +73,9 @@ export const coversEveryoneCards = [
     id: "captains",
     title: "For Captains",
     description:
-      "Bull Wave Rides supports captains with verification systems, safety training, emergency support tools, and fair platform policies.",
+      "BW Rides supports captains with verification systems, safety training, emergency support tools, and fair platform policies.",
     image: captainImages.partner,
-    alt: "Bull Wave Rides captain driving at night",
+    alt: "BW Rides captain driving at night",
     imageFallbackSrc: captainImages.partnerPng,
     imageClassName: "object-[center_42%]",
     tab: "captain" as const,
@@ -180,7 +180,7 @@ export const protectionSteps = [
 export const safetyFaqItems = [
   {
     id: "verify",
-    question: "How does Bull Wave Rides verify drivers?",
+    question: "How does BW Rides verify drivers?",
     answer:
       "Every captain submits government ID, driving license, vehicle documents, and passes background screening. Profiles are re-verified periodically to maintain platform standards.",
   },
@@ -194,19 +194,19 @@ export const safetyFaqItems = [
     id: "emergency",
     question: "What should I do in an emergency?",
     answer:
-      "Use in-app SOS for immediate Bull Wave Rides support. For life-threatening situations, call local emergency services first, then report the incident through Help & Support.",
+      "Use in-app SOS for immediate BW Rides support. For life-threatening situations, call local emergency services first, then report the incident through Help & Support.",
   },
   {
     id: "sos",
     question: "How does the SOS feature work?",
     answer:
-      "SOS connects you to Bull Wave Rides's safety team with your live location and trip details. The team can coordinate with local authorities when required.",
+      "SOS connects you to BW Rides' safety team with your live location and trip details. The team can coordinate with local authorities when required.",
   },
   {
     id: "privacy",
     question: "Is my personal data secure?",
     answer:
-      "Bull Wave Rides encrypts personal data and follows our Privacy Policy. Trip data is used for safety, support, and service improvement — never sold to third parties.",
+      "BW Rides encrypts personal data and follows our Privacy Policy. Trip data is used for safety, support, and service improvement — never sold to third parties.",
   },
   {
     id: "report",
@@ -218,7 +218,7 @@ export const safetyFaqItems = [
 
 export const safetyFooterLinks = {
   company: [
-    { label: "About Bull Wave Rides", href: ROUTES.about },
+    { label: "About BW Rides", href: ROUTES.about },
     { label: "Safety", href: ROUTES.safety },
     { label: "Contact Us", href: ROUTES.profileHelp },
   ],
@@ -247,16 +247,16 @@ export const safetyTabs: { id: SafetyAudience; label: string }[] = [
 const customerHeroImages = [
   {
     src: customerImages.quickPickup,
-    alt: "Bull Wave Rides customer booking a ride on the app",
+    alt: "BW Rides customer booking a ride on the app",
   },
   {
     src: customerImages.familyRide,
-    alt: "Bull Wave Rides family riding in electric auto",
-    fallbackSrc: "/images/pic-5.png",
+    alt: "BW Rides family riding in electric auto",
+    fallbackSrc: "/images/services/e-rickshaw.png",
   },
   {
     src: customerImages.bikePassenger,
-    alt: "Bull Wave Rides customer on a bike taxi",
+    alt: "BW Rides customer on a bike taxi",
     fallbackSrc: "/images/pic-14.png",
   },
 ] as const;
@@ -265,11 +265,11 @@ const captainHeroImages = [
   safetyCollageCaptain,
   {
     src: captainImages.fleet,
-    alt: "Bull Wave Rides captain fleet on the road",
+    alt: "BW Rides captain fleet on the road",
   },
   {
     src: captainImages.delivery,
-    alt: "Bull Wave Rides delivery captain with parcel",
+    alt: "BW Rides delivery captain with parcel",
   },
 ] as const;
 
@@ -277,7 +277,7 @@ export const safetyTabContent = {
   all: {
     heroTitle: "Safety for Everyone.",
     heroDescription:
-      "At Bull Wave Rides, your safety is our highest priority. From verified drivers and real-time ride tracking to emergency assistance and 24×7 support, we are committed to making every journey secure, reliable, and comfortable.",
+      "At BW Rides, your safety is our highest priority. From verified drivers and real-time ride tracking to emergency assistance and 24×7 support, we are committed to making every journey secure, reliable, and comfortable.",
     heroImages: safetyHeroImages,
     highlightsTitle: "Covers Everyone",
     highlights: [
@@ -286,21 +286,21 @@ export const safetyTabContent = {
         description:
           "Every ride is protected through live tracking, verified driver information, emergency support, and trip-sharing features designed to keep you safe.",
         image: landingAssets.cityAuto,
-        alt: "Bull Wave Rides rider safety",
+        alt: "BW Rides rider safety",
       },
       {
         title: "For Captains",
         description:
-          "Bull Wave Rides supports captains with verification systems, safety training, emergency support tools, and fair platform policies.",
+          "BW Rides supports captains with verification systems, safety training, emergency support tools, and fair platform policies.",
         image: captainImages.partner,
-        alt: "Bull Wave Rides captain safety",
+        alt: "BW Rides captain safety",
       },
       {
         title: "Emergency Support",
         description:
           "Ambulance rides with verified medical transport captains and 24×7 emergency assistance when every second counts.",
         image: landingAssets.slideAmbulance,
-        alt: "Bull Wave Rides ambulance safety",
+        alt: "BW Rides ambulance safety",
       },
     ],
     measuresHeading: "Measures to ensure the well-being of both Riders and Drivers.",
@@ -312,7 +312,7 @@ export const safetyTabContent = {
   customer: {
     heroTitle: "Safety for Customers.",
     heroDescription:
-      "At Bull Wave Rides, the well-being of our customers is above everything else. We constantly enhance safety measures — live tracking, verified captains, SOS support, and trip sharing — so every ride is secure and comfortable.",
+      "At BW Rides, the well-being of our customers is above everything else. We constantly enhance safety measures — live tracking, verified captains, SOS support, and trip sharing — so every ride is secure and comfortable.",
     heroImages: customerHeroImages,
     highlightsTitle: "Built for riders",
     highlights: [
@@ -326,13 +326,13 @@ export const safetyTabContent = {
         title: "In-app SOS",
         description: "Emergency assistance available throughout your active ride.",
         image: customerImages.ambulance,
-        alt: "Bull Wave Rides emergency ambulance support",
+        alt: "BW Rides emergency ambulance support",
       },
       {
         title: "Verified captains",
         description: "See captain and vehicle details before you board every trip.",
         image: customerImages.familyRide,
-        alt: "Verified Bull Wave Rides captain with passengers",
+        alt: "Verified BW Rides captain with passengers",
       },
     ],
     measuresHeading: "Measures to ensure the well-being of our customers.",
@@ -345,7 +345,7 @@ export const safetyTabContent = {
       {
         icon: Siren,
         title: "SOS Emergency Assistance",
-        description: "One-tap access to Bull Wave Rides safety support during active trips.",
+        description: "One-tap access to BW Rides safety support during active trips.",
       },
       {
         icon: Phone,
@@ -367,7 +367,7 @@ export const safetyTabContent = {
   captain: {
     heroTitle: "Safety for Captains.",
     heroDescription:
-      "Captains are the backbone of Bull Wave Rides. We provide verification support, safety training, emergency tools, fair policies, and 24×7 assistance — so you can focus on safe, reliable rides every day.",
+      "Captains are the backbone of BW Rides. We provide verification support, safety training, emergency tools, fair policies, and 24×7 assistance — so you can focus on safe, reliable rides every day.",
     heroImages: captainHeroImages,
     highlightsTitle: "Built for captains",
     highlights: [
@@ -375,19 +375,19 @@ export const safetyTabContent = {
         title: "Safety training",
         description: "Mandatory onboarding and refresher courses every six months.",
         image: captainImages.partnerIllustration,
-        alt: "Bull Wave Rides captain in professional uniform",
+        alt: "BW Rides captain in professional uniform",
       },
       {
         title: "Fatigue guidelines",
         description: "Rest reminders and shift limits to prevent tired driving.",
         image: captainImages.fleet,
-        alt: "Bull Wave Rides captains on the road",
+        alt: "BW Rides captains on the road",
       },
       {
         title: "Captain helpline",
         description: "Dedicated 24×7 support for on-road safety concerns.",
         image: captainImages.partner,
-        alt: "Bull Wave Rides captain partner support",
+        alt: "BW Rides captain partner support",
       },
     ],
     measuresHeading: "Measures to ensure the well-being of our captains.",
@@ -483,7 +483,7 @@ export const safetyOverviewPage = {
   hero: {
     title: "Safety for all.",
     description:
-      "At Bull Wave Rides, the well-being of our customers and captains is above everything else. We constantly enhance our safety technologies and processes so every ride is secure, reliable, and comfortable.",
+      "At BW Rides, the well-being of our customers and captains is above everything else. We constantly enhance our safety technologies and processes so every ride is secure, reliable, and comfortable.",
     images: safetyHeroImages,
   },
   coversEveryone: {
@@ -498,7 +498,7 @@ export const safetyOverviewPage = {
   wayForward: {
     title: "Way forward on Safety",
     description:
-      "We are continuously working on new safety features — smarter route monitoring, enhanced SOS response, and improved verification — to make every Bull Wave Rides trip safer.",
+      "We are continuously working on new safety features — smarter route monitoring, enhanced SOS response, and improved verification — to make every BW Rides trip safer.",
     linkLabel: "KNOW MORE",
     href: ROUTES.profileHelp,
   },
@@ -509,17 +509,17 @@ export const customerSafetyPage = {
   hero: {
     title: "Customers Safety",
     description:
-      "At Bull Wave Rides, the well-being of our customers is above everything else. We constantly enhance our safety technologies and processes — live tracking, verified captains, SOS support, and trip sharing — so every ride is secure and comfortable.",
+      "At BW Rides, the well-being of our customers is above everything else. We constantly enhance our safety technologies and processes — live tracking, verified captains, SOS support, and trip sharing — so every ride is secure and comfortable.",
     image: BRAND_PHOTOS.streetCab,
-    alt: "Bull Wave Rides customer enjoying a safe street cab ride",
+    alt: "BW Rides customer enjoying a safe street cab ride",
     fallbackSrc: "/images/pic-12.png",
   },
   captainVerification: {
     title: "Captain Verification",
     description:
-      "At Bull Wave Rides, the safety and security of our customers is of utmost importance. We have a zero-tolerance policy towards captains who violate our community guidelines. Every captain undergoes a thorough background check and verification before joining the platform.",
+      "At BW Rides, the safety and security of our customers is of utmost importance. We have a zero-tolerance policy towards captains who violate our community guidelines. Every captain undergoes a thorough background check and verification before joining the platform.",
     image: BRAND_PHOTOS.captainsHero,
-    alt: "Verified Bull Wave Rides captain partner",
+    alt: "Verified BW Rides captain partner",
     imageFallbackSrc: BRAND_PHOTOS.captainsHeroPng,
     imageClassName: "object-[center_42%]",
     accordion: [
@@ -527,7 +527,7 @@ export const customerSafetyPage = {
         id: "hiring",
         title: "Hiring Process",
         content:
-          "Captains apply through the Bull Wave Rides partner app with valid ID, driving license, and vehicle documents. Our team reviews each application before scheduling onboarding.",
+          "Captains apply through the BW Rides partner app with valid ID, driving license, and vehicle documents. Our team reviews each application before scheduling onboarding.",
       },
       {
         id: "third-party",
@@ -558,7 +558,7 @@ export const customerSafetyPage = {
   appFeatures: {
     title: "App Safety Features",
     description:
-      "Safety tools built into the Bull Wave Rides app — share trips, mask your number, trigger SOS, and review captain details before every ride.",
+      "Safety tools built into the BW Rides app — share trips, mask your number, trigger SOS, and review captain details before every ride.",
     features: [
       {
         icon: Share2,
@@ -576,7 +576,7 @@ export const customerSafetyPage = {
         icon: Siren,
         title: "SOS Button",
         description:
-          "One-tap SOS connects you to Bull Wave Rides's safety team with your live location and trip details during an active ride.",
+          "One-tap SOS connects you to BW Rides' safety team with your live location and trip details during an active ride.",
       },
       {
         icon: UserCheck,
@@ -602,7 +602,7 @@ export const customerSafetyPage = {
   wayForward: {
     title: "Way forward on Safety",
     description:
-      "We are continuously working on new safety features — smarter route monitoring, enhanced SOS response, and improved verification — to make every Bull Wave Rides trip safer.",
+      "We are continuously working on new safety features — smarter route monitoring, enhanced SOS response, and improved verification — to make every BW Rides trip safer.",
     linkLabel: "KNOW MORE",
     href: ROUTES.profileHelp,
   },
@@ -613,9 +613,9 @@ export const captainSafetyPage = {
   hero: {
     title: "Captains Safety",
     description:
-      "At Bull Wave Rides, every captain on the road matters. All active rides are insured — with accidental coverage and medical benefits up to ₹5 Lakh for you and your family. From OPD treatment and hospitalisation to emergency support, we stand behind our partners so you can ride with confidence, every single trip.",
+      "At BW Rides, every captain on the road matters. All active rides are insured — with accidental coverage and medical benefits up to ₹5 Lakh for you and your family. From OPD treatment and hospitalisation to emergency support, we stand behind our partners so you can ride with confidence, every single trip.",
     image: BRAND_PHOTOS.captainsHero,
-    alt: "Bull Wave Rides captain on the road at night",
+    alt: "BW Rides captain on the road at night",
     fallbackSrc: BRAND_PHOTOS.captainsHeroPng,
     imageClassName: "object-[center_42%]",
   },
@@ -627,19 +627,19 @@ export const captainSafetyPage = {
         icon: Shield,
         title: "Insurance",
         description:
-          "Insurance can be claimed for any accident that occurs during the ride covering OPD treatment, hospitalisation, and accidental benefit with a maximum sum insured of ₹5 Lakh. Claims can be initiated as soon as the ride ends through the Bull Wave Rides captain app.",
+          "Insurance can be claimed for any accident that occurs during the ride covering OPD treatment, hospitalisation, and accidental benefit with a maximum sum insured of ₹5 Lakh. Claims can be initiated as soon as the ride ends through the BW Rides captain app.",
       },
       {
         icon: Headphones,
         title: "24×7 Customer Support",
         description:
-          "Both our captains and customers can report any kind of issues to Bull Wave Rides through the 24×7 support feature on the app during and after the ride.",
+          "Both our captains and customers can report any kind of issues to BW Rides through the 24×7 support feature on the app during and after the ride.",
       },
       {
         icon: Star,
         title: "Two-way Rating System",
         description:
-          "After every ride, both parties can rate each other. Any rating below 3 is flagged by Bull Wave Rides — our team reaches out within 10 minutes to address concerns. Captains are removed immediately in case of misconduct.",
+          "After every ride, both parties can rate each other. Any rating below 3 is flagged by BW Rides — our team reaches out within 10 minutes to address concerns. Captains are removed immediately in case of misconduct.",
       },
     ],
   },

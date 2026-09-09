@@ -65,7 +65,7 @@ export function CaptainsView() {
           <div className="order-1 min-w-0 lg:order-1">
             <AnimateIn>
               <p className="font-heading text-2xl font-semibold tracking-tight text-[#111411] sm:text-3xl">
-                Bull Wave Rides
+                BW Rides
               </p>
               <p className="mt-1 text-[10px] font-semibold tracking-[0.24em] text-[#6b7344] uppercase sm:text-[11px]">
                 Drive with us
@@ -174,7 +174,7 @@ export function CaptainsView() {
             >
               <ResilientImage
                 src={landingAssets.slideFleet}
-                alt="Bull Wave Rides captain fleet"
+                alt="BW Rides captain fleet"
                 fill
                 className={BRAND_PHOTO_CLASS}
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -192,7 +192,7 @@ export function CaptainsView() {
               Protected while you earn
             </h2>
             <p className="mt-4 text-sm font-light leading-relaxed text-[#4a5228] sm:text-base">
-              From verification to on-road SOS, Bull Wave Rides backs captains with
+              From verification to on-road SOS, BW Rides backs captains with
               tools and policies designed for calm, confident trips.
             </p>
             <Link

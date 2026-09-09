@@ -30,7 +30,6 @@ const PUBLIC_PATHS = new Set<string>([
   ROUTES.terms,
   ROUTES.privacy,
   ROUTES.legalSafety,
-  ROUTES.deleteAccount,
   // Auth / onboarding
   ROUTES.login,
   ROUTES.signup,

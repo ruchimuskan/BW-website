@@ -8,7 +8,7 @@ function getAccountLabel(): string {
   const session = getAuthSession();
   if (!session) return "My account";
   const name = getDisplayName(session);
-  if (name === "Bull Wave Rides User") return "My account";
+  if (name === "BW Rides User") return "My account";
   const firstName = name.split(/\s+/).filter(Boolean)[0];
   return firstName || "My account";
 }

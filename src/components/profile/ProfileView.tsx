@@ -100,7 +100,7 @@ export function ProfileView() {
           </div>
           <div className="flex min-w-0 flex-1 flex-col">
             <h3 className="font-heading text-lg font-semibold">
-              {isFreePlan ? "Upgrade to Bull Wave Rides Plus" : `${activePlanName} Member`}
+              {isFreePlan ? "Upgrade to BW Rides Plus" : `${activePlanName} Member`}
             </h3>
             <p className="text-sm font-light text-white/85">
               {isFreePlan ? "Priority rides, ride discounts & more" : activePlanBenefit}

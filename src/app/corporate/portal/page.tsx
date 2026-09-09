@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { CorporatePortalView } from "@/components/corporate/CorporatePortalView";
 
 export const metadata: Metadata = {
-  title: { absolute: "Company Portal | Bull Wave Rides" },
-  description: "Manage corporate employees for Bull Wave Rides for Business.",
+  title: { absolute: "Company Portal | BW Rides" },
+  description: "Manage corporate employees for BW Rides for Business.",
 };
 
 export default function CorporatePortalPage() {

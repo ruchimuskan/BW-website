@@ -32,7 +32,7 @@ const exploreLinks = [
 const legalLinks = [
   { label: "Terms of service", href: ROUTES.terms },
   { label: "Privacy policy", href: ROUTES.privacy },
-  { label: "Safety policy", href: ROUTES.legalSafety },
+  { label: "Safety policy", href: ROUTES.safety },
 ] as const;
 
 const fastReveal = { duration: 0.24, ease: easeOut } as const;
@@ -79,7 +79,7 @@ export function AppFooter({ className }: AppFooterProps) {
             <Link
               href={ROUTES.home}
               className="inline-flex transition-opacity duration-200 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
-              aria-label="Bull Wave Rides home"
+              aria-label="BW Rides home"
             >
               <WaveGoLogo
                 size="sm"
@@ -210,7 +210,7 @@ export function AppFooter({ className }: AppFooterProps) {
           transition={fastReveal}
           className="mt-7 flex flex-col items-center justify-between gap-2 border-t border-primary/10 pt-5 text-center text-xs text-[#4a5228] sm:mt-9 sm:flex-row sm:text-left"
         >
-          <p>© {year} Bull Wave Rides Technologies. All rights reserved.</p>
+          <p>© {year} BW Rides Technologies. All rights reserved.</p>
           <p className="font-light tracking-wide">
             Made for riders &amp; captains across India.
           </p>

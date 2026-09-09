@@ -28,6 +28,7 @@ import {
 import { ROUTES } from "@/constants/routes";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
 import { getProtectedPath } from "@/lib/auth-session";
+import { landingShell } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 
 type SafetyOverviewViewProps = {
@@ -41,12 +42,12 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
   return (
     <>
       <section
-        className="relative overflow-hidden px-4 py-14 sm:px-6 sm:py-20 lg:py-24"
+        className="relative overflow-hidden py-10 sm:py-14 lg:py-16 xl:py-20"
         aria-labelledby="overview-hero-heading"
       >
         <SafetyAtmosphere />
 
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 sm:gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14 xl:gap-16">
+        <div className={landingShell("relative grid items-center gap-8 sm:gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14 xl:gap-16")}>
           <div className="min-w-0">
             <AnimateIn>
               <SafetyEyebrow>Safety</SafetyEyebrow>
@@ -113,7 +114,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
       </section>
 
       <SafetySectionBand tinted id="covers-everyone" aria-labelledby="covers-everyone-heading">
-        <div className="mx-auto max-w-6xl">
+        <div className="w-full min-w-0">
           <AnimateIn>
             <SafetyEyebrow>Who we protect</SafetyEyebrow>
             <h2
@@ -182,7 +183,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
       </SafetySectionBand>
 
       <SafetySectionBand id="safety-journey" aria-labelledby="safety-journey-heading">
-        <div className="mx-auto max-w-6xl">
+        <div className="w-full min-w-0">
           <AnimateIn className="max-w-2xl">
             <SafetyEyebrow>How we protect</SafetyEyebrow>
             <h2
@@ -222,7 +223,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
       </SafetySectionBand>
 
       <SafetySectionBand tinted id="safety-measures" aria-labelledby="overview-measures-heading">
-        <div className="mx-auto max-w-6xl">
+        <div className="w-full min-w-0">
           <div className="overflow-hidden rounded-2xl border border-primary/15 bg-white shadow-[0_28px_64px_-36px_rgba(184,217,38,0.45)] sm:rounded-3xl">
             <div className="grid sm:grid-cols-2">
               <AnimateIn className="relative flex flex-col justify-center border-b border-primary/10 bg-[#38471B] p-6 text-white sm:border-r sm:p-8 lg:p-10">
@@ -261,7 +262,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
       </SafetySectionBand>
 
       <SafetySectionBand accent aria-labelledby="safety-features-heading">
-        <div className="mx-auto max-w-6xl">
+        <div className="w-full min-w-0">
           <AnimateIn className="max-w-2xl">
             <SafetyEyebrow>Built in</SafetyEyebrow>
             <h2
@@ -271,7 +272,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
               Safety tools on every trip
             </h2>
             <p className="mt-3 max-w-xl text-sm font-light leading-relaxed text-[#4a5228] sm:mt-4 sm:text-base">
-              From verified captains to one-tap SOS — every Bull Wave Rides journey
+              From verified captains to one-tap SOS — every BW Rides journey
               includes tools designed to keep you safe before, during, and after the ride.
             </p>
           </AnimateIn>
@@ -287,7 +288,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
       </SafetySectionBand>
 
       <SafetySectionBand tinted aria-labelledby="safety-faq-heading">
-        <div className="mx-auto max-w-3xl">
+        <div className="w-full min-w-0 lg:max-w-4xl lg:mx-auto">
           <AnimateIn className="text-center">
             <SafetyEyebrow>FAQ</SafetyEyebrow>
             <h2
@@ -314,8 +315,8 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
         </div>
       </SafetySectionBand>
 
-      <section className="px-4 pb-14 sm:px-6 sm:pb-20">
-        <AnimateIn className="mx-auto max-w-6xl">
+      <section className="pb-10 sm:pb-14 lg:pb-16">
+        <AnimateIn className={landingShell()}>
           <SafetyWayForward
             title={wayForward.title}
             description={wayForward.description}

@@ -45,7 +45,7 @@ export function LandingLuxuryHero({
   return (
     <section
       className="relative overflow-x-clip"
-      aria-label="Book a premium ride with Bull Wave Rides"
+      aria-label="Book a premium ride with BW Rides"
     >
       <div className="relative overflow-hidden bg-[#111411] text-white">
         <div
@@ -136,10 +136,11 @@ export function LandingLuxuryHero({
 
       <div
         className={landingShell(
-          "relative z-20 -mt-10 sm:-mt-11 md:-mt-12 lg:-mt-14",
+          "relative z-20 -mt-10 flex justify-center sm:-mt-11 md:-mt-12 lg:-mt-14",
         )}
       >
         <motion.div
+          className="w-full max-w-3xl lg:max-w-4xl"
           initial={reduceMotion || !mounted ? false : { y: 20 }}
           animate={{ y: 0 }}
           transition={{ ...transitions.reveal, delay: 0.14 }}

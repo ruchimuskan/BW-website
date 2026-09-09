@@ -273,7 +273,7 @@ export function LandingWelcomeSection({ onBookNow }: LandingWelcomeSectionProps)
               Travel that feels composed — from the first tap to the final drop.
             </h2>
             <p className="mt-5 max-w-xl text-sm font-light leading-relaxed text-[#4a5228] sm:mt-6 sm:text-lg">
-              Bull Wave Rides is built for riders who want calm confidence: premium
+              BW Rides is built for riders who want calm confidence: premium
               matching, polished vehicles, and emergency SOS when seconds matter.
             </p>
             <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-[#4a5228]/90 sm:text-base">

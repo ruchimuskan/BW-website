@@ -76,7 +76,7 @@ const companyLinks = SITE_LINK_PAGES.filter(
 const legalLinks = [
   { label: "Terms of service", href: ROUTES.terms },
   { label: "Privacy policy", href: ROUTES.privacy },
-  { label: "Safety policy", href: ROUTES.legalSafety },
+  { label: "Safety policy", href: ROUTES.safety },
 ] as const;
 
 const fastReveal = { duration: 0.24, ease: easeOut } as const;
@@ -349,7 +349,7 @@ export function LandingFooter() {
           <div className="relative flex flex-col items-start justify-between gap-5 sm:gap-6 lg:flex-row lg:items-center">
             <div className="min-w-0 max-w-xl">
               <p className="text-[10px] font-semibold tracking-[0.22em] text-[#111411]/70 uppercase sm:text-[11px]">
-                Ride with Bull Wave
+                Ride with BW Rides
               </p>
               <h2 className="mt-2 font-heading text-xl font-semibold tracking-tight text-[#111411] sm:text-2xl lg:text-[1.75rem]">
                 Ready for your next ride?
@@ -464,7 +464,7 @@ export function LandingFooter() {
             <Link
               href={ROUTES.landing}
               className="inline-flex transition-opacity duration-200 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
-              aria-label="Bull Wave Rides home"
+              aria-label="BW Rides home"
             >
               <WaveGoLogo size="md" variant="light" className="h-[4.5rem] w-[4.5rem] sm:h-20 sm:w-20" />
             </Link>
@@ -547,7 +547,7 @@ export function LandingFooter() {
           className="mt-9 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-5 text-center text-sm text-white/50 sm:mt-10 sm:flex-row sm:gap-4 sm:text-left"
         >
           <p className="min-w-0">
-            © 2026 Bull Wave Rides Technologies. All rights reserved.
+            © 2026 BW Rides Technologies. All rights reserved.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-1 gap-y-1 text-xs tracking-wide">
             {legalLinks.map((link) => (

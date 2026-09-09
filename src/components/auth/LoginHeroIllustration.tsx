@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-/** Bull Wave Rides brand palette — matches globals.css tokens for inline SVG */
+/** BW Rides brand palette — matches globals.css tokens for inline SVG */
 const BRAND = {
   primary: "#B8D926",
   secondary: "#C8E84A",
@@ -27,7 +27,7 @@ export function LoginHeroIllustration() {
         xmlns="http://www.w3.org/2000/svg"
         className="h-full w-full object-contain drop-shadow-2xl"
         role="img"
-        aria-label="Bull Wave Rides transportation services"
+        aria-label="BW Rides transportation services"
       >
         <defs>
           <linearGradient id="loginSky" x1="0" y1="0" x2="0" y2="1">

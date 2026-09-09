@@ -14,7 +14,7 @@ export const metadata: Metadata = pageMetadata({
     "bike taxi",
     "auto booking",
     "cab booking",
-    "Bull Wave Rides",
+    "BW Rides",
   ],
 });
 

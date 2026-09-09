@@ -119,7 +119,7 @@ export function RideSafetyCheckDialog({
               id="ride-safety-check-desc"
               className="mt-2 text-center text-sm leading-relaxed text-[#4a5228]"
             >
-              We can alert your emergency contacts and Bull Wave Rides support with
+              We can alert your emergency contacts and BW Rides support with
               your live location and captain details right away.
             </p>
 

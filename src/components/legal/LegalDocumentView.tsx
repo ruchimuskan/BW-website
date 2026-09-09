@@ -1,6 +1,7 @@
-import Link from "next/link";
+"use client";
+
 import type { LucideIcon } from "lucide-react";
-import { InfoPageLayout } from "@/components/layout";
+import { PublicLegalShell } from "@/components/legal/PublicLegalShell";
 import { cn } from "@/lib/utils";
 
 interface LegalSection {
@@ -28,70 +29,51 @@ export function LegalDocumentView({
   relatedLinks,
 }: LegalDocumentViewProps) {
   return (
-    <InfoPageLayout title={title}>
-      <div className="max-w-3xl">
-        {(subtitle || Icon) && (
-          <div className="mb-8 flex gap-4 rounded-[20px] border border-border bg-card p-5 shadow-sm">
-            {Icon && (
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-primary/10 text-primary">
-                <Icon className="h-6 w-6" />
-              </div>
-            )}
-            <div>
-              {subtitle && (
-                <p className="text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
+    <PublicLegalShell
+      title={title}
+      description={subtitle}
+      relatedLinks={relatedLinks}
+    >
+      {(subtitle || Icon) && (
+        <div className="mb-5 flex gap-3 rounded-xl border border-[#E4E7E0] bg-white p-4 shadow-sm sm:mb-6 sm:p-5">
+          {Icon ? (
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#C6E31A]/20 text-[#1B3A22]">
+              <Icon className="h-5 w-5" />
+            </div>
+          ) : null}
+          <div className="min-w-0">
+            {subtitle ? (
+              <p className="text-sm leading-relaxed text-[#5A6158]">{subtitle}</p>
+            ) : null}
+            <p className="mt-2 text-xs font-medium text-[#5A6158]/80">
+              Last updated: {lastUpdated}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {sections && sections.length > 0 ? (
+        <div className="space-y-3 sm:space-y-4">
+          {sections.map((section, index) => (
+            <article
+              key={section.title}
+              className={cn(
+                "rounded-xl border border-[#E4E7E0] bg-white p-4 shadow-sm sm:p-5",
+                index === 0 && "border-[#C6E31A]/40",
               )}
-              <p className="mt-2 text-xs font-medium text-muted-foreground/70">
-                Last updated: {lastUpdated}
+            >
+              <h2 className="font-heading text-base font-bold text-[#1B3A22]">
+                {section.title}
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-[#5A6158]">
+                {section.content}
               </p>
-            </div>
-          </div>
-        )}
-
-        {sections && sections.length > 0 ? (
-          <div className="space-y-4">
-            {sections.map((section, index) => (
-              <article
-                key={section.title}
-                className={cn(
-                  "rounded-[20px] border border-border bg-card p-5 shadow-sm",
-                  index === 0 && "border-primary/15"
-                )}
-              >
-                <h2 className="font-heading text-base font-bold text-foreground">
-                  {section.title}
-                </h2>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {section.content}
-                </p>
-              </article>
-            ))}
-          </div>
-        ) : (
-          children
-        )}
-
-        {relatedLinks && relatedLinks.length > 0 && (
-          <div className="mt-8 rounded-[20px] border border-border bg-muted/30 p-5">
-            <p className="mb-3 font-heading text-sm font-bold text-foreground">See also</p>
-            <div className="flex flex-wrap gap-2">
-              {relatedLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-primary transition-colors hover:border-primary/30 hover:bg-primary/5"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <p className="mt-6 text-xs text-muted-foreground">
-          This is a UI preview document. The complete version will be published before public launch.
-        </p>
-      </div>
-    </InfoPageLayout>
+            </article>
+          ))}
+        </div>
+      ) : (
+        children
+      )}
+    </PublicLegalShell>
   );
 }

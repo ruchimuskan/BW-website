@@ -357,20 +357,20 @@ export function LocationCard({
             <button
               type="button"
               onClick={() => setScheduleOpen(true)}
-              className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-primary/12 bg-[#ffffff] px-3.5 py-3 text-left transition-colors hover:border-primary/25 hover:bg-[#f4f9e4] active:scale-[0.99] sm:px-4"
+              className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-[#e8eed8] bg-[#f8faf2] px-3.5 py-3 text-left transition-colors hover:border-[#C6E31A]/55 hover:bg-white active:scale-[0.99] sm:px-4"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-primary/15 bg-white text-primary">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#C6E31A] text-[#111411]">
                 <Clock3 className="h-4 w-4" strokeWidth={1.85} />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[10px] font-semibold tracking-[0.14em] text-primary uppercase">
-                  When to go
+                <span className="block text-[10px] font-semibold tracking-[0.14em] text-[#5a7a12] uppercase">
+                  {scheduledAt ? "Reschedule" : "When to go"}
                 </span>
-                <span className="mt-0.5 block text-sm font-semibold text-[#38471B]">
+                <span className="mt-0.5 block text-sm font-semibold text-[#111411]">
                   {formatScheduleLabel(scheduledAt)}
                 </span>
                 {preview && scheduledAt ? (
-                  <span className="mt-1 block text-[11px] font-medium text-[#4a5228]">
+                  <span className="mt-1 block text-[11px] font-medium text-[#5a6330]">
                     {preview.nearbyDriversCount != null
                       ? `${preview.nearbyDriversCount} captains nearby`
                       : preview.vehicleCount != null

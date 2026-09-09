@@ -31,8 +31,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/corporate/login",
     "/legal/privacy",
     "/legal/terms",
-    "/legal/safety",
-    "/delete-account",
   ];
 
   const uniqueRoutes = [...new Set(staticRoutes)];

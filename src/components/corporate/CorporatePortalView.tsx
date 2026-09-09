@@ -101,7 +101,7 @@ export function CorporatePortalView() {
             <div>
               <h1 className="text-2xl font-bold text-foreground">Company portal</h1>
               <p className="text-sm text-muted-foreground">
-                Add employees who already have a Bull Wave Rides user account.
+                Add employees who already have a BW Rides user account.
               </p>
             </div>
           </div>

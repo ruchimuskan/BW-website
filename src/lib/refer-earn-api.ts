@@ -101,8 +101,8 @@ const PLAY_STORE =
   "https://play.google.com/store/apps/details?id=com.bullwave.rides.user";
 
 function defaultShareMessage(code: string) {
-  if (!code) return "Join Bull Wave Rides.";
-  return `Join Bull Wave Rides with my code ${code}. Download the app: ${PLAY_STORE}&ref=${code}`;
+  if (!code) return "Join BW Rides.";
+  return `Join BW Rides with my code ${code}. Download the app: ${PLAY_STORE}&ref=${code}`;
 }
 
 function friendsPhrase(count: number) {

@@ -125,7 +125,7 @@ export function SosSection() {
             <div className="relative mx-auto aspect-[5/4] w-full max-w-md overflow-hidden rounded-xl border border-primary/12 bg-[#f7fbe8] sm:rounded-2xl lg:max-w-none">
               <ResilientImage
                 src={landingAssets.slideAmbulance}
-                alt="Bull Wave Rides emergency ambulance"
+                alt="BW Rides emergency ambulance"
                 fill
                 quality={85}
                 className={BRAND_PHOTO_CLASS}

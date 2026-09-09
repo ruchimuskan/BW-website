@@ -35,7 +35,6 @@ const NO_BOTTOM_NAV_PREFIXES = [
   ROUTES.about,
   ROUTES.terms,
   ROUTES.privacy,
-  ROUTES.deleteAccount,
 ] as const;
 
 function pathHasBottomNav(pathname: string): boolean {

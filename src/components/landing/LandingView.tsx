@@ -12,7 +12,6 @@ import { LandingPremiumGallery } from "@/components/landing/LandingPremiumGaller
 import { LandingServicesSection } from "@/components/landing/LandingServicesSection";
 import { ROUTES } from "@/constants/routes";
 import {
-  landingServices,
   type LandingBookingTab,
   type ServiceItem,
 } from "@/constants/services";
@@ -97,7 +96,7 @@ export function LandingView() {
     null,
   );
   const [isBooking, setIsBooking] = useState(false);
-  const [services, setServices] = useState<ServiceItem[]>(landingServices);
+  const [services, setServices] = useState<ServiceItem[]>([]);
   const [servicesLoading, setServicesLoading] = useState(true);
 
   const dropoffCopy = getDropoffLocationCopy(activeTab);
@@ -107,7 +106,7 @@ export function LandingView() {
     let cancelled = false;
     void fetchLandingServices()
       .then((items) => {
-        if (!cancelled && items.length > 0) setServices(items);
+        if (!cancelled) setServices(items);
       })
       .finally(() => {
         if (!cancelled) setServicesLoading(false);
@@ -138,15 +137,6 @@ export function LandingView() {
         if (draft.tab) setActiveTab(draft.tab);
         if (draft.scheduledAt) setScheduledAt(draft.scheduledAt);
       }
-    }
-
-    if (!urlScheduled) {
-      setScheduledAt((prev) => {
-        if (prev) return prev;
-        const next = new Date();
-        next.setMinutes(next.getMinutes() + 20);
-        return next.toISOString();
-      });
     }
 
     // Returning from location search should stay on the book widget, not jump to top.
@@ -247,6 +237,34 @@ export function LandingView() {
     });
   };
 
+  const handleScheduleConfirm = async (iso: string) => {
+    setSchedulePreviewLabel(null);
+    try {
+      const preview = await fetchSchedulePreview({
+        scheduledAt: iso,
+        coords: tripCoords,
+        serviceGroup: "ride",
+      });
+      if (preview.sampleFareMin != null && preview.sampleFareMax != null) {
+        setSchedulePreviewLabel(
+          `Est. ₹${Math.round(preview.sampleFareMin)}–₹${Math.round(preview.sampleFareMax)} · ${preview.vehicleCount ?? "—"} options`,
+        );
+      } else if (preview.nearbyDriversCount != null) {
+        setSchedulePreviewLabel(
+          `${preview.nearbyDriversCount} captains nearby · scheduled pickup`,
+        );
+      } else if (preview.vehicleCount != null) {
+        setSchedulePreviewLabel(
+          `${preview.vehicleCount} vehicle options · scheduled pickup`,
+        );
+      } else {
+        setSchedulePreviewLabel("Schedule saved · confirm on next step");
+      }
+    } catch {
+      setSchedulePreviewLabel("Schedule saved · fares load on next step");
+    }
+  };
+
   const handleBook = (e: React.FormEvent) => {
     e.preventDefault();
     if (!pickup || !dropoff) {
@@ -322,16 +340,20 @@ export function LandingView() {
         onOpenLocation={openLocationSearch}
         onSubmit={handleBook}
         scheduledAt={scheduledAt}
-        onScheduledAtChange={setScheduledAt}
+        onScheduledAtChange={(iso) => {
+          setScheduledAt(iso);
+          if (!iso) setSchedulePreviewLabel(null);
+        }}
+        onScheduleConfirm={handleScheduleConfirm}
         schedulePreviewLabel={schedulePreviewLabel}
         isSubmitting={isBooking}
       />
 
+      <LandingServicesSection services={services} isLoading={servicesLoading} />
+
       <LandingPremiumGallery />
 
       <LandingPremiumExperience />
-
-      <LandingServicesSection services={services} isLoading={servicesLoading} />
 
       <LandingPillarsSection />
 

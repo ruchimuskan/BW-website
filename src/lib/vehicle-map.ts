@@ -30,37 +30,40 @@ export const VEHICLE_TO_CATEGORY_SLUG: Partial<Record<RideVehicleId, string>> = 
 
 export function vehicleImageForSlug(slug: string): string {
   const normalized = slug.toLowerCase();
-  if (normalized.includes("ambulance")) return "/images/img-3.webp";
-  if (normalized.includes("parcel")) return "/images/img-2.webp";
+  if (normalized.includes("ambulance")) return "/images/img-3.png";
+  if (normalized.includes("parcel")) return "/images/img-2.png";
   if (normalized.includes("travel") || normalized.includes("stay")) {
-    return "/images/pic-6.webp";
+    return "/images/pic-6.png";
   }
+  // E-rickshaw first (before generic "auto") — dedicated asset.
   if (normalized.includes("rickshaw") || normalized.includes("e-rick")) {
-    return "/images/pic-5.webp";
+    return "/images/services/e-rickshaw.png";
   }
-  if (normalized.includes("auto")) return "/images/services/auto.webp";
-  if (normalized.includes("bike")) return "/images/pic-14.webp";
+  // Classic Bajaj-style auto / electric-auto — different asset from e-rickshaw.
+  if (
+    normalized.includes("electric-auto") ||
+    normalized.includes("e-auto") ||
+    /\bauto\b/.test(normalized) ||
+    normalized.includes("auto")
+  ) {
+    return "/images/services/auto.png";
+  }
+  if (normalized.includes("bike")) return "/images/pic-14.png";
   if (
     normalized.includes("xl") ||
     normalized.includes("suv") ||
-    normalized.includes("innova")
-  ) {
-    return "/images/pic-11.webp";
-  }
-  if (normalized.includes("premium") || normalized.includes("luxury")) {
-    return "/images/img-1.webp";
-  }
-  if (normalized.includes("economy") || normalized.includes("sedan")) {
-    return "/images/pic-13.webp";
-  }
-  if (
+    normalized.includes("innova") ||
+    normalized.includes("premium") ||
+    normalized.includes("luxury") ||
+    normalized.includes("economy") ||
+    normalized.includes("sedan") ||
     normalized.includes("cab") ||
     normalized.includes("comfort") ||
     normalized.includes("car")
   ) {
-    return "/images/pic-13.webp";
+    return "/images/services/cab-lime.png";
   }
-  return "/images/pic-13.webp";
+  return "/images/services/cab-lime.png";
 }
 
 /** Normalize admin / legacy labels (e.g. Bike-Taxi → Bike). */
@@ -78,15 +81,14 @@ export function displayVehicleName(name: string | null | undefined, slug?: strin
 }
 
 const DISTINCT_VEHICLE_IMAGES = [
-  "/images/pic-14.webp",
-  "/images/pic-5.webp",
-  "/images/services/auto.webp",
-  "/images/pic-11.webp",
-  "/images/pic-13.webp",
-  "/images/img-1.webp",
-  "/images/img-2.webp",
-  "/images/img-3.webp",
-  "/images/pic-6.webp",
+  "/images/pic-14.png",
+  "/images/services/e-rickshaw.png",
+  "/images/services/auto.png",
+  "/images/services/cab-lime.png",
+  "/images/services/car.webp",
+  "/images/img-2.png",
+  "/images/img-3.png",
+  "/images/pic-6.png",
 ] as const;
 
 function unusedVehicleImage(preferred: string, used?: Set<string>): string {

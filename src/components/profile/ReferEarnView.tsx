@@ -66,7 +66,7 @@ export function ReferEarnView() {
 
   const inviteMessage = (dashboard: ReferEarnDashboard) =>
     dashboard.shareMessage?.trim() ||
-    `Join Bull Wave Rides with my code ${dashboard.inviteCode}.`;
+    `Join BW Rides with my code ${dashboard.inviteCode}.`;
 
   const shareInvite = async (dashboard: ReferEarnDashboard) => {
     const text = inviteMessage(dashboard);
@@ -74,7 +74,7 @@ export function ReferEarnView() {
     try {
       if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
         await navigator.share({
-          title: "Bull Wave Rides",
+          title: "BW Rides",
           text,
         });
         return;

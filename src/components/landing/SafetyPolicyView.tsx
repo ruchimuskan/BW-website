@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Car, Shield, UserRound } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingHeader } from "@/components/landing/LandingHeader";
+import { MarketingPageShell } from "@/components/landing/MarketingPageShell";
 import { CaptainSafetyView } from "@/components/landing/CaptainSafetyView";
 import { CustomerSafetyView } from "@/components/landing/CustomerSafetyView";
 import { SafetyOverviewView } from "@/components/landing/SafetyOverviewView";
@@ -11,6 +12,7 @@ import {
   safetyTabs,
   type SafetyAudience,
 } from "@/constants/safety-content";
+import { landingShell } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 
 function parseSafetyTab(raw: string | null): SafetyAudience {
@@ -58,11 +60,11 @@ export function SafetyPolicyView() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-b from-[#fafdf4] via-white to-[#ffffff] font-sans">
+    <MarketingPageShell className="min-h-[100dvh] bg-gradient-to-b from-[#fafdf4] via-white to-[#ffffff]">
       <LandingHeader />
 
-      <div className="sticky top-[calc(4.15rem+env(safe-area-inset-top,0px))] z-30 border-b border-primary/10 bg-[#fafdf4]/90 backdrop-blur-xl md:top-[calc(4.4rem+env(safe-area-inset-top,0px))]">
-        <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6 sm:py-4">
+      <div className="sticky top-[calc(4.15rem+env(safe-area-inset-top,0px))] z-30 border-b border-primary/10 bg-[#fafdf4]/92 backdrop-blur-xl md:top-[calc(4.4rem+env(safe-area-inset-top,0px))]">
+        <div className={landingShell("py-2.5 sm:py-3.5")}>
           <div
             className="flex gap-1 overflow-x-auto rounded-2xl border border-[#dce8a8]/60 bg-white/95 p-1 shadow-[0_16px_40px_-28px_rgba(184,217,38,0.35)] [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-1.5 [&::-webkit-scrollbar]:hidden"
             role="tablist"
@@ -79,7 +81,7 @@ export function SafetyPolicyView() {
                   aria-selected={selected}
                   onClick={() => selectTab(tab.id)}
                   className={cn(
-                    "relative flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold tracking-wide transition-all duration-300 sm:px-5 sm:py-3.5",
+                    "relative flex min-w-[7.5rem] flex-1 items-center justify-center gap-1.5 rounded-xl px-2.5 py-2.5 text-[12px] font-semibold tracking-wide transition-all duration-300 sm:min-w-0 sm:gap-2 sm:px-5 sm:py-3.5 sm:text-sm",
                     selected
                       ? "bg-gradient-to-r from-primary to-[#9BB820] text-white shadow-[0_10px_28px_-14px_rgba(184,217,38,0.65)]"
                       : "text-[#4a5228]/80 hover:bg-primary/[0.05] hover:text-primary",
@@ -94,7 +96,7 @@ export function SafetyPolicyView() {
         </div>
       </div>
 
-      <div role="tabpanel">
+      <div role="tabpanel" className="min-w-0">
         {activeTab === "customer" ? (
           <CustomerSafetyView />
         ) : activeTab === "captain" ? (
@@ -105,6 +107,6 @@ export function SafetyPolicyView() {
       </div>
 
       <LandingFooter />
-    </div>
+    </MarketingPageShell>
   );
 }

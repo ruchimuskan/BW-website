@@ -1,14 +1,21 @@
 "use client";
 
 import { HelpLegalDocument } from "@/components/profile/help/HelpRemoteContent";
-import { InfoPageLayout } from "@/components/layout";
+import { PublicLegalShell } from "@/components/legal/PublicLegalShell";
+import { ROUTES } from "@/constants/routes";
 
 export default function TermsPage() {
   return (
-    <InfoPageLayout title="Terms of Service">
-      <div className="mx-auto w-full max-w-3xl">
-        <HelpLegalDocument source="terms" />
-      </div>
-    </InfoPageLayout>
+    <PublicLegalShell
+      title="Terms of Service"
+      eyebrow="Legal · Terms"
+      description="The rules that apply when you use BW Rides."
+      relatedLinks={[
+        { label: "Privacy Policy", href: ROUTES.privacy },
+        { label: "Safety policy", href: ROUTES.safety },
+      ]}
+    >
+      <HelpLegalDocument source="terms" variant="public" />
+    </PublicLegalShell>
   );
 }

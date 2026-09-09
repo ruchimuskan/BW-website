@@ -26,7 +26,7 @@ export function LandingCaptainsSection() {
       <div className={landingShell("grid grid-cols-1 items-center gap-6 py-8 sm:gap-8 sm:py-10 lg:grid-cols-2 lg:gap-10 lg:py-12")}>
         <AnimateIn className="order-2 min-w-0 lg:order-1">
           <p className="text-[9px] font-semibold tracking-[0.22em] uppercase text-[#6b7344] sm:text-[10px]">
-            Drive with Bull Wave Rides
+            Drive with BW Rides
           </p>
           <div className="mt-1.5 h-px w-10 bg-gradient-to-r from-[#B8D926] to-transparent" />
           <h2 className="mt-2.5 font-heading text-[1.3rem] font-light leading-snug tracking-tight text-[#283614] sm:text-[1.55rem] lg:text-[1.75rem]">

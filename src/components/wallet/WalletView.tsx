@@ -101,7 +101,7 @@ const paymentMethods = [
   {
     id: "wallet",
     title: "Wallet",
-    description: "Use your Bull Wave Rides balance",
+    description: "Use your BW Rides balance",
     icon: Wallet,
     badge: null,
     accent: "from-secondary/20 to-primary/10",
@@ -426,7 +426,7 @@ export function WalletView() {
                     <div className="relative mt-3 space-y-2.5">
                       <div className="flex items-center justify-between gap-3 text-sm">
                         <span className="text-muted-foreground">
-                          Bull Wave Rides Cash
+                          BW Rides Cash
                         </span>
                         <span className="font-semibold tabular-nums text-foreground">
                           {formatFare(cashBalance)}

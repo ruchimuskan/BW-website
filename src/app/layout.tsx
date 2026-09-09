@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   description: DEFAULT_SITE_DESCRIPTION,
   applicationName: SITE_BRAND,
   keywords: [
-    "Bull Wave Rides",
+    "BW Rides",
     "Bullwave Rides",
     "BW Rides",
     "bike taxi",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     "ambulance SOS",
     "ride hailing",
     "book a ride",
-    "drive with Bull Wave Rides",
+    "drive with BW Rides",
   ],
   authors: [{ name: SITE_BRAND, url: siteUrl }],
   creator: SITE_BRAND,

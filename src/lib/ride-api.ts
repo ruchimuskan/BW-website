@@ -359,6 +359,7 @@ export async function estimateRideFares(payload: {
   duration_min?: number;
   service_group?: string;
   stops?: TripStop[];
+  scheduled_at?: string;
 }): Promise<{
   discount_percent: number | null;
   distance_km?: number;
@@ -378,6 +379,7 @@ export async function estimateRideFares(payload: {
         dropoff_lng: payload.dropoff_lng,
         ...(payload.distance_km != null ? { distance_km: payload.distance_km } : {}),
         ...(payload.duration_min != null ? { duration_min: payload.duration_min } : {}),
+        ...(payload.scheduled_at ? { scheduled_at: payload.scheduled_at } : {}),
         ...(stopsPayload.length > 0 ? { stops: stopsPayload } : {}),
       }),
     },
@@ -1003,7 +1005,7 @@ export function buildLiveRideShareText(ride: Ride, etaMinutes?: number | null): 
   const rideRef = ride.public_id?.trim() || ride.id;
 
   return [
-    "Bull Wave Rides — Live Trip Share",
+    "BW Rides — Live Trip Share",
     `Driver: ${driver}`,
     `Vehicle: ${vehicle}`,
     `Destination: ${ride.dropoff_address}`,
@@ -1013,6 +1015,9 @@ export function buildLiveRideShareText(ride: Ride, etaMinutes?: number | null): 
   ].join("\n");
 }
 
+/** Nearby-driver ETA must come from a live endpoint — do not invent values. */
 export function getNearbyDrivers(): Promise<{ count: number; eta_minutes: number }> {
-  return Promise.resolve({ count: 3, eta_minutes: 5 });
+  return Promise.reject(
+    new Error("Nearby driver ETA is not available from the server yet."),
+  );
 }

@@ -11,7 +11,6 @@ import {
   Building2,
   CheckCircle2,
   ClipboardList,
-  FileCheck2,
   Loader2,
   Lock,
   Receipt,
@@ -88,7 +87,7 @@ const steps = [
       "Provide legal, billing, and primary admin details for a secure review.",
   },
   {
-    icon: FileCheck2,
+    icon: BadgeCheck,
     title: "Verification & approval",
     detail:
       "Our business desk confirms your organisation and activates company billing.",
@@ -244,7 +243,7 @@ export function CorporateRegisterView() {
                       key={item.label}
                       className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-3 py-1.5 text-[12px] font-medium text-white/80"
                     >
-                      <Icon className="h-3.5 w-3.5 text-secondary" />
+                      <Icon className="h-3.5 w-3.5 text-[#C6E31A]" strokeWidth={2.25} />
                       {item.label}
                     </li>
                   );
@@ -279,15 +278,15 @@ export function CorporateRegisterView() {
                         {i < steps.length - 1 ? (
                           <span
                             aria-hidden
-                            className="absolute left-[19px] top-10 h-[calc(100%-0.5rem)] w-px bg-gradient-to-b from-secondary/60 to-white/10"
+                            className="absolute left-[19px] top-10 h-[calc(100%-0.5rem)] w-px bg-gradient-to-b from-[#C6E31A]/70 to-white/15"
                           />
                         ) : null}
-                        <span className="relative z-[1] flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-[#1c0f2a] text-secondary shadow-[0_0_0_4px_rgba(18,8,28,0.9)]">
-                          <Icon className="h-4 w-4" strokeWidth={1.75} />
+                        <span className="relative z-[1] flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#C6E31A]/45 bg-[#1c0f2a] text-[#C6E31A] shadow-[0_0_0_4px_rgba(18,8,28,0.9)]">
+                          <Icon className="h-[18px] w-[18px]" strokeWidth={2.25} aria-hidden />
                         </span>
                         <div className="min-w-0 pt-0.5">
                           <div className="flex items-baseline gap-2">
-                            <span className="font-heading text-[11px] tracking-[0.16em] text-secondary/90">
+                            <span className="font-heading text-[11px] tracking-[0.16em] text-[#C6E31A]">
                               {String(i + 1).padStart(2, "0")}
                             </span>
                             <p className="text-sm font-semibold tracking-tight text-white">
@@ -321,7 +320,7 @@ export function CorporateRegisterView() {
               Built for finance, ops, and employee experience
             </h2>
             <p className="mt-3 text-sm font-light leading-relaxed text-[#4a5228] sm:text-[15px]">
-              A structured corporate layer on top of Bull Wave Rides — so travel
+              A structured corporate layer on top of BW Rides — so travel
               is easier to approve, bill, and oversee.
             </p>
           </AnimateIn>
@@ -367,12 +366,12 @@ export function CorporateRegisterView() {
                   const Icon = step.icon;
                   return (
                     <li key={step.title} className="flex items-start gap-3.5">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-secondary">
-                        <Icon className="h-4 w-4" strokeWidth={1.75} />
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#C6E31A]/45 bg-white/5 text-[#C6E31A]">
+                        <Icon className="h-[18px] w-[18px]" strokeWidth={2.25} aria-hidden />
                       </span>
                       <div className="min-w-0 pt-0.5">
                         <p className="text-sm font-semibold text-white">
-                          <span className="mr-2 font-heading text-[11px] tracking-[0.14em] text-secondary">
+                          <span className="mr-2 font-heading text-[11px] tracking-[0.14em] text-[#C6E31A]">
                             {String(i + 1).padStart(2, "0")}
                           </span>
                           {step.title}

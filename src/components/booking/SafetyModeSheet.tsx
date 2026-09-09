@@ -137,7 +137,7 @@ export function SafetyModeSheet({
       const text = buildLiveRideShareText(liveRide, etaMinutes);
       if (navigator.share) {
         await navigator.share({
-          title: "Bull Wave Rides — Live location",
+          title: "BW Rides — Live location",
           text,
         });
         onToast("Live location shared");
@@ -384,7 +384,7 @@ export function SafetyModeSheet({
         ? "Describe what happened. Support will review with your ride details."
         : panel === "contacts"
           ? "Used for SOS alerts during active rides."
-          : "Recording is uploaded securely to Bull Wave Rides support.";
+          : "Recording is uploaded securely to BW Rides support.";
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

@@ -176,7 +176,7 @@ export function AboutUsView() {
           <div className="min-w-0 order-2 lg:order-1">
             <AnimateIn>
               <p className="font-heading text-3xl font-semibold tracking-tight text-[#38471B] sm:text-4xl lg:text-[2.75rem]">
-                Bull Wave Rides
+                BW Rides
               </p>
               <p className="mt-1 text-[10px] font-semibold tracking-[0.24em] text-[#6B7344] uppercase sm:text-[11px]">
                 About us
@@ -196,7 +196,7 @@ export function AboutUsView() {
             <AnimateIn delay={0.1}>
               <p className="mt-3 max-w-md text-sm font-light leading-relaxed text-[#4a5228] sm:mt-4 sm:text-base">
                 We are not an option — we are a choice. Millions of riders trust
-                Bull Wave Rides for safe, transparently priced journeys from bike
+                BW Rides for safe, transparently priced journeys from bike
                 to emergency ambulance.
               </p>
             </AnimateIn>
@@ -232,7 +232,7 @@ export function AboutUsView() {
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#dce8a8]/60 bg-[#1a1f16] shadow-[0_28px_56px_-28px_rgba(40,54,20,0.5)] sm:rounded-3xl">
               <ResilientImage
                 src={BRAND_PHOTOS.captainsHero}
-                alt="Bull Wave Rides captain driving at night"
+                alt="BW Rides captain driving at night"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 560px"
@@ -253,7 +253,7 @@ export function AboutUsView() {
                 <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border-2 border-white/85 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.55)] sm:h-16 sm:w-16 sm:rounded-2xl">
                   <ResilientImage
                     src={landingAssets.cityBike}
-                    alt="Bull Wave Rides bike taxi"
+                    alt="BW Rides bike taxi"
                     fill
                     sizes="64px"
                     className={cn(BRAND_PHOTO_CLASS, "object-center")}
@@ -279,7 +279,7 @@ export function AboutUsView() {
               Calm, confident mobility for every rider
             </h2>
             <p className="mt-3 text-sm font-light leading-relaxed text-[#4a5228] sm:text-base">
-              Bull Wave Rides brings premium city travel, secure deliveries, and
+              BW Rides brings premium city travel, secure deliveries, and
               emergency care into one polished experience — designed for how
               India moves today.
             </p>
@@ -407,11 +407,11 @@ export function AboutUsView() {
               Grow with us
             </p>
             <h2 className="mt-3 font-heading text-2xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
-              Partner with Bull Wave Rides
+              Partner with BW Rides
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm font-light leading-relaxed text-white/85 sm:mt-4 sm:text-base">
               Drive with us as a captain, or bring premium mobility to your
-              workplace with Bull Wave Rides Business.
+              workplace with BW Rides Business.
             </p>
             <div className="mt-7 flex w-full max-w-md flex-col items-stretch gap-3 sm:mt-8 sm:max-w-none sm:flex-row sm:justify-center">
               <GlowButton
@@ -426,7 +426,7 @@ export function AboutUsView() {
                 className="px-8"
                 onClick={() => router.push(ROUTES.corporateRegister)}
               >
-                Bull Wave Business
+                BW Rides Business
                 <span aria-hidden>→</span>
               </GlowButton>
             </div>

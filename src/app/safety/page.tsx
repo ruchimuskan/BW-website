@@ -9,7 +9,7 @@ const page =
   SITE_LINK_PAGES.find((p) => p.path === "/safety");
 
 export const metadata: Metadata = pageMetadata({
-  title: page?.title ?? "Safety | Bull Wave Rides",
+  title: page?.title ?? "Safety | BW Rides",
   description:
     page?.description ??
     "Safety tools for riders and captains — verified profiles, live tracking, trip share, and SOS assistance.",

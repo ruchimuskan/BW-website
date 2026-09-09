@@ -10,7 +10,7 @@ export const metadata: Metadata = pageMetadata({
   description: page.description,
   path: page.path,
   keywords: [
-    "download Bull Wave Rides",
+    "download BW Rides",
     "ride app India",
     "bike taxi app",
     "ambulance SOS app",

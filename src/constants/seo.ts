@@ -2,12 +2,12 @@ import { ROUTES } from "@/constants/routes";
 import { getSiteUrl } from "@/constants/site";
 
 /** Primary brand name used in titles, schema, and search snippets. */
-export const SITE_BRAND = "Bull Wave Rides";
+export const SITE_BRAND = "BW Rides";
 
 export const SITE_BRAND_ALTERNATES = [
   "Bullwave Rides",
   "BW Rides",
-  "Bull Wave Ride",
+  "BW Ride",
   "Bull Wave",
 ] as const;
 
@@ -15,7 +15,7 @@ export const SITE_BRAND_ALTERNATES = [
  * Homepage / brand-search snippet (Uber-style: short brand + benefit hooks).
  */
 export const DEFAULT_SITE_DESCRIPTION =
-  "Book Bull Wave Rides online — bike, auto, cab, parcel & ambulance SOS. Live tracking, verified captains, and safer travel anytime across India. Download the app.";
+  "Book BW Rides online — bike, auto, cab, parcel & ambulance SOS. Live tracking, verified captains, and safer travel anytime across India. Download the app.";
 
 /**
  * High-value public pages Google can surface as sitelinks
@@ -26,18 +26,18 @@ export const DEFAULT_SITE_DESCRIPTION =
  */
 export const SITE_LINK_PAGES = [
   {
-    name: "Drive with Bull Wave Rides",
+    name: "Drive with BW Rides",
     path: ROUTES.captains,
-    title: "Drive with Bull Wave Rides | Become a Captain",
+    title: "Drive with BW Rides | Become a Captain",
     description:
-      "Partner as a Bull Wave Rides captain — flexible hours, transparent payouts, safety tools, and 24×7 support. Sign up to earn on your terms.",
+      "Partner as a BW Rides captain — flexible hours, transparent payouts, safety tools, and 24×7 support. Sign up to earn on your terms.",
     sitelinkDescription:
       "Flexible hours and transparent payouts. Sign up to drive and earn on your terms.",
   },
   {
     name: "Book a Ride",
     path: ROUTES.ride,
-    title: "Book a Ride | Bike, Auto & Cab — Bull Wave Rides",
+    title: "Book a Ride | Bike, Auto & Cab — BW Rides",
     description:
       "Request a ride anytime — bike taxi, auto, or cab with upfront fares, live tracking, and verified captains across India.",
     sitelinkDescription:
@@ -46,16 +46,16 @@ export const SITE_LINK_PAGES = [
   {
     name: "Download the App",
     path: ROUTES.download,
-    title: "Download Bull Wave Rides App | Android & iOS",
+    title: "Download BW Rides App | Android & iOS",
     description:
-      "Download Bull Wave Rides for Android and iOS — book rides, send parcels, and request ambulance SOS in one app.",
+      "Download BW Rides for Android and iOS — book rides, send parcels, and request ambulance SOS in one app.",
     sitelinkDescription:
       "Get the app for Android and iOS. Book rides, parcels, and SOS in one place.",
   },
   {
     name: "Business",
     path: ROUTES.corporateRegister,
-    title: "Bull Wave Rides for Business | Corporate Travel",
+    title: "BW Rides for Business | Corporate Travel",
     description:
       "Corporate employee travel billed to one company account — admin controls, trip visibility, and consolidated invoicing after approval.",
     sitelinkDescription:
@@ -64,16 +64,16 @@ export const SITE_LINK_PAGES = [
   {
     name: "Emergency SOS",
     path: ROUTES.sos,
-    title: "Emergency SOS Ambulance | Bull Wave Rides",
+    title: "Emergency SOS Ambulance | BW Rides",
     description:
-      "Request ambulance SOS with Bull Wave Rides — verified medical transport, live tracking, and 24×7 emergency support when seconds matter.",
+      "Request ambulance SOS with BW Rides — verified medical transport, live tracking, and 24×7 emergency support when seconds matter.",
     sitelinkDescription:
       "Verified medical transport with live tracking and 24×7 emergency support.",
   },
   {
     name: "Safety",
     path: ROUTES.safety,
-    title: "Safety | Bull Wave Rides",
+    title: "Safety | BW Rides",
     description:
       "Safety tools for riders and captains — verified profiles, live tracking, trip share, SOS assistance, and 24×7 support on every trip.",
     sitelinkDescription:
@@ -82,7 +82,7 @@ export const SITE_LINK_PAGES = [
   {
     name: "About Us",
     path: ROUTES.about,
-    title: "About Us | Bull Wave Rides",
+    title: "About Us | BW Rides",
     description:
       "We're building calm, confident mobility for India — premium rides, parcels, and emergency SOS for millions of riders and captains.",
     sitelinkDescription:
@@ -91,11 +91,11 @@ export const SITE_LINK_PAGES = [
   {
     name: "Blogs",
     path: ROUTES.blogs,
-    title: "Blog | Bull Wave Rides",
+    title: "Blog | BW Rides",
     description:
-      "Company news, product updates, safety guides, and captain stories from Bull Wave Rides.",
+      "Company news, product updates, safety guides, and captain stories from BW Rides.",
     sitelinkDescription:
-      "Product updates, safety guides, and stories from across Bull Wave Rides.",
+      "Product updates, safety guides, and stories from across BW Rides.",
   },
 ] as const;
 

@@ -30,8 +30,8 @@ export function FloatingChatLazy() {
       if (!cancelled) setReady(true);
     };
 
-    const ric = window.requestIdleCallback?.(enable, { timeout: 1500 });
-    const timer = window.setTimeout(enable, 800);
+    const ric = window.requestIdleCallback?.(enable, { timeout: 600 });
+    const timer = window.setTimeout(enable, 200);
 
     return () => {
       cancelled = true;

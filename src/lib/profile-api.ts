@@ -194,14 +194,7 @@ export async function createAddress(payload: {
     parseAddress(asRecord(res)) ??
     parseAddressList(res)[0];
   if (!parsed) {
-    return {
-      id: `${label}-${Date.now()}`,
-      label,
-      address_line,
-      latitude,
-      longitude,
-      is_default: payload.is_default ?? false,
-    };
+    throw new Error("Place was saved but the server response could not be read. Please refresh and try again.");
   }
   return parsed;
 }
@@ -218,12 +211,4 @@ export async function logoutAccount(): Promise<{ message: string }> {
   const { logoutCurrentUser } = await import("@/lib/logout");
   await logoutCurrentUser();
   return { message: "Logged out" };
-}
-
-export function deleteAccount(): Promise<{ message: string }> {
-  return authFetch<{ message: string }>(
-    "/auth/me",
-    { method: "DELETE" },
-    "Unable to delete account"
-  );
 }

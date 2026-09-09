@@ -28,7 +28,7 @@ export function CaptainsShowcaseGallery({
       <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl bg-[#1a1f16] sm:rounded-3xl">
         <ResilientImage
           src={BRAND_PHOTOS.captainsHero}
-          alt="Bull Wave Rides captain driving at night"
+          alt="BW Rides captain driving at night"
           fill
           priority={priority}
           sizes={BRAND_IMAGE_SIZES.half}

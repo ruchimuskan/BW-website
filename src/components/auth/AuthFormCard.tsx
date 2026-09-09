@@ -16,6 +16,8 @@ interface AuthFormCardProps {
   bodyClassName?: string;
   /** Hide brand row on large screens when the left panel already shows it. */
   hideBrandOnDesktop?: boolean;
+  /** Optional eyebrow above the title (e.g. Secure sign-in). */
+  eyebrow?: ReactNode;
 }
 
 /** Shared branded shell for login / signup form cards. */
@@ -27,54 +29,64 @@ export function AuthFormCard({
   className,
   bodyClassName,
   hideBrandOnDesktop = false,
+  eyebrow,
 }: AuthFormCardProps) {
   return (
     <div
       className={cn(
-        "relative flex w-full max-h-[100dvh] min-h-0 flex-col overflow-hidden rounded-[20px] border border-[#dfe8c4]/90 bg-white/95 shadow-[0_16px_48px_-28px_rgba(40,54,20,0.4)] backdrop-blur-sm sm:rounded-[24px] lg:h-full lg:max-h-full lg:shadow-[0_20px_60px_-32px_rgba(40,54,20,0.42)]",
+        "relative flex w-full min-h-0 flex-col overflow-hidden rounded-[22px] border border-[#dfe4d4] bg-white/95 shadow-[0_28px_64px_-34px_rgba(17,20,17,0.42)] backdrop-blur-sm sm:rounded-[26px]",
         className,
       )}
     >
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#9BB820] via-[#C8E84A] to-[#B8D926]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-[#111411] via-[#C6E31A] to-[#9BB820]"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute -right-16 -top-20 h-36 w-36 rounded-full bg-[#C8E84A]/18 blur-3xl"
+        className="pointer-events-none absolute -right-20 -top-24 h-44 w-44 rounded-full bg-[#C8E84A]/16 blur-3xl"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -bottom-24 -left-16 h-40 w-40 rounded-full bg-[#111411]/[0.04] blur-3xl"
         aria-hidden
       />
 
       <div
         className={cn(
-          "relative flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-3.5 py-3.5 sm:px-5 sm:py-5 lg:px-6 lg:py-5",
+          "relative flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-5 lg:px-7 lg:py-6",
           bodyClassName,
         )}
       >
         <Link
           href={ROUTES.landing}
           className={cn(
-            "mb-2.5 inline-flex items-center gap-2 rounded-xl outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-primary/30 sm:mb-3",
+            "mb-3 inline-flex items-center gap-2 rounded-xl outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#C6E31A]/40 sm:mb-3.5",
             hideBrandOnDesktop && "lg:hidden",
           )}
         >
           <WaveGoLogo size="sm" priority className="!h-7 !w-7 sm:!h-9 sm:!w-9" />
-          <span className="font-heading text-[13px] font-bold tracking-tight text-[#38471B] sm:text-sm">
+          <span className="font-heading text-[13px] font-bold tracking-tight text-[#111411] sm:text-sm">
             {SITE_BRAND}
           </span>
         </Link>
 
-        <div className="mb-3 shrink-0 sm:mb-4">
-          <h1 className="font-heading text-[1.25rem] font-bold leading-tight tracking-tight text-[#38471B] sm:text-[1.4rem] lg:text-[1.5rem]">
+        <div className="mb-4 shrink-0 sm:mb-5">
+          {eyebrow ? <div className="mb-2.5">{eyebrow}</div> : null}
+          <h1 className="font-heading text-[1.4rem] font-bold leading-tight tracking-tight text-[#111411] sm:text-[1.55rem] lg:text-[1.7rem]">
             {title}
           </h1>
-          <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground sm:mt-1 sm:text-[13px]">
+          <p className="mt-1.5 max-w-[34ch] text-[12.5px] leading-relaxed text-[#5A6158] sm:text-[13.5px]">
             {subtitle}
           </p>
         </div>
 
         <div className="min-h-0 flex-1">{children}</div>
 
-        {footer ? <div className="mt-2.5 shrink-0 sm:mt-3.5">{footer}</div> : null}
+        {footer ? (
+          <div className="mt-4 shrink-0 border-t border-[#eef1e6] pt-3.5 sm:mt-5 sm:pt-4">
+            {footer}
+          </div>
+        ) : null}
       </div>
     </div>
   );

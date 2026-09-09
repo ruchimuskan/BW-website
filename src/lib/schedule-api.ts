@@ -40,6 +40,7 @@ export async function fetchSchedulePreview(options: {
         dropoff_lng: coords!.dropoffLng!,
         service_group: serviceGroup,
         stops,
+        scheduled_at: scheduledAt,
       });
       const fares = Object.values(estimate.quotes)
         .map((q) => q.estimated_fare)

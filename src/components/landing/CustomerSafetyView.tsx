@@ -16,6 +16,7 @@ import {
 import { BrandImageOverlay, BRAND_PHOTO_CLASS } from "@/components/brand/BrandImageOverlay";
 import { customerSafetyPage } from "@/constants/safety-content";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
+import { landingShell } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 
 function VerificationAccordion({
@@ -93,12 +94,12 @@ export function CustomerSafetyView() {
   return (
     <>
       <section
-        className="relative overflow-hidden px-4 py-12 sm:px-6 sm:py-16 lg:py-20"
+        className="relative overflow-hidden py-10 sm:py-14 lg:py-16 xl:py-20"
         aria-labelledby="customer-safety-heading"
       >
         <SafetyAtmosphere />
 
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16">
+        <div className={landingShell("relative grid items-center gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16")}>
           <div className="min-w-0">
             <AnimateIn>
               <SafetyEyebrow>Customers</SafetyEyebrow>
@@ -139,7 +140,7 @@ export function CustomerSafetyView() {
         id="captain-verification"
         aria-labelledby="verification-heading"
       >
-        <div className="mx-auto grid max-w-6xl items-start gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16">
+        <div className="grid w-full min-w-0 items-start gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16">
           <AnimateIn className="order-2 lg:order-1">
             <div className="relative mx-auto w-full max-w-md lg:max-w-none">
               <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/60 bg-[#1a1f16] shadow-[0_24px_56px_-30px_rgba(184,217,38,0.45)] ring-1 ring-primary/10 sm:rounded-3xl">
@@ -183,7 +184,7 @@ export function CustomerSafetyView() {
         id="app-safety-features"
         aria-labelledby="app-features-heading"
       >
-        <div className="mx-auto max-w-6xl">
+        <div className="w-full min-w-0">
           <AnimateIn className="max-w-2xl">
             <SafetyEyebrow>In the app</SafetyEyebrow>
             <h2
@@ -216,7 +217,7 @@ export function CustomerSafetyView() {
       </SafetySectionBand>
 
       <section className="px-4 pb-12 sm:px-6 sm:pb-16 lg:pb-20" aria-labelledby="way-forward-heading">
-        <AnimateIn className="mx-auto max-w-6xl">
+        <AnimateIn className="w-full min-w-0">
           <SafetyWayForward
             title={wayForward.title}
             description={wayForward.description}
