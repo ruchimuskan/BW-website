@@ -25,6 +25,27 @@ export function useActiveRideGuard() {
     setGuardError("");
   }, []);
 
+  const showBlockedRide = useCallback((ride: Ride) => {
+    setGuardError("");
+    setBlockedRide(ride);
+  }, []);
+
+  const showBlockedNotice = useCallback(
+    (options: { ride?: Ride | null; message?: string }) => {
+      if (options.ride) {
+        setGuardError("");
+        setBlockedRide(options.ride);
+        return;
+      }
+      setBlockedRide(null);
+      setGuardError(
+        options.message ||
+          "You already have an active ride on the server. Open Bookings to view or cancel it, then try again.",
+      );
+    },
+    [],
+  );
+
   const guardBooking = useCallback(
     async (onAllowed: () => void, options?: GuardOptions): Promise<boolean> => {
       if (!isAuthenticated()) {
@@ -75,9 +96,7 @@ export function useActiveRideGuard() {
     blockDialog,
     blockedRide,
     clearBlockedRide: close,
-    showBlockedRide: useCallback((ride: Ride) => {
-      setGuardError("");
-      setBlockedRide(ride);
-    }, []),
+    showBlockedRide,
+    showBlockedNotice,
   };
 }

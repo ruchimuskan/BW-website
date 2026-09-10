@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { MarketingPageShell } from "@/components/landing/MarketingPageShell";
 import { LandingHeader } from "@/components/landing/LandingHeader";
@@ -18,8 +18,11 @@ import {
 import { fetchLandingServices } from "@/lib/landing-api";
 import { warmBackend } from "@/lib/api";
 import {
+  normalizeScheduledAt,
+  patchLandingBookingSchedule,
   readLandingBookingDraft,
   saveLandingBookingDraft,
+  syncScheduledAtQuery,
 } from "@/lib/landing-booking-draft";
 import { buildLocationSearchUrl, isLandingBookingTab } from "@/lib/location-search";
 import type { LocationFieldType } from "@/lib/location-search";
@@ -98,8 +101,66 @@ export function LandingView() {
   const [isBooking, setIsBooking] = useState(false);
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [servicesLoading, setServicesLoading] = useState(true);
+  const [draftHydrated, setDraftHydrated] = useState(false);
+  const hydratedOnce = useRef(false);
 
   const dropoffCopy = getDropoffLocationCopy(activeTab);
+
+  const tripCoords = {
+    pickupLat: Number(searchParams.get("plat")) || undefined,
+    pickupLng: Number(searchParams.get("plng")) || undefined,
+    dropoffLat: Number(searchParams.get("dlat")) || undefined,
+    dropoffLng: Number(searchParams.get("dlng")) || undefined,
+  };
+
+  const applySchedulePreview = useCallback(
+    async (iso: string) => {
+      setSchedulePreviewLabel(null);
+      try {
+        const preview = await fetchSchedulePreview({
+          scheduledAt: iso,
+          coords: tripCoords,
+          serviceGroup: "ride",
+        });
+        if (preview.sampleFareMin != null && preview.sampleFareMax != null) {
+          setSchedulePreviewLabel(
+            `Est. ₹${Math.round(preview.sampleFareMin)}–₹${Math.round(preview.sampleFareMax)} · ${preview.vehicleCount ?? "—"} options`,
+          );
+        } else if (preview.nearbyDriversCount != null) {
+          setSchedulePreviewLabel(
+            `${preview.nearbyDriversCount} captains nearby · scheduled pickup`,
+          );
+        } else if (preview.vehicleCount != null) {
+          setSchedulePreviewLabel(
+            `${preview.vehicleCount} vehicle options · scheduled pickup`,
+          );
+        } else {
+          setSchedulePreviewLabel("Schedule confirmed with server · continue to prices");
+        }
+      } catch {
+        setSchedulePreviewLabel("Schedule saved · fares load on next step");
+      }
+    },
+    [
+      tripCoords.pickupLat,
+      tripCoords.pickupLng,
+      tripCoords.dropoffLat,
+      tripCoords.dropoffLng,
+    ],
+  );
+
+  const applyScheduledAt = useCallback(
+    (iso: string | null, opts?: { preview?: boolean }) => {
+      const next = normalizeScheduledAt(iso);
+      setScheduledAt(next);
+      if (!next) setSchedulePreviewLabel(null);
+      // Never write schedule into the landing URL — that made "Reschedule" look like a default.
+      if (next && opts?.preview !== false) {
+        void applySchedulePreview(next);
+      }
+    },
+    [applySchedulePreview],
+  );
 
   useEffect(() => {
     void warmBackend();
@@ -120,26 +181,37 @@ export function LandingView() {
     const urlPickup = searchParams.get("pickup");
     const urlDropoff = searchParams.get("dropoff");
     const urlTab = searchParams.get("tab");
-    const urlScheduled = searchParams.get("scheduled_at");
+    const urlScheduled = normalizeScheduledAt(searchParams.get("scheduled_at"));
     const fromLocationPicker = Boolean(urlPickup || urlDropoff || urlTab);
+    const draft = readLandingBookingDraft();
 
     if (urlPickup) setPickup(urlPickup);
-    if (urlDropoff) setDropoff(urlDropoff);
-    if (isLandingBookingTab(urlTab)) setActiveTab(urlTab);
+    else if (!hydratedOnce.current && draft?.pickup) setPickup(draft.pickup);
 
-    if (urlScheduled) {
+    if (urlDropoff) setDropoff(urlDropoff);
+    else if (!hydratedOnce.current && draft?.dropoff) setDropoff(draft.dropoff);
+
+    if (isLandingBookingTab(urlTab)) setActiveTab(urlTab);
+    else if (!hydratedOnce.current && draft?.tab) setActiveTab(draft.tab);
+
+    // Default is always "When to go". Schedule only if the user already chose one
+    // in this flow (returning from location search with their selection).
+    if (fromLocationPicker && urlScheduled) {
       setScheduledAt(urlScheduled);
-    } else if (!urlPickup && !urlDropoff && !urlTab) {
-      const draft = readLandingBookingDraft();
-      if (draft) {
-        if (draft.pickup) setPickup(draft.pickup);
-        if (draft.dropoff) setDropoff(draft.dropoff);
-        if (draft.tab) setActiveTab(draft.tab);
-        if (draft.scheduledAt) setScheduledAt(draft.scheduledAt);
-      }
+    } else if (!hydratedOnce.current) {
+      setScheduledAt(null);
+      setSchedulePreviewLabel(null);
+      patchLandingBookingSchedule(null);
     }
 
-    // Returning from location search should stay on the book widget, not jump to top.
+    // Strip sticky ?scheduled_at= from the address bar so refresh doesn't look pre-scheduled.
+    if (searchParams.has("scheduled_at")) {
+      syncScheduledAtQuery(null, window.location.hash || "#book");
+    }
+
+    hydratedOnce.current = true;
+    setDraftHydrated(true);
+
     if (fromLocationPicker || window.location.hash === "#book") {
       const scrollToBookWidget = () => {
         document.getElementById("book")?.scrollIntoView({
@@ -178,29 +250,24 @@ export function LandingView() {
     };
   }, [router]);
 
-  const tripCoords = {
-    pickupLat: Number(searchParams.get("plat")) || undefined,
-    pickupLng: Number(searchParams.get("plng")) || undefined,
-    dropoffLat: Number(searchParams.get("dlat")) || undefined,
-    dropoffLng: Number(searchParams.get("dlng")) || undefined,
-  };
-
   useEffect(() => {
+    if (!draftHydrated) return;
     saveLandingBookingDraft({
       pickup,
       dropoff,
       tab: activeTab,
-      scheduledAt,
+      // Landing draft never stores a default schedule — only pickup/drop/tab.
+      scheduledAt: null,
       pickupLat: tripCoords.pickupLat,
       pickupLng: tripCoords.pickupLng,
       dropoffLat: tripCoords.dropoffLat,
       dropoffLng: tripCoords.dropoffLng,
     });
   }, [
+    draftHydrated,
     pickup,
     dropoff,
     activeTab,
-    scheduledAt,
     tripCoords.pickupLat,
     tripCoords.pickupLng,
     tripCoords.dropoffLat,
@@ -238,31 +305,7 @@ export function LandingView() {
   };
 
   const handleScheduleConfirm = async (iso: string) => {
-    setSchedulePreviewLabel(null);
-    try {
-      const preview = await fetchSchedulePreview({
-        scheduledAt: iso,
-        coords: tripCoords,
-        serviceGroup: "ride",
-      });
-      if (preview.sampleFareMin != null && preview.sampleFareMax != null) {
-        setSchedulePreviewLabel(
-          `Est. ₹${Math.round(preview.sampleFareMin)}–₹${Math.round(preview.sampleFareMax)} · ${preview.vehicleCount ?? "—"} options`,
-        );
-      } else if (preview.nearbyDriversCount != null) {
-        setSchedulePreviewLabel(
-          `${preview.nearbyDriversCount} captains nearby · scheduled pickup`,
-        );
-      } else if (preview.vehicleCount != null) {
-        setSchedulePreviewLabel(
-          `${preview.vehicleCount} vehicle options · scheduled pickup`,
-        );
-      } else {
-        setSchedulePreviewLabel("Schedule saved · confirm on next step");
-      }
-    } catch {
-      setSchedulePreviewLabel("Schedule saved · fares load on next step");
-    }
+    await applySchedulePreview(iso);
   };
 
   const handleBook = (e: React.FormEvent) => {
@@ -277,23 +320,9 @@ export function LandingView() {
 
     const proceedToBook = async () => {
       setIsBooking(true);
-      setSchedulePreviewLabel(null);
       try {
         if (scheduleIso) {
-          const preview = await fetchSchedulePreview({
-            scheduledAt: scheduleIso,
-            coords: tripCoords,
-            serviceGroup: "ride",
-          });
-          if (preview.sampleFareMin != null && preview.sampleFareMax != null) {
-            setSchedulePreviewLabel(
-              `Est. ₹${Math.round(preview.sampleFareMin)}–₹${Math.round(preview.sampleFareMax)} · ${preview.vehicleCount ?? "—"} options`,
-            );
-          } else if (preview.nearbyDriversCount != null) {
-            setSchedulePreviewLabel(
-              `${preview.nearbyDriversCount} captains nearby · scheduled pickup`,
-            );
-          }
+          await applySchedulePreview(scheduleIso);
         }
       } catch {
         // Fare preview is best-effort before navigation.
@@ -324,7 +353,7 @@ export function LandingView() {
       ? "See prices"
       : activeTab === "parcel"
         ? "Send parcel"
-        : "Request ambulance";
+        : "Book ambulance for free";
 
   return (
     <MarketingPageShell>
@@ -341,8 +370,8 @@ export function LandingView() {
         onSubmit={handleBook}
         scheduledAt={scheduledAt}
         onScheduledAtChange={(iso) => {
-          setScheduledAt(iso);
-          if (!iso) setSchedulePreviewLabel(null);
+          // Confirm path runs preview via onScheduleConfirm; Leave now clears here.
+          applyScheduledAt(iso, { preview: false });
         }}
         onScheduleConfirm={handleScheduleConfirm}
         schedulePreviewLabel={schedulePreviewLabel}

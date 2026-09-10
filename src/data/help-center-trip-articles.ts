@@ -474,7 +474,7 @@ export const tripSafetyHub: HelpArticle = {
         "Use in-app SOS and live tracking during active rides.",
         "For medical emergencies, call 112 in addition to using BW Rides ambulance services.",
       ],
-      link: { label: "Request ambulance", href: ROUTES.ambulanceBook },
+      link: { label: "Book ambulance for free", href: ROUTES.ambulanceBook },
     },
     {
       id: "share-trip-status",

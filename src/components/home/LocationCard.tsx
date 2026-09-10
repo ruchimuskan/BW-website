@@ -20,6 +20,10 @@ import {
 } from "@/lib/location-search";
 import { buildBookUrl } from "@/lib/ride-booking";
 import {
+  normalizeScheduledAt,
+  patchLandingBookingSchedule,
+} from "@/lib/landing-booking-draft";
+import {
   fetchSchedulePreview,
   formatScheduleLabel,
   type SchedulePreview,
@@ -87,8 +91,10 @@ export function LocationCard({
   const bookTab = isAmbulance ? "ambulance" : isParcel ? "parcel" : "rides";
 
   const setScheduledAt = (iso: string | null) => {
-    setLocalScheduledAt(iso);
-    onScheduledAtChange?.(iso);
+    const next = normalizeScheduledAt(iso);
+    setLocalScheduledAt(next);
+    patchLandingBookingSchedule(next);
+    onScheduledAtChange?.(next);
   };
 
   const withScheduleReturnTo = () => {
@@ -409,7 +415,7 @@ export function LocationCard({
                 <span className="bw-cta-glow__label gap-2">
                   {ready
                     ? isAmbulance
-                      ? "Request ambulance"
+                      ? "Book ambulance for free"
                       : isParcel
                         ? "Send parcel"
                         : scheduledAt

@@ -169,7 +169,7 @@ export function ReferEarnView() {
 
               <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
                 <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                  <div className="grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-3 sm:gap-3">
                     {[
                       { label: "Referrals", value: data.stats.referrals },
                       { label: "1st rides", value: data.stats.firstRides },
@@ -177,9 +177,9 @@ export function ReferEarnView() {
                     ].map((stat) => (
                       <div
                         key={stat.label}
-                        className="rounded-2xl border border-[#e8f0c8] bg-white px-2 py-4 text-center shadow-[0_10px_28px_-22px_rgba(56,71,27,0.4)] sm:px-3 sm:py-5"
+                        className="rounded-2xl border border-[#e8f0c8] bg-white px-3 py-3.5 text-center shadow-[0_10px_28px_-22px_rgba(56,71,27,0.4)] sm:px-3 sm:py-5"
                       >
-                        <p className="font-heading text-2xl font-bold tabular-nums text-[#38471B] sm:text-[1.85rem]">
+                        <p className="font-heading text-xl font-bold tabular-nums text-[#38471B] sm:text-[1.85rem]">
                           {stat.value}
                         </p>
                         <p className="mt-1 text-[11px] font-semibold tracking-wide text-[#5a6330] uppercase sm:text-xs">

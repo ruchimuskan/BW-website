@@ -48,7 +48,7 @@ export const SITE_LINK_PAGES = [
     path: ROUTES.download,
     title: "Download BW Rides App | Android & iOS",
     description:
-      "Download BW Rides for Android and iOS — book rides, send parcels, and request ambulance SOS in one app.",
+      "Download BW Rides for Android and iOS — book rides, send parcels, and book ambulance for free in one app.",
     sitelinkDescription:
       "Get the app for Android and iOS. Book rides, parcels, and SOS in one place.",
   },
@@ -66,7 +66,7 @@ export const SITE_LINK_PAGES = [
     path: ROUTES.sos,
     title: "Emergency SOS Ambulance | BW Rides",
     description:
-      "Request ambulance SOS with BW Rides — verified medical transport, live tracking, and 24×7 emergency support when seconds matter.",
+      "Book ambulance for free with BW Rides — verified medical transport, live tracking, and 24×7 emergency support when seconds matter.",
     sitelinkDescription:
       "Verified medical transport with live tracking and 24×7 emergency support.",
   },

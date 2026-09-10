@@ -72,7 +72,7 @@ export function SosSection() {
             >
               Need help fast?
               <span className="mt-1 block font-semibold text-destructive">
-                Request an ambulance in one tap.
+                Choose & book ambulance for free.
               </span>
             </h2>
             <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-[#4a5228] sm:text-base">
@@ -89,7 +89,7 @@ export function SosSection() {
                   "h-12 w-full bg-destructive px-7 font-semibold text-white hover:bg-destructive/90 sm:w-auto",
                 )}
               >
-                Request Ambulance SOS
+                Book ambulance for free
               </Link>
               <Link
                 href={ROUTES.sos}

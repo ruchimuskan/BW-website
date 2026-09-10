@@ -92,7 +92,7 @@ export default function EmergencyHistoryPage() {
               className="mt-6 h-11 rounded-2xl bg-destructive font-semibold text-white hover:bg-destructive/90"
               onClick={() => router.push(ROUTES.ambulanceBook)}
             >
-              Request ambulance
+              Book ambulance for free
             </Button>
           </div>
         ) : (

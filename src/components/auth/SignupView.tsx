@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Eye, EyeOff, Loader2, Mail, User } from "lucide-react";
@@ -76,19 +76,6 @@ export function SignupView() {
 
   const strength = useMemo(() => passwordStrengthScore(password), [password]);
   const strengthInfo = strengthMeta[password ? strength : 0];
-
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const apply = () => {
-      document.body.style.overflow = mq.matches ? "hidden" : "";
-    };
-    apply();
-    mq.addEventListener("change", apply);
-    return () => {
-      mq.removeEventListener("change", apply);
-      document.body.style.overflow = "";
-    };
-  }, []);
 
   const clearError = (key: keyof FormErrors) => {
     setErrors((prev) => {
@@ -178,12 +165,12 @@ export function SignupView() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35, ease: easeOut }}
-      className="relative min-h-[100dvh] overflow-x-hidden overflow-y-auto font-sans lg:h-[100dvh] lg:overflow-hidden"
+      className="relative min-h-[100dvh] overflow-x-hidden overflow-y-auto font-sans"
     >
       <LoginSceneDecor />
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-stretch justify-center px-3 py-3 sm:px-5 sm:py-4 lg:flex-row lg:items-stretch lg:gap-6 lg:overflow-hidden lg:px-8 lg:py-5 xl:gap-10">
-        <aside className="hidden min-h-0 w-full flex-1 lg:flex lg:max-w-[52%]">
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-stretch justify-center gap-4 px-3 py-4 sm:px-5 sm:py-5 lg:min-h-[100dvh] lg:flex-row lg:items-center lg:gap-7 lg:px-8 lg:py-6 xl:gap-10">
+        <aside className="hidden min-h-0 w-full max-h-[min(88dvh,52rem)] flex-1 lg:flex lg:max-w-[52%]">
           <LoginServicesPanel compact className="w-full" />
         </aside>
 
@@ -191,13 +178,12 @@ export function SignupView() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...transitions.reveal, delay: 0.05 }}
-          className="mx-auto flex h-full w-full max-w-[420px] flex-col lg:mx-0 lg:min-h-0 lg:max-w-[420px] lg:flex-1 lg:flex-none xl:max-w-[440px]"
+          className="mx-auto flex w-full max-w-[420px] flex-col justify-center lg:mx-0 lg:max-w-[430px] lg:flex-none xl:max-w-[450px]"
         >
           <AuthFormCard
             title="Join BW Rides"
             subtitle="Create your account to start riding in minutes."
             hideBrandOnDesktop
-            className="min-h-0 flex-1"
             footer={
               <p className="text-center text-xs text-muted-foreground sm:text-sm">
                 Already have an account?{" "}
@@ -212,7 +198,7 @@ export function SignupView() {
           >
             <form
               onSubmit={handleSubmit}
-              className="flex h-full flex-col gap-2 sm:gap-3"
+              className="flex flex-col gap-2.5 sm:gap-3"
             >
               <div className="flex flex-col gap-1">
                 <Label htmlFor="fullName" className="text-xs font-semibold text-[#38471B] sm:text-sm">
@@ -479,7 +465,7 @@ export function SignupView() {
                 </p>
               )}
 
-              <div className="mt-auto space-y-1.5 pt-1">
+              <div className="space-y-1.5 pt-2">
                 <motion.div whileTap={{ scale: 0.985 }} transition={transitions.fast}>
                   <Button
                     type="submit"

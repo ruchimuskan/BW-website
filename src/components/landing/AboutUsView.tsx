@@ -46,7 +46,7 @@ const differentiators = [
     icon: Ambulance,
     title: "SOS when seconds matter",
     description:
-      "Verified medical transport in one tap — ambulance support built into the same app.",
+      "Verified medical transport — choose and book ambulance for free in the same app.",
   },
   {
     icon: ShieldCheck,
@@ -217,7 +217,7 @@ export function AboutUsView() {
                     router.push(getProtectedPath(ROUTES.ambulanceBook))
                   }
                 >
-                  Ambulance SOS
+                  Book ambulance for free
                 </GlowButton>
               </div>
             </AnimateIn>

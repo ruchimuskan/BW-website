@@ -43,7 +43,7 @@ import { getVehicleCategories } from "@/lib/home-api";
 export function RideSearchingView() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { blockDialog, showBlockedRide } = useActiveRideGuard();
+  const { blockDialog, showBlockedRide, showBlockedNotice } = useActiveRideGuard();
 
   const pickup = searchParams.get("pickup") || "";
   const dropoff = searchParams.get("dropoff") || "";
@@ -299,12 +299,9 @@ export function RideSearchingView() {
         if (isActiveRideBlockingError(message)) {
           const active = await getBlockingActiveRide(existingRideId ?? undefined);
           if (active) {
-            showBlockedRide(active);
-          } else if (scheduledAt) {
-            setScheduleError(message);
+            showBlockedNotice({ ride: active });
           } else {
-            setBookError(message);
-            setStatus(message);
+            showBlockedNotice({ message });
           }
           bookingStarted.current = false;
           return;

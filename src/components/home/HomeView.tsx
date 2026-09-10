@@ -14,6 +14,11 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { useHomeDashboard } from "@/hooks/useHomeDashboard";
+import {
+  normalizeScheduledAt,
+  patchLandingBookingSchedule,
+  syncScheduledAtQuery,
+} from "@/lib/landing-booking-draft";
 import { reverseGeocode } from "@/lib/places-api";
 import { buildTrackingUrl } from "@/lib/ride-booking";
 import { isRideInProgress, isRideTerminal, isSearchingForCaptain, resolveRideAddress } from "@/lib/ride-api";
@@ -102,8 +107,10 @@ export function HomeView() {
     if (dlat != null && dlat !== "") setDropoffLat(Number(dlat));
     if (dlng != null && dlng !== "") setDropoffLng(Number(dlng));
     setStops(parseStopsFromParams(searchParams));
-    const scheduled = searchParams.get("scheduled_at");
-    if (scheduled) setScheduledAt(scheduled);
+    const scheduled = normalizeScheduledAt(searchParams.get("scheduled_at"));
+    // Home only shows a schedule when the book URL explicitly carries one the user chose.
+    setScheduledAt(scheduled);
+    patchLandingBookingSchedule(null);
   }, [searchParams]);
 
   useEffect(() => {
@@ -260,7 +267,12 @@ export function HomeView() {
                     setStops((prev) => prev.filter((_, i) => i !== index))
                   }
                   scheduledAt={scheduledAt}
-                  onScheduledAtChange={setScheduledAt}
+                  onScheduledAtChange={(iso) => {
+                    const next = normalizeScheduledAt(iso);
+                    setScheduledAt(next);
+                    patchLandingBookingSchedule(next);
+                    syncScheduledAtQuery(next, "");
+                  }}
                 />
               </motion.div>
 

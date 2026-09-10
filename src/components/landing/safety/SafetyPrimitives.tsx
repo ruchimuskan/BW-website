@@ -99,7 +99,7 @@ export function SafetyImageCollage({
         className="pointer-events-none absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-primary/18 via-primary/6 to-transparent blur-3xl sm:-inset-6 sm:rounded-[2.5rem]"
       />
 
-      <div className="relative rounded-[1.5rem] border border-primary/10 bg-white/50 p-2.5 shadow-[0_28px_60px_-34px_rgba(184,217,38,0.45)] backdrop-blur-sm sm:rounded-[1.75rem] sm:p-3.5 md:p-4 lg:rounded-[2rem] lg:p-5">
+      <div className="relative overflow-hidden rounded-[1.5rem] border border-primary/10 bg-white/50 p-2.5 shadow-[0_28px_60px_-34px_rgba(184,217,38,0.45)] backdrop-blur-sm sm:rounded-[1.75rem] sm:p-3.5 md:p-4 lg:rounded-[2rem] lg:p-5">
         <div className="grid grid-cols-3 items-end gap-2 sm:gap-2.5 md:gap-3 lg:gap-4">
           {images.map((img, i) => {
             const isFeatured = img.featured ?? i === 1;

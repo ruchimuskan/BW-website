@@ -82,7 +82,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
                     router.push(getProtectedPath(ROUTES.ambulanceBook))
                   }
                 >
-                  Ambulance SOS
+                  Book ambulance for free
                 </Button>
                 <Button
                   size="lg"
@@ -194,7 +194,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
             </h2>
           </AnimateIn>
 
-          <div className="mt-8 grid items-start gap-3 min-[480px]:grid-cols-2 sm:mt-10 sm:gap-4 xl:grid-cols-5 lg:gap-4">
+          <div className="mt-8 grid items-start gap-3 min-[480px]:grid-cols-2 sm:mt-10 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5 lg:gap-4">
             {protectionSteps.map((step, index) => (
               <AnimateIn key={step.step} delay={index * 0.05}>
                 <div className="relative flex h-full flex-col rounded-2xl border border-[#dce8a8]/50 bg-gradient-to-b from-white to-[#f8fbe8]/60 p-5 shadow-[0_12px_36px_-24px_rgba(56,71,27,0.12)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_18px_44px_-26px_rgba(184,217,38,0.32)] sm:p-6">

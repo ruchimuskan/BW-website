@@ -28,6 +28,7 @@ import { warmBackend, ensureValidSession, isAuthErrorMessage } from "@/lib/api";
 import {
   ActiveRideBlockError,
   assertNoBlockingActiveRide,
+  getBlockingActiveRide,
 } from "@/lib/active-ride-guard";
 import {
   bookRideWithRetry,
@@ -50,6 +51,10 @@ import {
 } from "@/lib/ride-booking";
 import { formatScheduleLabel } from "@/lib/schedule-api";
 import { WhenToGoDialog } from "@/components/home/WhenToGoDialog";
+import {
+  normalizeScheduledAt,
+  syncScheduledAtQuery,
+} from "@/lib/landing-booking-draft";
 import { saveLastBookedRide } from "@/lib/last-booked-ride";
 import {
   categoryVehicleId,
@@ -58,7 +63,6 @@ import {
   vehicleCapacityForCategory,
   vehicleImageForCategory,
 } from "@/lib/vehicle-map";
-import { ViewBookingsButton } from "@/components/bookings/ViewBookingsButton";
 import { BRAND_CTA_LIME } from "@/lib/brand-cta";
 import { cn } from "@/lib/utils";
 import { BookingConfirmDialog } from "@/components/booking/BookingConfirmDialog";
@@ -131,7 +135,8 @@ function findQuote(
 export function RideBookingView() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { guardBooking, blockDialog, showBlockedRide } = useActiveRideGuard();
+  const { guardBooking, blockDialog, showBlockedRide, showBlockedNotice } =
+    useActiveRideGuard();
 
   const pickup = searchParams.get("pickup") || "";
   const dropoff = searchParams.get("dropoff") || "";
@@ -157,7 +162,9 @@ export function RideBookingView() {
   const [preferWomenRiders, setPreferWomenRiders] = useState(false);
   const [offersOpen, setOffersOpen] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
-  const [scheduledAt, setScheduledAt] = useState(scheduledParam);
+  const [scheduledAt, setScheduledAt] = useState(
+    () => normalizeScheduledAt(scheduledParam) ?? "",
+  );
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [confirmingSchedule, setConfirmingSchedule] = useState(false);
   const [notes, setNotes] = useState(notesParam);
@@ -194,8 +201,15 @@ export function RideBookingView() {
   );
 
   useEffect(() => {
-    setScheduledAt(scheduledParam);
+    setScheduledAt(normalizeScheduledAt(scheduledParam) ?? "");
   }, [scheduledParam]);
+
+  const applyBookSchedule = (iso: string | null) => {
+    const next = normalizeScheduledAt(iso) ?? "";
+    setScheduledAt(next);
+    // Keep schedule on the book URL only while the user is on the booking step.
+    syncScheduledAtQuery(next || null, "");
+  };
 
   useEffect(() => {
     setNotes(notesParam);
@@ -596,6 +610,7 @@ export function RideBookingView() {
       if (err instanceof ActiveRideBlockError) {
         showBlockedRide(err.ride);
         setConfirmOpen(false);
+        setBookingError(null);
         return;
       }
       const message =
@@ -608,10 +623,18 @@ export function RideBookingView() {
         return;
       }
       if (isActiveRideBlockingError(message)) {
-        setBookingError(
-          "You still have an active ride. Open Bookings to view or cancel it, then try again.",
-        );
         setConfirmOpen(false);
+        setBookingError(null);
+        try {
+          const active = await getBlockingActiveRide();
+          if (active) {
+            showBlockedNotice({ ride: active });
+            return;
+          }
+        } catch {
+          // Fall through to message-only notice.
+        }
+        showBlockedNotice({ message });
         return;
       }
       setBookingError(message);
@@ -674,7 +697,7 @@ export function RideBookingView() {
         </div>
       </header>
 
-      <div className="mx-auto grid w-full min-w-0 max-w-6xl flex-1 grid-cols-1 gap-4 px-3 pb-[calc(10.75rem+env(safe-area-inset-bottom))] pt-3 min-[400px]:px-4 sm:gap-6 sm:px-6 sm:pb-[calc(11.5rem+env(safe-area-inset-bottom))] sm:pt-5 md:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] md:items-start md:pb-[calc(12rem+env(safe-area-inset-bottom))] lg:grid-cols-[minmax(0,1fr)_minmax(20rem,28rem)] lg:gap-8 lg:px-10 lg:pb-[calc(12.5rem+env(safe-area-inset-bottom))] lg:pt-6 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,32rem)]">
+      <div className="mx-auto grid w-full min-w-0 max-w-6xl flex-1 grid-cols-1 gap-4 px-3 pb-[calc(14.5rem+env(safe-area-inset-bottom))] pt-3 min-[400px]:px-4 sm:gap-6 sm:px-6 sm:pb-[calc(15rem+env(safe-area-inset-bottom))] sm:pt-5 md:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] md:items-start md:pb-[calc(15.5rem+env(safe-area-inset-bottom))] lg:grid-cols-[minmax(0,1fr)_minmax(20rem,28rem)] lg:gap-8 lg:px-10 lg:pb-[calc(16rem+env(safe-area-inset-bottom))] lg:pt-6 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,32rem)]">
         <div className="flex min-w-0 flex-col">
           <AnimateIn>
             <section className={cn("rounded-2xl border bg-white p-3.5 shadow-[0_12px_32px_-24px_rgba(40,54,20,0.35)] min-[400px]:p-4 sm:p-5", theme.card)}>
@@ -950,32 +973,24 @@ export function RideBookingView() {
             {isBooking ? (
               <>
                 <Loader2 className="mr-2 inline h-4 w-4 animate-spin" />
-                {isAmbulanceTab ? "Requesting ambulance…" : "Booking your ride…"}
+                {isAmbulanceTab ? "Booking ambulance…" : "Booking your ride…"}
               </>
             ) : canBookAmbulanceWithoutQuote ? (
-              "Request ambulance"
+              "Book ambulance for free"
             ) : !selectedOption ? (
               isAmbulanceTab ? "Select ambulance" : "Select a ride"
             ) : scheduledAt ? (
               `Schedule ${selectedOption.name} · ${displayFare <= 0 ? "FREE" : formatFare(displayFare)}`
             ) : isAmbulanceTab ? (
-              `Book Ambulance · ${displayFare <= 0 ? "FREE" : formatFare(displayFare)}`
+              `Book ambulance for free · ${displayFare <= 0 ? "FREE" : formatFare(displayFare)}`
             ) : (
               `Book ${selectedOption.name} · ${displayFare <= 0 ? "FREE" : formatFare(displayFare)}`
             )}
           </Button>
           {bookingError ? (
-            <div className="mt-2 space-y-2 text-center">
-              <p className="text-xs font-medium text-destructive">{bookingError}</p>
-              {/active ride/i.test(bookingError) ? (
-                <ViewBookingsButton
-                  label="Open My Bookings"
-                  variant="soft"
-                  className="mx-auto max-w-xs"
-                  onClick={() => router.push(ROUTES.bookings)}
-                />
-              ) : null}
-            </div>
+            <p className="mt-2 text-center text-xs font-medium text-destructive">
+              {bookingError}
+            </p>
           ) : null}
         </div>
       </div>
@@ -995,14 +1010,14 @@ export function RideBookingView() {
           onConfirm={(iso) => {
             setConfirmingSchedule(true);
             try {
-              setScheduledAt(iso);
+              applyBookSchedule(iso);
               setScheduleOpen(false);
             } finally {
               setConfirmingSchedule(false);
             }
           }}
           onLeaveNow={() => {
-            setScheduledAt("");
+            applyBookSchedule(null);
             setScheduleOpen(false);
           }}
         />

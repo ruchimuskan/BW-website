@@ -254,7 +254,7 @@ export function HelpView({ onBack }: HelpViewProps) {
                   Need help in an emergency?
                 </p>
                 <p className="mt-0.5 text-xs text-[#5a6330] sm:text-sm">
-                  Request ambulance SOS and share your trip with family.
+                  Book ambulance for free and share your trip with family.
                 </p>
               </div>
             </div>

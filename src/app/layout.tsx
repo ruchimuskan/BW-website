@@ -141,7 +141,7 @@ export default function RootLayout({
           "Auto rickshaw",
           "Cab booking",
           "Parcel delivery",
-          "Ambulance SOS",
+          "Book ambulance for free",
         ],
       },
       ...SITE_LINK_PAGES.map((page, index) => ({

@@ -1,9 +1,11 @@
-import { ROUTES } from "@/constants/routes";
+import type { RideVehicleId } from "@/data/ride-options";
+import { buildBookingDetailUrl, buildTrackingUrl } from "@/lib/ride-booking";
 import {
   getActiveRide,
   isDriverAssigned,
   isRideInProgress,
   isRideTerminal,
+  isSearchingForCaptain,
   type Ride,
 } from "@/lib/ride-api";
 
@@ -42,8 +44,31 @@ export function formatActiveRideStatus(ride: {
   return ride.status.replace(/_/g, " ");
 }
 
+function vehicleIdFromRide(ride: Ride): RideVehicleId {
+  const key = `${ride.vehicle_type_name ?? ""} ${ride.booking_purpose ?? ""}`.toLowerCase();
+  if (key.includes("bike")) return "bike";
+  if (key.includes("auto")) return "auto";
+  if (key.includes("parcel") || key.includes("delivery")) return "parcel";
+  if (key.includes("ambulance") || ride.is_emergency) return "ambulance";
+  return "cab";
+}
+
+/** Deep-link to the live trip when possible; otherwise booking detail. */
 export function buildActiveRideViewUrl(ride: Ride): string {
-  return `${ROUTES.bookings}?highlight=${encodeURIComponent(ride.id)}`;
+  if (
+    isSearchingForCaptain(ride.status) ||
+    isDriverAssigned(ride.status) ||
+    isRideInProgress(ride.status)
+  ) {
+    return buildTrackingUrl(
+      ride.pickup_address || "",
+      ride.dropoff_address || "",
+      vehicleIdFromRide(ride),
+      ride.is_emergency || ride.ride_type === "EMERGENCY" ? "ambulance" : "rides",
+      ride.id,
+    );
+  }
+  return buildBookingDetailUrl(ride.id);
 }
 
 export function activeRideBlockMessage(ride: Ride): string {

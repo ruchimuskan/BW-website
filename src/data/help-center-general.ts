@@ -526,7 +526,7 @@ export const cancellationHub: HelpArticle = {
         "Free cancellation is available within 2 minutes of booking, or before a captain is assigned.",
         "After a captain is assigned, a fee may apply based on vehicle type and wait time.",
         "If the captain cancels, you are not charged. Check Activity for refund status.",
-        "Ambulance SOS follows a separate emergency policy — contact support right away.",
+        "Emergency ambulance bookings follow a separate policy — contact support right away.",
       ],
       link: { label: "Open bookings", href: ROUTES.activity },
     },

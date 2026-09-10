@@ -77,7 +77,7 @@ export default function AmbulanceLandingPage() {
             className={cn("mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-2xl", AMBULANCE_CTA)}
           >
             <Ambulance className="h-5 w-5" />
-            Request ambulance
+            Book ambulance for free
           </button>
           <button
             type="button"

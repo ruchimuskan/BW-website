@@ -554,7 +554,7 @@ export function ActivityView() {
                     router.push(ROUTES.ambulanceBook)
                   }
                 >
-                  Request ambulance
+                  Book ambulance for free
                 </Button>
               ) : (
                 <Button

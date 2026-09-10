@@ -26,9 +26,9 @@ export interface BlogPost {
 export const blogPosts: BlogPost[] = [
   {
     slug: "wavego-ambulance-sos-launch",
-    title: "BW Rides Ambulance SOS: Emergency care, one tap away",
+    title: "BW Rides: Choose & book ambulance for free",
     excerpt:
-      "We launched integrated ambulance booking so riders can request verified medical transport without leaving the BW Rides app.",
+      "We launched free ambulance booking so riders can choose verified medical transport without leaving the BW Rides app.",
     category: "Product",
     date: "2026-05-12",
     readTime: "4 min read",
@@ -37,10 +37,10 @@ export const blogPosts: BlogPost[] = [
     imagePosition: "center 35%",
     author: "BW Rides Team",
     paragraphs: [
-      "Every second counts in a medical emergency. That is why BW Rides Ambulance SOS is built directly into the same app you use for rides and parcels — no separate downloads, no confusing flows.",
-      "When you request an ambulance, BW Rides matches you with verified medical transport partners, shows live ETA, and shares trip details with your emergency contacts automatically.",
+      "Every second counts in a medical emergency. That is why BW Rides lets you choose and book ambulance for free in the same app you use for rides and parcels — no separate downloads, no confusing flows.",
+      "When you book ambulance for free, BW Rides matches you with verified medical transport partners, shows live ETA, and shares trip details with your emergency contacts automatically.",
       "Our captains undergo additional training for medical transport routes, hospital coordination, and calm customer communication under pressure.",
-      "Ambulance SOS is rolling out across major metros first, with expansion planned for tier-2 cities through 2026. Tap Emergency on the home screen or landing page to get started.",
+      "Book ambulance for free is rolling out across major metros first, with expansion planned for tier-2 cities through 2026. Tap Emergency on the home screen or landing page to get started.",
     ],
   },
   {
@@ -97,7 +97,7 @@ export const blogPosts: BlogPost[] = [
       "Monsoon season brings flooded roads, reduced visibility, and longer trip times. BW Rides adjusts ETAs for weather, but a few habits from you make every ride safer.",
       "Share your live trip with a family member before you leave, especially on late-night or long-distance rides. Use in-app SOS if you ever feel unsafe — our team is available 24×7.",
       "Wait under cover for your captain when possible. Confirm the vehicle number and captain name in the app before boarding.",
-      "For ambulance or urgent medical trips during floods, use Ambulance SOS and keep your pickup pin as precise as possible so responders reach you faster.",
+      "For ambulance or urgent medical trips during floods, choose book ambulance for free and keep your pickup pin as precise as possible so responders reach you faster.",
       "Read our full Safety page for captain verification, insurance coverage, and community guidelines that protect everyone on the platform.",
     ],
   },

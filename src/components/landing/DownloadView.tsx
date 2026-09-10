@@ -34,7 +34,7 @@ export function DownloadView() {
               </h1>
               <p className="mx-auto mt-4 max-w-xl text-[14px] font-light leading-relaxed text-[#4a5228] sm:mt-5 sm:text-base">
                 Download BW Rides for Android or iOS. Book bike, auto, and
-                cab rides, send parcels, and request ambulance SOS — with live
+                cab rides, send parcels, and book ambulance for free — with live
                 tracking and safety tools built in.
               </p>
             </AnimateIn>

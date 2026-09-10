@@ -39,7 +39,7 @@ const highlights = [
 
 const steps = [
   {
-    title: "Tap Ambulance SOS",
+    title: "Choose book ambulance for free",
     description: "Open emergency mode and confirm your pickup location.",
   },
   {
@@ -81,14 +81,15 @@ export function SosView() {
               >
                 Need help fast?
                 <span className="mt-1 block font-semibold text-destructive">
-                  Request an ambulance in one tap.
+                  Choose & book ambulance for free.
                 </span>
               </h1>
             </AnimateIn>
             <AnimateIn delay={0.12}>
               <p className="mt-5 max-w-lg text-sm font-light leading-relaxed text-[#4a5228] sm:text-lg">
-                When every second counts, BW Rides helps you request verified
-                medical transport, track live ETA, and keep your family informed.
+                When every second counts, BW Rides helps you choose and book
+                ambulance for free — with verified medical transport, live ETA,
+                and family updates.
               </p>
             </AnimateIn>
             <AnimateIn delay={0.18}>
@@ -116,7 +117,7 @@ export function SosView() {
                       "h-12 w-full bg-destructive px-8 font-semibold text-white hover:bg-destructive/90 sm:w-auto",
                     )}
                   >
-                    Request Ambulance SOS
+                    Book ambulance for free
                   </Link>
                 </motion.div>
                 <Link
