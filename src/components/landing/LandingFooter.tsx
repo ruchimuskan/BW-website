@@ -45,8 +45,8 @@ const footerFeatures = [
   },
   {
     icon: Ambulance,
-    title: "SOS care",
-    description: "Emergency ambulance on tap",
+    title: "Ambulance for free",
+    description: "Choose & book medical transport",
     href: ROUTES.sos,
   },
 ] as const;
@@ -54,21 +54,20 @@ const footerFeatures = [
 const quickTags = [
   { label: "Rides", href: ROUTES.ride },
   { label: "Download", href: ROUTES.download },
-  { label: "SOS", href: ROUTES.sos },
+  { label: "Ambulance", href: ROUTES.sos },
   { label: "Captains", href: ROUTES.captains },
 ] as const;
 
 const exploreLinks = [
-  { label: "Book a Ride", href: ROUTES.home, protected: true },
+  { label: "Book a Ride", href: ROUTES.ride },
   { label: "Download App", href: ROUTES.download },
   { label: "Become a captain", href: ROUTES.captains },
+  { label: "Sitemap", href: ROUTES.siteMap },
   { label: "Services", href: "#services" },
   { label: "FAQs", href: "#faqs" },
 ] as const;
 
-const companyLinks = SITE_LINK_PAGES.filter(
-  (page) => page.path !== ROUTES.ride && page.path !== ROUTES.download,
-).map((page) => ({
+const companyLinks = SITE_LINK_PAGES.map((page) => ({
   label: page.name,
   href: page.path,
 }));
@@ -77,6 +76,7 @@ const legalLinks = [
   { label: "Terms of service", href: ROUTES.terms },
   { label: "Privacy policy", href: ROUTES.privacy },
   { label: "Safety policy", href: ROUTES.safety },
+  { label: "Sitemap", href: ROUTES.siteMap },
 ] as const;
 
 const fastReveal = { duration: 0.24, ease: easeOut } as const;
@@ -469,8 +469,8 @@ export function LandingFooter() {
               <WaveGoLogo size="md" variant="light" className="h-[4.5rem] w-[4.5rem] sm:h-20 sm:w-20" />
             </Link>
             <p className="mt-4 max-w-md text-sm font-light leading-relaxed text-white/65 sm:text-[15px]">
-              Bike, auto, cab, parcel, and ambulance SOS — book, track, and ride
-              with verified captains across India.
+              Bike, auto, cab, parcel, and book ambulance for free — book, track,
+              and ride with verified captains across India.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2">

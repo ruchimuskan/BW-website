@@ -15,7 +15,9 @@
     "dev:all": "concurrently -k -n backend,frontend -c blue,green \"npm run dev:backend\" \"node scripts/with-env.mjs .env.local.backend next dev --turbopack -p 3000\"",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:images": "node scripts/check-images.js",
+    "prebuild": "node scripts/check-images.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

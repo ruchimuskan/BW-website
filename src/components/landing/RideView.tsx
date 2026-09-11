@@ -60,7 +60,7 @@ const assurances = [
 const alsoAvailable = [
   {
     href: ROUTES.sos,
-    label: "Emergency SOS ambulance",
+    label: "Book ambulance for free",
     detail: "Medical transport when seconds matter.",
   },
   {

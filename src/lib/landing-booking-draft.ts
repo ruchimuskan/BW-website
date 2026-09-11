@@ -1,8 +1,9 @@
 import type { LandingBookingTab } from "@/constants/services";
 
-/** Durable draft — survives full page refresh (localStorage). */
-export const LANDING_BOOKING_DRAFT_KEY = "bw_landing_booking_draft_v3";
+/** Durable draft — session handoff only (location picker return). Not a default fill. */
+export const LANDING_BOOKING_DRAFT_KEY = "bw_landing_booking_draft_v4";
 const LEGACY_DRAFT_KEYS = [
+  "bw_landing_booking_draft_v3",
   "bw_landing_booking_draft_v2",
   "bw_landing_booking_draft_v1",
 ] as const;
@@ -70,16 +71,18 @@ export function saveLandingBookingDraft(
 }
 
 export function readLandingBookingDraft(): LandingBookingDraft | null {
-  const current = readRaw(LANDING_BOOKING_DRAFT_KEY);
-  if (current) return current;
+  if (typeof window === "undefined") return null;
+  // Do not migrate legacy drafts — older keys often held demo/stale addresses
+  // that looked like "defaults" on the landing book card.
   for (const key of LEGACY_DRAFT_KEYS) {
-    const legacy = readRaw(key);
-    if (legacy) {
-      // Migrate pickup/drop/tab only — drop stale schedule from older drafts.
-      return { ...legacy, scheduledAt: null };
+    try {
+      window.localStorage.removeItem(key);
+      window.sessionStorage.removeItem(key);
+    } catch {
+      // ignore
     }
   }
-  return null;
+  return readRaw(LANDING_BOOKING_DRAFT_KEY);
 }
 
 export function clearLandingBookingDraft(): void {

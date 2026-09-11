@@ -20,13 +20,17 @@ import {
   buildBookingDetailUrl,
   buildTrackingUrl,
   formatFare,
-  isRideVehicleId,
   mapEmbedUrl,
 } from "@/lib/ride-booking";
+import {
+  buildActiveRideViewUrl,
+  vehicleIdFromRide,
+} from "@/lib/active-ride-guard";
 import {
   getRide,
   isDriverAssigned,
   isRideInProgress,
+  isSearchingForCaptain,
   type Ride,
 } from "@/lib/ride-api";
 import { formatScheduleLabel } from "@/lib/schedule-api";
@@ -151,7 +155,9 @@ export function BookingDetailView() {
       });
   const vehicleName = displayVehicleName(ride.vehicle_type_name);
   const canTrack =
-    isRideInProgress(ride.status) || isDriverAssigned(ride.status);
+    isSearchingForCaptain(ride.status) ||
+    isRideInProgress(ride.status) ||
+    isDriverAssigned(ride.status);
   const mapSrc = mapEmbedUrl(
     ride.pickup_lat ?? undefined,
     ride.pickup_lng ?? undefined,
@@ -335,13 +341,17 @@ export function BookingDetailView() {
                 )}
                 onClick={() =>
                   router.push(
-                    buildTrackingUrl(
-                      ride.pickup_address,
-                      ride.dropoff_address,
-                      isRideVehicleId(null) ? "bike" : "bike",
-                      "rides",
-                      ride.id,
-                    ),
+                    isSearchingForCaptain(ride.status)
+                      ? buildActiveRideViewUrl(ride)
+                      : buildTrackingUrl(
+                          ride.pickup_address,
+                          ride.dropoff_address,
+                          vehicleIdFromRide(ride),
+                          ride.is_emergency || ride.ride_type === "EMERGENCY"
+                            ? "ambulance"
+                            : "rides",
+                          ride.id,
+                        ),
                   )
                 }
               >
@@ -350,7 +360,9 @@ export function BookingDetailView() {
                     <Navigation2 className="h-4 w-4" />
                   </span>
                   <span className="min-w-0 flex-1 truncate text-left font-semibold tracking-wide">
-                    Open live tracking
+                    {isSearchingForCaptain(ride.status)
+                      ? "Open captain search"
+                      : "Open live tracking"}
                   </span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#38471B]/10 sm:h-9 sm:w-9">
                     <ArrowRight className="h-4 w-4" />

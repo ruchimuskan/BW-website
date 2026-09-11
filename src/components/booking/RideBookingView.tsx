@@ -35,6 +35,7 @@ import {
   estimateRideFares,
   getRideDirections,
   isActiveRideBlockingError,
+  isDriverAssigned,
   type PaymentMethod,
 } from "@/lib/ride-api";
 import { useActiveRideGuard } from "@/hooks/useActiveRideGuard";
@@ -42,9 +43,14 @@ import type { AppliedCoupon } from "@/lib/coupons-api";
 import { couponFinalAmount } from "@/lib/coupons-api";
 import { getProtectedPath, isAuthenticated, setPostLoginRedirect } from "@/lib/auth-session";
 import { buildLocationSearchUrl } from "@/lib/location-search";
+import { resolveAddressCoords } from "@/lib/places-api";
 import {
   buildBookUrl,
+  buildBookingDetailUrl,
+  buildSearchingUrl,
+  buildTrackingUrl,
   formatFare,
+  isRideVehicleId,
   mapEmbedUrl,
   parseTripCoords,
   isValidLatLng,
@@ -238,6 +244,33 @@ export function RideBookingView() {
       setLoadError(null);
 
       try {
+        let resolvedPickupLat = tripCoords.pickupLat;
+        let resolvedPickupLng = tripCoords.pickupLng;
+        let resolvedDropoffLat = tripCoords.dropoffLat;
+        let resolvedDropoffLng = tripCoords.dropoffLng;
+
+        if (
+          !isValidLatLng(resolvedPickupLat, resolvedPickupLng) ||
+          !isValidLatLng(resolvedDropoffLat, resolvedDropoffLng)
+        ) {
+          const [pickupResolved, dropoffResolved] = await Promise.all([
+            !isValidLatLng(resolvedPickupLat, resolvedPickupLng)
+              ? resolveAddressCoords(pickup)
+              : Promise.resolve(null),
+            !isValidLatLng(resolvedDropoffLat, resolvedDropoffLng)
+              ? resolveAddressCoords(dropoff)
+              : Promise.resolve(null),
+          ]);
+          if (pickupResolved) {
+            resolvedPickupLat = pickupResolved.latitude;
+            resolvedPickupLng = pickupResolved.longitude;
+          }
+          if (dropoffResolved) {
+            resolvedDropoffLat = dropoffResolved.latitude;
+            resolvedDropoffLng = dropoffResolved.longitude;
+          }
+        }
+
         const [allCategories, directions] = await Promise.all([
           tab === "ambulance"
             ? getAmbulanceVehicleTypes()
@@ -245,13 +278,13 @@ export function RideBookingView() {
           getRideDirections(
             {
               label: pickup,
-              latitude: tripCoords.pickupLat,
-              longitude: tripCoords.pickupLng,
+              latitude: resolvedPickupLat,
+              longitude: resolvedPickupLng,
             },
             {
               label: dropoff,
-              latitude: tripCoords.dropoffLat,
-              longitude: tripCoords.dropoffLng,
+              latitude: resolvedDropoffLat,
+              longitude: resolvedDropoffLng,
             },
             tripCoords.stops,
           ),
@@ -261,16 +294,16 @@ export function RideBookingView() {
 
         const pickupLat = isValidLatLng(directions.pickup_lat, directions.pickup_lng)
           ? directions.pickup_lat
-          : tripCoords.pickupLat;
+          : resolvedPickupLat;
         const pickupLng = isValidLatLng(directions.pickup_lat, directions.pickup_lng)
           ? directions.pickup_lng
-          : tripCoords.pickupLng;
+          : resolvedPickupLng;
         const dropoffLat = isValidLatLng(directions.dropoff_lat, directions.dropoff_lng)
           ? directions.dropoff_lat
-          : tripCoords.dropoffLat;
+          : resolvedDropoffLat;
         const dropoffLng = isValidLatLng(directions.dropoff_lat, directions.dropoff_lng)
           ? directions.dropoff_lng
-          : tripCoords.dropoffLng;
+          : resolvedDropoffLng;
 
         if (
           pickupLat == null ||
@@ -596,16 +629,54 @@ export function RideBookingView() {
       });
 
       setConfirmOpen(false);
-      const toast = scheduledAt ? "scheduled" : "booked";
       saveLastBookedRide(ride);
       if (ride.requires_rider_preference_choice) {
+        const toast = scheduledAt ? "scheduled" : "booked";
         router.push(
           `${ROUTES.bookings}?preference=${encodeURIComponent(ride.id)}&toast=${toast}`,
         );
         return;
       }
 
-      router.push(`${ROUTES.bookings}?toast=${toast}&highlight=${encodeURIComponent(ride.id)}`);
+      // Scheduled trips go to booking detail — no live captain search yet.
+      if (scheduledAt) {
+        router.push(buildBookingDetailUrl(ride.id, "scheduled"));
+        return;
+      }
+
+      const rawVehicle = selectedOption?.vehicleId ?? null;
+      const vehicle = isRideVehicleId(rawVehicle) ? rawVehicle : "bike";
+
+      // Rapido-style: open captain search (or tracking if already assigned).
+      if (isDriverAssigned(ride.status)) {
+        router.push(
+          buildTrackingUrl(pickup, dropoff, vehicle, tab, ride.id),
+        );
+        return;
+      }
+
+      router.push(
+        buildSearchingUrl(
+          pickup,
+          dropoff,
+          vehicle,
+          tab,
+          selectedOption?.categoryId,
+          preferWomenRiders,
+          {
+            pickupLat: routeMeta.pickupLat,
+            pickupLng: routeMeta.pickupLng,
+            dropoffLat: routeMeta.dropoffLat,
+            dropoffLng: routeMeta.dropoffLng,
+            distanceKm: routeMeta.distanceKm,
+            durationMin: routeMeta.durationMin,
+            payment: payment.id as PaymentMethod,
+            promoCode: appliedCoupon?.coupon.code,
+            notes: notes.trim() || undefined,
+            rideId: ride.id,
+          },
+        ),
+      );
     } catch (err) {
       if (err instanceof ActiveRideBlockError) {
         showBlockedRide(err.ride);

@@ -68,8 +68,8 @@ export const landingServices: ServiceItem[] = [
   },
   {
     name: "Ambulance",
-    description: "Emergency SOS",
-    image: BRAND_PHOTOS.ambulance,
+    description: "Book for free",
+    image: "/images/services/ambulance-cutout.png",
     route: `${ROUTES.start}?tab=ambulance&vehicle=ambulance`,
   },
 ];
@@ -115,7 +115,7 @@ export const landingAssets = {
   serviceERickshaw: "/images/services/e-rickshaw.png",
   serviceCab: "/images/services/car.webp",
   serviceParcel: "/images/services/parcel.png",
-  serviceAmbulance: "/images/services/ambulance.png",
+  serviceAmbulance: "/images/services/ambulance-cutout.png",
 } as const;
 
 export const landingHeroImage = landingAssets.cityCab;
@@ -293,13 +293,13 @@ export const landingBookImages = {
     scale: 1.34,
   },
   ambulance: {
-    src: landingAssets.serviceAmbulance,
+    src: "/images/services/ambulance-cutout.png",
     fallback: "/images/services/ambulance.png",
-    alt: "BW Rides emergency ambulance SOS",
+    alt: "BW Rides emergency ambulance",
     objectPosition: "50% 90%",
     offsetY: "12%",
     accent: "from-transparent via-transparent to-transparent",
-    glow: "rgba(198,227,26,0.34)",
+    glow: "rgba(220,38,38,0.28)",
     scale: 1.28,
   },
 } as const;

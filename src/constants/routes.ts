@@ -49,4 +49,5 @@ export const ROUTES = {
   corporateRegister: "/corporate/register",
   corporateLogin: "/corporate/login",
   corporatePortal: "/corporate/portal",
+  siteMap: "/site-map",
 } as const;

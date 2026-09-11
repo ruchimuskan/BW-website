@@ -221,6 +221,43 @@ export async function resolvePlaceDetails(
   };
 }
 
+/**
+ * Resolve a free-text address to lat/lng via the places search API.
+ * Used when landing/home book without map-picker coordinates.
+ */
+export async function resolveAddressCoords(
+  address: string,
+  bias?: PlaceSearchBias | null,
+): Promise<{ latitude: number; longitude: number; label: string } | null> {
+  const trimmed = address.trim();
+  if (trimmed.length < 2) return null;
+
+  try {
+    const results = await searchPlaces(trimmed, { limit: 5, bias: bias ?? null });
+    const withCoords = results.find((row) => hasCoordinates(row));
+    if (withCoords?.latitude != null && withCoords.longitude != null) {
+      return {
+        latitude: withCoords.latitude,
+        longitude: withCoords.longitude,
+        label: withCoords.address || withCoords.name || trimmed,
+      };
+    }
+    if (results[0]) {
+      const resolved = await resolvePlaceDetails(results[0]);
+      if (resolved.latitude != null && resolved.longitude != null) {
+        return {
+          latitude: resolved.latitude,
+          longitude: resolved.longitude,
+          label: resolved.label || trimmed,
+        };
+      }
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 export async function reverseGeocode(
   lat: number,
   lng: number,

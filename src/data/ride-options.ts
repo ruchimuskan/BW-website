@@ -19,7 +19,7 @@ export const RIDE_VEHICLE_OPTIONS: RideVehicleOption[] = [
     id: "bike",
     name: "Bike",
     tagline: "Beat the traffic, save money",
-    image: "/images/pic-14.webp",
+    image: "/images/pic-14.png",
   },
   {
     id: "auto",

@@ -27,6 +27,7 @@ import {
   type Ride,
 } from "@/lib/ride-api";
 import { formatFare } from "@/lib/ride-booking";
+import { buildActiveRideViewUrl } from "@/lib/active-ride-guard";
 import { displayVehicleName } from "@/lib/vehicle-map";
 import type { ActivityTab } from "@/types/activity";
 import { brandTheme } from "@/lib/brand-theme";
@@ -514,11 +515,16 @@ export function ActivityView() {
                     isScheduledTrip={activity.isScheduledTrip}
                     scheduledLabel={activity.scheduledLabel}
                     highlighted={activity.id === pinnedHighlight}
-                    onClick={() =>
+                    onClick={() => {
+                      const ride = filteredRides.find((r) => r.id === activity.id);
+                      if (ride && activity.status === "Live") {
+                        router.push(buildActiveRideViewUrl(ride));
+                        return;
+                      }
                       router.push(
                         `${ROUTES.bookingDetail}?id=${encodeURIComponent(activity.id)}`,
-                      )
-                    }
+                      );
+                    }}
                   />
                 </StaggerItem>
               ))}

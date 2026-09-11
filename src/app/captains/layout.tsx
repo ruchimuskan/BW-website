@@ -8,7 +8,13 @@ export default function CaptainsLayout({
       <link
         rel="preload"
         as="image"
-        href="/images/img15.webp?v=1"
+        href="/images/img15.png"
+        type="image/png"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/images/img15-2x.webp"
         type="image/webp"
       />
       {children}

@@ -1,3 +1,4 @@
+import { APP_DOWNLOAD } from "@/constants/app-download";
 import { ROUTES } from "@/constants/routes";
 import { getSiteUrl } from "@/constants/site";
 
@@ -5,26 +6,70 @@ import { getSiteUrl } from "@/constants/site";
 export const SITE_BRAND = "BW Rides";
 
 export const SITE_BRAND_ALTERNATES = [
+  "Bull Wave Rides",
   "Bullwave Rides",
-  "BW Rides",
   "BW Ride",
   "Bull Wave",
 ] as const;
 
 /**
- * Homepage / brand-search snippet (Uber-style: short brand + benefit hooks).
+ * Homepage / brand-search snippet — short brand + clear benefits (helps SERP + sitelinks).
  */
 export const DEFAULT_SITE_DESCRIPTION =
-  "Book BW Rides online — bike, auto, cab, parcel & ambulance SOS. Live tracking, verified captains, and safer travel anytime across India. Download the app.";
+  "Book BW Rides online — bike, auto, cab, parcel, and book ambulance for free. Live tracking, verified captains, and safer travel anytime across India.";
+
+/** Official profiles / store pages for Organization.sameAs (helps knowledge panel trust). */
+export function organizationSameAs(): string[] {
+  const links = [
+    APP_DOWNLOAD.androidPlayStoreUrl,
+    APP_DOWNLOAD.captainAndroidPlayStoreUrl,
+    APP_DOWNLOAD.iosAppStoreUrl,
+    APP_DOWNLOAD.captainIosAppStoreUrl,
+  ];
+  return [...new Set(links.map((url) => url.trim()).filter(Boolean))];
+}
 
 /**
- * High-value public pages Google can surface as sitelinks
- * (similar to Uber / Rapido). Keep crawlable via real <a href> + sitemap + footer.
- *
- * `name` = nav / sitelink label
- * `sitelinkDescription` = short blurb like Uber’s sitelink subtitles
+ * High-value public pages Google can surface as sitelinks (GitHub-style).
+ * Keep crawlable via real <a href>, sitemap, footer, and homepage sitelinks section.
  */
 export const SITE_LINK_PAGES = [
+  {
+    name: "Book a Ride",
+    path: ROUTES.ride,
+    title: "Book a Ride | Bike, Auto & Cab — BW Rides",
+    description:
+      "Book a ride anytime — bike taxi, auto, or cab with upfront fares, live tracking, and verified captains across India.",
+    sitelinkDescription:
+      "Bike, auto, or cab with upfront fares. Live tracking from pickup to drop.",
+  },
+  {
+    name: "Download App",
+    path: ROUTES.download,
+    title: "Download BW Rides App | Android & iOS",
+    description:
+      "Download BW Rides for Android and iOS — book rides, send parcels, and book ambulance for free in one app.",
+    sitelinkDescription:
+      "Get the app for Android and iOS. Book rides, parcels, and ambulance in one place.",
+  },
+  {
+    name: "Sign in",
+    path: ROUTES.login,
+    title: "Sign in | BW Rides",
+    description:
+      "Sign in to BW Rides to book rides, track trips, manage your wallet, and book ambulance for free.",
+    sitelinkDescription:
+      "Access your BW Rides account to book and manage trips.",
+  },
+  {
+    name: "Sign up",
+    path: ROUTES.signup,
+    title: "Sign up | BW Rides",
+    description:
+      "Create your BW Rides account in minutes — book bike, auto, cab, parcels, and ambulance for free.",
+    sitelinkDescription:
+      "Create an account to start booking rides across India.",
+  },
   {
     name: "Drive with BW Rides",
     path: ROUTES.captains,
@@ -32,25 +77,7 @@ export const SITE_LINK_PAGES = [
     description:
       "Partner as a BW Rides captain — flexible hours, transparent payouts, safety tools, and 24×7 support. Sign up to earn on your terms.",
     sitelinkDescription:
-      "Flexible hours and transparent payouts. Sign up to drive and earn on your terms.",
-  },
-  {
-    name: "Book a Ride",
-    path: ROUTES.ride,
-    title: "Book a Ride | Bike, Auto & Cab — BW Rides",
-    description:
-      "Request a ride anytime — bike taxi, auto, or cab with upfront fares, live tracking, and verified captains across India.",
-    sitelinkDescription:
-      "Bike, auto, or cab with upfront fares. Live tracking from pickup to drop.",
-  },
-  {
-    name: "Download the App",
-    path: ROUTES.download,
-    title: "Download BW Rides App | Android & iOS",
-    description:
-      "Download BW Rides for Android and iOS — book rides, send parcels, and book ambulance for free in one app.",
-    sitelinkDescription:
-      "Get the app for Android and iOS. Book rides, parcels, and SOS in one place.",
+      "Flexible hours and transparent payouts. Sign up to drive and earn.",
   },
   {
     name: "Business",
@@ -59,16 +86,16 @@ export const SITE_LINK_PAGES = [
     description:
       "Corporate employee travel billed to one company account — admin controls, trip visibility, and consolidated invoicing after approval.",
     sitelinkDescription:
-      "Employee travel billed to your company. Admin controls and clear reporting.",
+      "Employee travel billed to your company with clear reporting.",
   },
   {
-    name: "Emergency SOS",
+    name: "Book ambulance for free",
     path: ROUTES.sos,
-    title: "Emergency SOS Ambulance | BW Rides",
+    title: "Book Ambulance for Free | BW Rides",
     description:
-      "Book ambulance for free with BW Rides — verified medical transport, live tracking, and 24×7 emergency support when seconds matter.",
+      "Choose and book ambulance for free with BW Rides — verified medical transport, live tracking, and 24×7 emergency support.",
     sitelinkDescription:
-      "Verified medical transport with live tracking and 24×7 emergency support.",
+      "Verified medical transport with live tracking and 24×7 support.",
   },
   {
     name: "Safety",
@@ -84,9 +111,9 @@ export const SITE_LINK_PAGES = [
     path: ROUTES.about,
     title: "About Us | BW Rides",
     description:
-      "We're building calm, confident mobility for India — premium rides, parcels, and emergency SOS for millions of riders and captains.",
+      "We're building calm, confident mobility for India — premium rides, parcels, and book ambulance for free for millions of riders and captains.",
     sitelinkDescription:
-      "Premium rides, parcels, and emergency SOS built for modern India.",
+      "Premium rides, parcels, and emergency care built for modern India.",
   },
   {
     name: "Blogs",

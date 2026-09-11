@@ -19,6 +19,7 @@ import {
   type LocationFieldType,
 } from "@/lib/location-search";
 import { buildBookUrl } from "@/lib/ride-booking";
+import { resolveAddressCoords } from "@/lib/places-api";
 import {
   normalizeScheduledAt,
   patchLandingBookingSchedule,
@@ -123,13 +124,54 @@ export function LocationCard({
     );
   };
 
-  const navigateToBook = (scheduledAtValue?: string) => {
+  const navigateToBook = async (scheduledAtValue?: string) => {
+    let nextCoords = { ...(coords ?? {}) };
+    const needsPickup =
+      nextCoords.pickupLat == null || nextCoords.pickupLng == null;
+    const needsDropoff =
+      nextCoords.dropoffLat == null || nextCoords.dropoffLng == null;
+
+    if (needsPickup || needsDropoff) {
+      const [pickupResolved, dropoffResolved] = await Promise.all([
+        needsPickup ? resolveAddressCoords(pickup) : Promise.resolve(null),
+        needsDropoff ? resolveAddressCoords(dropoff) : Promise.resolve(null),
+      ]);
+      if (needsPickup && pickupResolved) {
+        nextCoords = {
+          ...nextCoords,
+          pickupLat: pickupResolved.latitude,
+          pickupLng: pickupResolved.longitude,
+        };
+      }
+      if (needsDropoff && dropoffResolved) {
+        nextCoords = {
+          ...nextCoords,
+          dropoffLat: dropoffResolved.latitude,
+          dropoffLng: dropoffResolved.longitude,
+        };
+      }
+    }
+
+    if (
+      nextCoords.pickupLat == null ||
+      nextCoords.pickupLng == null ||
+      nextCoords.dropoffLat == null ||
+      nextCoords.dropoffLng == null
+    ) {
+      openLocationSearch(
+        nextCoords.pickupLat == null || nextCoords.pickupLng == null
+          ? "pickup"
+          : "dropoff",
+      );
+      return;
+    }
+
     router.push(
       buildBookUrl(pickup, dropoff, bookTab, undefined, {
-        pickupLat: coords?.pickupLat,
-        pickupLng: coords?.pickupLng,
-        dropoffLat: coords?.dropoffLat,
-        dropoffLng: coords?.dropoffLng,
+        pickupLat: nextCoords.pickupLat,
+        pickupLng: nextCoords.pickupLng,
+        dropoffLat: nextCoords.dropoffLat,
+        dropoffLng: nextCoords.dropoffLng,
         stops: isParcel || isAmbulance ? undefined : filled,
         scheduledAt: scheduledAtValue || scheduledAt || undefined,
       }),
@@ -141,7 +183,9 @@ export function LocationCard({
       openLocationSearch(!pickup ? "pickup" : "dropoff");
       return;
     }
-    void guardBooking(() => navigateToBook());
+    void guardBooking(() => {
+      void navigateToBook();
+    });
   };
 
   const handleScheduleConfirm = async (iso: string) => {
@@ -159,7 +203,9 @@ export function LocationCard({
       setScheduleOpen(false);
 
       if (pickup && dropoff) {
-        void guardBooking(() => navigateToBook(iso));
+        void guardBooking(() => {
+          void navigateToBook(iso);
+        });
         return;
       }
 
@@ -195,7 +241,9 @@ export function LocationCard({
       setScheduledAt(iso);
       setScheduleOpen(false);
       if (pickup && dropoff) {
-        void guardBooking(() => navigateToBook(iso));
+        void guardBooking(() => {
+          void navigateToBook(iso);
+        });
         return;
       }
       if (!dropoff) {

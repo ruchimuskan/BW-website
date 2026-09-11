@@ -13,7 +13,7 @@ export const metadata: Metadata = pageMetadata({
     "download BW Rides",
     "ride app India",
     "bike taxi app",
-    "ambulance SOS app",
+    "book ambulance for free app",
   ],
 });
 

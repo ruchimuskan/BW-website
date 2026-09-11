@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
-import { BRAND_PHOTOS, brandPhotoFit } from "@/constants/brand-images";
+import { brandPhotoFit } from "@/constants/brand-images";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
 import { type ServiceItem } from "@/constants/services";
 import { ROUTES } from "@/constants/routes";
@@ -22,13 +22,39 @@ function cardHref(route: string) {
 
 function serviceFallback(name: string): string {
   const key = name.toLowerCase();
-  if (key.includes("bike")) return BRAND_PHOTOS.studioBike;
+  if (key.includes("bike")) return "/images/pic-14.png";
   if (key.includes("rickshaw") || key.includes("e-rick")) {
     return "/images/services/e-rickshaw.png";
   }
   if (key.includes("auto")) return "/images/services/auto.png";
-  if (key.includes("ambulance")) return BRAND_PHOTOS.ambulance;
+  if (key.includes("ambulance")) return "/images/services/ambulance-cutout.png";
   return "/images/services/cab-lime.png";
+}
+
+/** Prefer studio cutouts so all four cards share the same white-background look. */
+function serviceDisplayImage(service: ServiceItem): string {
+  const key = `${service.name} ${service.image}`.toLowerCase();
+  if (key.includes("ambulance")) return "/images/services/ambulance-cutout.png";
+  if (key.includes("bike")) {
+    return service.image.includes("pic-14") || service.image.includes("bike")
+      ? service.image
+      : "/images/pic-14.png";
+  }
+  if (key.includes("rickshaw") || key.includes("e-rick")) {
+    return "/images/services/e-rickshaw.png";
+  }
+  if (key.includes("auto")) return "/images/services/auto.png";
+  if (
+    key.includes("cab") ||
+    key.includes("economy") ||
+    key.includes("car") ||
+    key.includes("sedan")
+  ) {
+    return service.image.includes("cab-lime") || service.image.includes("services/")
+      ? service.image
+      : "/images/services/cab-lime.png";
+  }
+  return service.image;
 }
 
 function shortLabel(name: string): string {
@@ -37,10 +63,24 @@ function shortLabel(name: string): string {
   if (key.includes("rickshaw") || key.includes("e-rick")) return "E-Rickshaw";
   if (key.includes("auto")) return "Auto";
   if (key.includes("ambulance")) return "Ambulance";
-  if (key.includes("economy") || key.includes("cab") || key.includes("car") || key.includes("sedan")) {
+  if (
+    key.includes("economy") ||
+    key.includes("cab") ||
+    key.includes("car") ||
+    key.includes("sedan")
+  ) {
     return key.includes("xl") ? "Cab XL" : "Cab";
   }
   return name;
+}
+
+function shortDescription(service: ServiceItem): string {
+  const key = service.name.toLowerCase();
+  if (key.includes("ambulance")) return "Book for free";
+  if (service.description?.trim()) return service.description.trim();
+  if (key.includes("bike")) return "Fast city hops";
+  if (key.includes("auto")) return "Everyday rides";
+  return "Comfort on the go";
 }
 
 function defaultSelectedIndex(cards: ServiceItem[]): number {
@@ -61,12 +101,14 @@ export function LandingServicesSection({
   isLoading = false,
 }: LandingServicesSectionProps) {
   const router = useRouter();
-  const cards = services;
+  const cards = services.slice(0, 4);
   const selectedKey = useMemo(
     () => cards.map((s) => s.name).join("|"),
     [cards],
   );
-  const [activeIndex, setActiveIndex] = useState(() => defaultSelectedIndex(cards));
+  const [activeIndex, setActiveIndex] = useState(() =>
+    defaultSelectedIndex(cards),
+  );
 
   useEffect(() => {
     setActiveIndex(defaultSelectedIndex(cards));
@@ -93,22 +135,22 @@ export function LandingServicesSection({
               Choose how you move
             </h2>
             <p className="mt-2.5 text-[13px] leading-relaxed text-[#5a6330] sm:mt-3 sm:text-base lg:text-lg">
-              Bike, auto, cab, and ambulance SOS — book in moments.
+              Bike, auto, cab, and book ambulance for free — book in moments.
             </p>
           </header>
         </AnimateIn>
 
         <div className="mt-9 sm:mt-11 lg:mt-12">
           {isLoading ? (
-            <div className="mx-auto grid max-w-5xl grid-cols-1 justify-items-center gap-4 min-[520px]:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
               {Array.from({ length: 4 }).map((_, index) => (
                 <div
                   key={`service-skeleton-${index}`}
-                  className="w-full max-w-[17.5rem] overflow-hidden rounded-[1.5rem] border border-[#e4e9d8] bg-white"
+                  className="w-full overflow-hidden rounded-[1.35rem] border border-[#e4e9d8] bg-white sm:rounded-[1.5rem]"
                   aria-hidden
                 >
                   <div className="aspect-[4/3] animate-pulse bg-[#eef2e0]" />
-                  <div className="space-y-2 px-4 py-4">
+                  <div className="space-y-2 px-3 py-3 sm:px-4 sm:py-4">
                     <div className="h-4 w-2/5 animate-pulse rounded bg-[#dce8a8]/70" />
                     <div className="h-3 w-4/5 animate-pulse rounded bg-[#dce8a8]/45" />
                   </div>
@@ -116,25 +158,22 @@ export function LandingServicesSection({
               ))}
             </div>
           ) : (
-            <Stagger
-              className={cn(
-                "flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 pt-1",
-                "px-[max(1rem,calc(50%-8.5rem))]",
-                "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-                "sm:mx-auto sm:max-w-5xl sm:flex-wrap sm:justify-center sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0",
-              )}
-            >
+            <Stagger className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
               {cards.map((service, index) => {
-                const isSos = service.name.toLowerCase().includes("ambulance");
+                const isAmbulance = service.name
+                  .toLowerCase()
+                  .includes("ambulance");
                 const selected = activeIndex === index;
-                const fit = brandPhotoFit(service.image);
+                const imageSrc = serviceDisplayImage(service);
+                const fit = brandPhotoFit(imageSrc);
                 const title = shortLabel(service.name);
+                const description = shortDescription(service);
 
                 return (
                   <StaggerItem
                     key={`${service.name}-${service.route}`}
                     index={index}
-                    className="w-[min(78vw,17.25rem)] shrink-0 snap-center sm:w-[min(100%,16.75rem)] sm:max-w-[16.75rem]"
+                    className="min-w-0"
                   >
                     <button
                       type="button"
@@ -147,20 +186,26 @@ export function LandingServicesSection({
                         });
                       }}
                       className={cn(
-                        "group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[1.5rem] text-left",
-                        "border transition-[transform,box-shadow,background-color,border-color] duration-300",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6E31A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f8f3]",
+                        "group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[1.35rem] text-left sm:rounded-[1.5rem]",
+                        "border bg-white transition-[transform,box-shadow,background-color,border-color] duration-300",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f8f3]",
                         "active:scale-[0.99]",
-                        selected
-                          ? "border-[#C6E31A] bg-[#C6E31A] shadow-[0_20px_44px_-18px_rgba(198,227,26,0.9)]"
-                          : "border-[#e4e9d8] bg-white shadow-[0_14px_32px_-20px_rgba(17,20,17,0.35)] hover:border-[#C6E31A]/60 hover:-translate-y-0.5",
+                        isAmbulance
+                          ? selected
+                            ? "border-[#ef4444]/55 shadow-[0_18px_40px_-22px_rgba(185,28,28,0.4)] focus-visible:ring-[#ef4444]/45"
+                            : "border-[#f0c7c2] shadow-[0_14px_32px_-20px_rgba(17,20,17,0.35)] hover:-translate-y-0.5 hover:border-[#ef4444]/45 focus-visible:ring-[#ef4444]/40"
+                          : selected
+                            ? "border-[#C6E31A] shadow-[0_18px_40px_-22px_rgba(198,227,26,0.55)] ring-1 ring-[#C6E31A]/35 focus-visible:ring-[#C6E31A]"
+                            : "border-[#e4e9d8] shadow-[0_14px_32px_-20px_rgba(17,20,17,0.35)] hover:-translate-y-0.5 hover:border-[#C6E31A]/60 focus-visible:ring-[#C6E31A]",
                       )}
                     >
                       <span
                         className={cn(
-                          "absolute right-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+                          "absolute right-2.5 top-2.5 z-10 flex h-6 w-6 items-center justify-center rounded-full transition-colors sm:right-3 sm:top-3 sm:h-7 sm:w-7",
                           selected
-                            ? "bg-[#111411] text-white"
+                            ? isAmbulance
+                              ? "bg-[#b91c1c] text-white"
+                              : "bg-[#111411] text-white"
                             : "border border-[#d5dcc0] bg-white text-transparent",
                         )}
                         aria-hidden
@@ -168,47 +213,47 @@ export function LandingServicesSection({
                         <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
                       </span>
 
-                      <div
-                        className={cn(
-                          "relative isolate aspect-[4/3] w-full shrink-0 overflow-hidden",
-                          selected ? "bg-[#C6E31A]" : "bg-white",
-                        )}
-                      >
+                      <div className="relative isolate aspect-[4/3] w-full shrink-0 overflow-hidden bg-transparent">
                         <ResilientImage
-                          src={service.image}
+                          src={imageSrc}
                           alt={title}
                           fill
                           quality={NEXT_IMAGE_QUALITY.high}
-                          sizes="(max-width: 639px) 78vw, 268px"
+                          sizes="(max-width: 1023px) 45vw, 22vw"
                           className={cn(
                             "select-none transition-transform duration-500 group-hover:scale-[1.03]",
                             fit === "contain"
-                              ? "object-contain object-center p-5 sm:p-6"
+                              ? "object-contain object-center p-3.5 sm:p-5 lg:p-6"
                               : "object-cover object-center",
                           )}
                           fallbackSrc={serviceFallback(service.name)}
                         />
                       </div>
 
-                      <div className="flex flex-1 flex-col px-4 pb-4 pt-0.5">
-                        <h3 className="font-heading text-[1.05rem] font-semibold tracking-tight text-[#111411] sm:text-lg">
+                      <div className="flex flex-1 flex-col px-3 pb-3.5 pt-0.5 sm:px-4 sm:pb-4">
+                        <h3
+                          className={cn(
+                            "font-heading text-[0.98rem] font-semibold tracking-tight sm:text-[1.05rem] lg:text-lg",
+                            isAmbulance ? "text-[#b91c1c]" : "text-[#111411]",
+                          )}
+                        >
                           {title}
                         </h3>
                         <p
                           className={cn(
-                            "mt-1 line-clamp-2 min-h-[2.4em] text-[12px] leading-relaxed sm:text-[13px]",
-                            selected ? "text-[#1B3A22]/80" : "text-[#5a6330]",
+                            "mt-1 line-clamp-2 min-h-[2.4em] text-[11.5px] leading-relaxed sm:text-[13px]",
+                            isAmbulance ? "text-[#dc2626]/85" : "text-[#5a6330]",
                           )}
                         >
-                          {service.description}
+                          {description}
                         </p>
                         <p
                           className={cn(
-                            "mt-3 text-sm font-semibold tracking-tight sm:text-[15px]",
-                            selected ? "text-[#111411]" : "text-[#5a7a12]",
+                            "mt-2.5 text-[13px] font-semibold tracking-tight sm:mt-3 sm:text-sm lg:text-[15px]",
+                            isAmbulance ? "text-[#dc2626]" : "text-[#5a7a12]",
                           )}
                         >
-                          {isSos ? "SOS ready" : "Book now"}
+                          {isAmbulance ? "Book free" : "Book now"}
                           <span aria-hidden className="ml-1">
                             →
                           </span>
@@ -221,20 +266,6 @@ export function LandingServicesSection({
             </Stagger>
           )}
         </div>
-
-        {!isLoading && cards.length > 1 ? (
-          <div className="mt-4 flex justify-center gap-1.5 sm:hidden" aria-hidden>
-            {cards.map((service, index) => (
-              <span
-                key={`dot-${service.name}`}
-                className={cn(
-                  "h-1.5 rounded-full transition-all",
-                  activeIndex === index ? "w-5 bg-[#C6E31A]" : "w-1.5 bg-[#c5ccb4]",
-                )}
-              />
-            ))}
-          </div>
-        ) : null}
       </div>
     </section>
   );

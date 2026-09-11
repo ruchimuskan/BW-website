@@ -20,9 +20,11 @@ import {
   syncScheduledAtQuery,
 } from "@/lib/landing-booking-draft";
 import { reverseGeocode } from "@/lib/places-api";
-import { buildTrackingUrl } from "@/lib/ride-booking";
+import {
+  formatActiveRideStatus,
+  buildActiveRideViewUrl,
+} from "@/lib/active-ride-guard";
 import { isRideInProgress, isRideTerminal, isSearchingForCaptain, resolveRideAddress } from "@/lib/ride-api";
-import { formatActiveRideStatus } from "@/lib/active-ride-guard";
 import { parseStopsFromParams, type TripStop } from "@/lib/trip-stops";
 import { transitions } from "@/lib/motion";
 import {
@@ -288,27 +290,7 @@ export function HomeView() {
                     type="button"
                     onClick={() => {
                       const ride = dashboard.active_ride!;
-                      if (isSearchingForCaptain(ride.status)) {
-                        router.push(
-                          `${ROUTES.bookSearching}?rideId=${encodeURIComponent(ride.id)}&pickup=${encodeURIComponent(ride.pickup_address || "")}&dropoff=${encodeURIComponent(ride.dropoff_address || "")}`,
-                        );
-                        return;
-                      }
-                      if (isRideInProgress(ride.status)) {
-                        router.push(
-                          buildTrackingUrl(
-                            ride.pickup_address || "",
-                            ride.dropoff_address || "",
-                            "bike",
-                            "rides",
-                            ride.id,
-                          ),
-                        );
-                        return;
-                      }
-                      router.push(
-                        `${ROUTES.bookings}?highlight=${encodeURIComponent(ride.id)}`,
-                      );
+                      router.push(buildActiveRideViewUrl(ride));
                     }}
                     className="w-full rounded-2xl border border-white/25 bg-white/95 p-4 text-left shadow-[0_16px_36px_-24px_rgba(32,42,16,0.5)] transition-all duration-150 hover:bg-white sm:p-5"
                   >

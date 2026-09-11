@@ -1,6 +1,5 @@
 import { landingFaqItems, shortenLandingFaqQuestion } from "@/constants/landing-faq";
 import { landingServices, type ServiceItem } from "@/constants/services";
-import { allowDemoDataFallbacks } from "@/lib/app-env";
 import {
   getVehicleCategories,
   isAmbulanceVehicle,
@@ -128,10 +127,11 @@ export async function fetchLandingServices(): Promise<ServiceItem[]> {
       return picked.map((category) => mapCategoryToService(category, usedImages));
     }
   } catch {
-    // Fall through to static only in non-production dev.
+    // Fall through to curated marketing tiles so production never shows an empty grid.
   }
 
-  return allowDemoDataFallbacks() ? landingServices : [];
+  // Curated service tiles (not trip mocks) — keep the landing usable when CMS is empty.
+  return landingServices;
 }
 
 function mapFaqItem(item: FaqItem, index: number): LandingFaq {
@@ -148,7 +148,15 @@ function mapFaqItem(item: FaqItem, index: number): LandingFaq {
   };
 }
 
-/** Landing FAQ accordion — live CMS first; bundled copy only outside production. */
+function bundledLandingFaqs(): LandingFaq[] {
+  return landingFaqItems.map(({ id, question, answer }) => ({
+    id,
+    question,
+    answer,
+  }));
+}
+
+/** Landing FAQ accordion — live CMS first; curated copy keeps production usable. */
 export async function fetchLandingFaqs(): Promise<LandingFaq[]> {
   try {
     const items = await getFaqs();
@@ -156,14 +164,8 @@ export async function fetchLandingFaqs(): Promise<LandingFaq[]> {
       return items.slice(0, 12).map(mapFaqItem);
     }
   } catch {
-    // Fall through only when demo fallbacks are allowed.
+    // Fall through to curated FAQ copy.
   }
 
-  if (!allowDemoDataFallbacks()) return [];
-
-  return landingFaqItems.map(({ id, question, answer }) => ({
-    id,
-    question,
-    answer,
-  }));
+  return bundledLandingFaqs();
 }

@@ -8,11 +8,16 @@ import {
   DEFAULT_SITE_DESCRIPTION,
   SITE_BRAND,
   SITE_BRAND_ALTERNATES,
-  SITE_LINK_PAGES,
   absoluteUrl,
+  organizationSameAs,
 } from "@/constants/seo";
 import { getSiteUrl } from "@/constants/site";
 import { inter, playwriteEnglandJoined } from "@/lib/fonts";
+import {
+  curatedSeoSiteLinks,
+  fetchSeoSiteLinks,
+  type SeoSiteLink,
+} from "@/lib/seo-sitelinks";
 import "./globals.css";
 
 const siteUrl = getSiteUrl();
@@ -20,20 +25,20 @@ const siteUrl = getSiteUrl();
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: SITE_BRAND,
+    default: `${SITE_BRAND} · Book rides, parcels & ambulance for free`,
     template: `%s | ${SITE_BRAND}`,
   },
   description: DEFAULT_SITE_DESCRIPTION,
   applicationName: SITE_BRAND,
   keywords: [
     "BW Rides",
+    "Bull Wave Rides",
     "Bullwave Rides",
-    "BW Rides",
     "bike taxi",
     "auto rickshaw booking",
     "cab booking India",
     "parcel delivery",
-    "ambulance SOS",
+    "book ambulance for free",
     "ride hailing",
     "book a ride",
     "drive with BW Rides",
@@ -91,15 +96,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+function buildSiteGraph(siteLinks: SeoSiteLink[]) {
   const organizationId = `${siteUrl}/#organization`;
   const websiteId = `${siteUrl}/#website`;
+  const sameAs = organizationSameAs();
 
-  const jsonLd = {
+  return {
     "@context": "https://schema.org",
     "@graph": [
       {
@@ -113,7 +115,7 @@ export default function RootLayout({
           url: `${siteUrl}/images/bwride.png`,
         },
         description: DEFAULT_SITE_DESCRIPTION,
-        sameAs: [] as string[],
+        ...(sameAs.length ? { sameAs } : {}),
       },
       {
         "@type": "WebSite",
@@ -124,6 +126,8 @@ export default function RootLayout({
         description: DEFAULT_SITE_DESCRIPTION,
         publisher: { "@id": organizationId },
         inLanguage: "en-IN",
+        hasPart: { "@id": `${siteUrl}/#sitelinks` },
+        mainEntity: { "@id": `${siteUrl}/#sitelinks` },
       },
       {
         "@type": "TaxiService",
@@ -144,7 +148,7 @@ export default function RootLayout({
           "Book ambulance for free",
         ],
       },
-      ...SITE_LINK_PAGES.map((page, index) => ({
+      ...siteLinks.map((page, index) => ({
         "@type": "SiteNavigationElement",
         "@id": `${siteUrl}/#nav-${index + 1}`,
         position: index + 1,
@@ -156,18 +160,32 @@ export default function RootLayout({
         "@type": "ItemList",
         "@id": `${siteUrl}/#sitelinks`,
         name: `${SITE_BRAND} popular pages`,
-        numberOfItems: SITE_LINK_PAGES.length,
-        itemListElement: SITE_LINK_PAGES.map((page, index) => ({
+        numberOfItems: siteLinks.length,
+        itemListElement: siteLinks.map((page, index) => ({
           "@type": "ListItem",
           position: index + 1,
           name: page.name,
           description: page.sitelinkDescription,
           url: absoluteUrl(page.path),
-          item: absoluteUrl(page.path),
+          item: {
+            "@type": "WebPage",
+            name: page.title,
+            description: page.description,
+            url: absoluteUrl(page.path),
+          },
         })),
       },
     ],
   };
+}
+
+export default async function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const siteLinks = await fetchSeoSiteLinks().catch(() => curatedSeoSiteLinks());
+  const jsonLd = buildSiteGraph(siteLinks);
 
   return (
     <html lang="en-IN" data-scroll-behavior="smooth">
@@ -175,6 +193,14 @@ export default function RootLayout({
         <link rel="preconnect" href="https://api.bullwaverides.com" />
         <link rel="dns-prefetch" href="https://api.bullwaverides.com" />
         <link rel="preload" as="image" href="/images/bwride.png" />
+        <link rel="preload" as="image" href="/images/services/car.webp" type="image/webp" />
+        <link
+          rel="preload"
+          as="image"
+          href="/images/services/ambulance-cutout.png"
+          type="image/png"
+        />
+        <link rel="preload" as="image" href="/images/services/parcel.png" type="image/png" />
       </head>
       <body
         className={`${inter.variable} ${playwriteEnglandJoined.variable} font-sans antialiased bg-background text-foreground`}

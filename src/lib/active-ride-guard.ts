@@ -1,7 +1,12 @@
 import type { RideVehicleId } from "@/data/ride-options";
-import { buildBookingDetailUrl, buildTrackingUrl } from "@/lib/ride-booking";
+import {
+  buildBookingDetailUrl,
+  buildSearchingUrl,
+  buildTrackingUrl,
+} from "@/lib/ride-booking";
 import {
   getActiveRide,
+  isDeliveryRide,
   isDriverAssigned,
   isRideInProgress,
   isRideTerminal,
@@ -44,30 +49,67 @@ export function formatActiveRideStatus(ride: {
   return ride.status.replace(/_/g, " ");
 }
 
-function vehicleIdFromRide(ride: Ride): RideVehicleId {
+export function vehicleIdFromRide(ride: {
+  vehicle_type_name?: string | null;
+  booking_purpose?: string | null;
+  is_emergency?: boolean | null;
+}): RideVehicleId {
   const key = `${ride.vehicle_type_name ?? ""} ${ride.booking_purpose ?? ""}`.toLowerCase();
   if (key.includes("bike")) return "bike";
   if (key.includes("auto")) return "auto";
   if (key.includes("parcel") || key.includes("delivery")) return "parcel";
   if (key.includes("ambulance") || ride.is_emergency) return "ambulance";
+  if (key.includes("cab") || key.includes("car") || key.includes("sedan")) return "cab";
   return "cab";
 }
 
-/** Deep-link to the live trip when possible; otherwise booking detail. */
-export function buildActiveRideViewUrl(ride: Ride): string {
-  if (
-    isSearchingForCaptain(ride.status) ||
-    isDriverAssigned(ride.status) ||
-    isRideInProgress(ride.status)
-  ) {
-    return buildTrackingUrl(
-      ride.pickup_address || "",
-      ride.dropoff_address || "",
-      vehicleIdFromRide(ride),
-      ride.is_emergency || ride.ride_type === "EMERGENCY" ? "ambulance" : "rides",
-      ride.id,
-    );
+function tabFromRide(ride: {
+  is_emergency?: boolean | null;
+  ride_type?: string | null;
+  booking_purpose?: string | null;
+  vehicle_type_name?: string | null;
+}): string {
+  if (ride.is_emergency || ride.ride_type === "EMERGENCY") return "ambulance";
+  if (isDeliveryRide(ride)) return "parcel";
+  return "rides";
+}
+
+/** Deep-link to captain search / live tracking when possible; otherwise booking detail. */
+export function buildActiveRideViewUrl(ride: {
+  id: string;
+  status: string;
+  pickup_address?: string | null;
+  dropoff_address?: string | null;
+  pickup_lat?: number | null;
+  pickup_lng?: number | null;
+  dropoff_lat?: number | null;
+  dropoff_lng?: number | null;
+  vehicle_type_name?: string | null;
+  booking_purpose?: string | null;
+  is_emergency?: boolean | null;
+  ride_type?: string | null;
+  scheduled_at?: string | null;
+}): string {
+  const pickup = ride.pickup_address || "";
+  const dropoff = ride.dropoff_address || "";
+  const vehicle = vehicleIdFromRide(ride);
+  const tab = tabFromRide(ride);
+  const coords = {
+    pickupLat: ride.pickup_lat ?? undefined,
+    pickupLng: ride.pickup_lng ?? undefined,
+    dropoffLat: ride.dropoff_lat ?? undefined,
+    dropoffLng: ride.dropoff_lng ?? undefined,
+    rideId: ride.id,
+  };
+
+  if (isSearchingForCaptain(ride.status)) {
+    return buildSearchingUrl(pickup, dropoff, vehicle, tab, undefined, false, coords);
   }
+
+  if (isDriverAssigned(ride.status) || isRideInProgress(ride.status)) {
+    return buildTrackingUrl(pickup, dropoff, vehicle, tab, ride.id);
+  }
+
   return buildBookingDetailUrl(ride.id);
 }
 

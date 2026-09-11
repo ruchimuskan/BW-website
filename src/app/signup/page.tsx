@@ -1,5 +1,17 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SignupView } from "@/components/auth";
+import { SITE_LINK_PAGES } from "@/constants/seo";
+import { pageMetadata } from "@/lib/page-metadata";
+
+const page = SITE_LINK_PAGES.find((p) => p.path === "/signup")!;
+
+export const metadata: Metadata = pageMetadata({
+  title: page.title,
+  description: page.description,
+  path: page.path,
+  keywords: ["BW Rides signup", "create account", "register BW Rides"],
+});
 
 function SignupFallback() {
   return (

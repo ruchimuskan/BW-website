@@ -10,8 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         disallow: [
-          "/login",
-          "/signup",
+          // Keep private app surfaces out of the index — public sitelink pages stay allowed.
           "/otp",
           "/start",
           "/create-profile",

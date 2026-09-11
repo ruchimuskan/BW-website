@@ -1,7 +1,10 @@
 import type { MetadataRoute } from "next";
-import { SITE_LINK_PAGES } from "@/constants/seo";
 import { getSiteUrl } from "@/constants/site";
 import { blogPosts } from "@/data/blogs";
+import {
+  curatedSeoSiteLinks,
+  fetchSeoSiteLinks,
+} from "@/lib/seo-sitelinks";
 
 const siteUrl = getSiteUrl();
 
@@ -13,21 +16,26 @@ function url(path: string) {
 const PRIORITY: Record<string, number> = {
   "/": 1,
   "/ride": 0.98,
-  "/captains": 0.97,
-  "/download": 0.96,
-  "/about": 0.95,
+  "/download": 0.97,
+  "/login": 0.96,
+  "/signup": 0.96,
+  "/captains": 0.95,
+  "/about": 0.94,
+  "/sos": 0.93,
   "/safety": 0.92,
-  "/sos": 0.92,
   "/corporate/register": 0.9,
   "/blogs": 0.85,
+  "/site-map": 0.6,
 };
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const liveLinks = await fetchSeoSiteLinks().catch(() => curatedSeoSiteLinks());
 
   const staticRoutes = [
     "/",
-    ...SITE_LINK_PAGES.map((p) => p.path),
+    ...liveLinks.map((p) => p.path),
+    "/site-map",
     "/corporate/login",
     "/legal/privacy",
     "/legal/terms",
@@ -43,8 +51,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ? "monthly"
       : path === "/" ||
           path === "/ride" ||
-          path === "/captains" ||
-          path === "/download"
+          path === "/download" ||
+          path === "/login" ||
+          path === "/signup"
         ? "daily"
         : "weekly",
     priority: PRIORITY[path] ?? (path.startsWith("/blogs/") ? 0.55 : 0.7),

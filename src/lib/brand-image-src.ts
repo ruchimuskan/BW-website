@@ -3,8 +3,18 @@ import { BRAND_PHOTOS, CAPTAIN_PARTNER_FALLBACKS } from "@/constants/brand-image
 /** Return src unchanged — do not auto-swap PNG→WebP (many assets are PNG-only in production). */
 export function preferWebp(src: string): string {
   if (!src.startsWith("/images/")) return src;
-  if (/captain-partner|captain_cta/i.test(src)) {
-    return src.replace(/\.webp(\?.*)?$/i, ".png$1");
+  // Prefer files that actually ship in /public for captain assets.
+  if (/captain-partner/i.test(src)) {
+    return "/images/img15.png";
+  }
+  if (/captain_cta\.png/i.test(src)) {
+    return "/images/captain_cta.webp";
+  }
+  if (/img15\.webp(\?|$)/i.test(src)) {
+    return "/images/img15.png";
+  }
+  if (/pic-14\.webp(\?|$)/i.test(src)) {
+    return "/images/pic-14.png";
   }
   return src;
 }

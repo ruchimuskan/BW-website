@@ -70,7 +70,7 @@ export function LandingLuxuryHero({
               transition={{ ...transitions.reveal, delay: 0.04 }}
             >
               <p className="text-[10px] font-semibold tracking-[0.28em] uppercase text-white/55 sm:text-[11px]">
-                Ride · Parcel · SOS
+                Ride · Parcel · Ambulance
               </p>
 
               <div className="mt-2 h-0.5 w-10 rounded-full bg-[#C6E31A] sm:mt-2.5 sm:w-12" aria-hidden />
@@ -80,7 +80,7 @@ export function LandingLuxuryHero({
               </h1>
 
               <p className="mt-2.5 max-w-lg text-[13px] leading-relaxed text-white/72 sm:mt-3 sm:text-sm lg:text-[15px]">
-                Bike, auto, cab, parcel, and ambulance SOS — live tracking, upfront
+                Bike, auto, cab, parcel, and book ambulance for free — live tracking, upfront
                 fares, and verified captains across India.
               </p>
 

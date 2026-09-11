@@ -37,15 +37,15 @@ export const landingFaqItems = [
   },
   {
     id: "ambulance",
-    question: "How does SOS ambulance work?",
+    question: "How do I book ambulance for free?",
     answer:
-      "Tap Emergency, enter pickup and hospital, and confirm. We match verified medical transport and share live updates.",
+      "Choose Book ambulance for free, enter pickup and hospital, and confirm. We match verified medical transport and share live updates.",
   },
   {
     id: "safety",
     question: "Is my ride safe?",
     answer:
-      "Captains are verified. You get live tracking, trip share, in-app SOS, and support on every journey.",
+      "Captains are verified. You get live tracking, trip share, emergency assistance, and support on every journey.",
   },
 ] as const;
 

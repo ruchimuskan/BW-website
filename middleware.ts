@@ -12,7 +12,7 @@ import { isProductionEnv } from "@/lib/app-env";
  * Full route access map for the user panel.
  * Public = no rider login required. Protected = auth cookie + profile complete.
  * Corporate routes use their own session in the UI; they stay public at the edge.
- * Do not change API/data contracts here — access gating only.
+ * Static images under /public must never be gated — zip/production deploys rely on this.
  */
 
 /** Exact paths anyone can open without rider login. */
@@ -30,6 +30,7 @@ const PUBLIC_PATHS = new Set<string>([
   ROUTES.terms,
   ROUTES.privacy,
   ROUTES.legalSafety,
+  ROUTES.siteMap,
   // Auth / onboarding
   ROUTES.login,
   ROUTES.signup,
@@ -43,7 +44,7 @@ const PUBLIC_PATHS = new Set<string>([
   ROUTES.corporateRegister,
   ROUTES.corporateLogin,
   ROUTES.corporatePortal,
-  // Site metadata / icons
+  // Site metadata / icons (also covered by static matcher)
   "/robots.txt",
   "/sitemap.xml",
   "/manifest.webmanifest",
@@ -138,7 +139,10 @@ function isProtectedPath(pathname: string) {
   return PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 
-/** Static files must never hit auth redirects (images, fonts, Next internals). */
+/**
+ * Static files must never hit auth redirects.
+ * Covers every folder shipped in /public for production zips.
+ */
 function isStaticAssetPath(pathname: string): boolean {
   if (
     pathname.startsWith("/_next/") ||
@@ -147,11 +151,16 @@ function isStaticAssetPath(pathname: string): boolean {
     pathname.startsWith("/landing/") ||
     pathname.startsWith("/uploads/") ||
     pathname.startsWith("/api/") ||
-    pathname.startsWith("/fonts/")
+    pathname.startsWith("/fonts/") ||
+    pathname.startsWith("/brand/") ||
+    pathname.startsWith("/icons/") ||
+    pathname.startsWith("/media/") ||
+    pathname.startsWith("/assets/") ||
+    pathname.startsWith("/static/")
   ) {
     return true;
   }
-  return /\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm)$/i.test(
+  return /\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm|css|js|map)$/i.test(
     pathname,
   );
 }
@@ -181,6 +190,7 @@ function safeReturnPath(pathname: string, search: string): string {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Always allow static assets (images, fonts, APKs) — never auth-gate them.
   if (isStaticAssetPath(pathname)) {
     return NextResponse.next();
   }
@@ -246,9 +256,9 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * App routes only — skip Next internals, /images, /uploads, /api, and
-     * any path with a static file extension (see isStaticAssetPath too).
+     * App routes only — skip Next internals and every static asset folder/extension
+     * so production image loads stay fast and never redirect to login.
      */
-    "/((?!_next|images|gallery|landing|uploads|api|fonts|favicon\\.ico|robots\\.txt|sitemap\\.xml|manifest\\.webmanifest|opengraph-image|twitter-image|icon|apple-icon|.*\\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm)$).*)",
+    "/((?!_next/static|_next/image|_next/data|images|gallery|landing|uploads|api|fonts|brand|icons|media|assets|static|favicon\\.ico|robots\\.txt|sitemap\\.xml|manifest\\.webmanifest|opengraph-image|twitter-image|icon|apple-icon|.*\\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm|css|js|map)$).*)",
   ],
 };

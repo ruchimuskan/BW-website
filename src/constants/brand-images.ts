@@ -55,13 +55,13 @@ export const BRAND_PHOTOS = {
   captainsHero: "/images/img15.png",
   captainsHeroPng: "/images/img15.png",
   captainsHero2x: "/images/img15-2x.webp",
-  /** Legacy captain partner assets (other pages). */
-  captain: "/images/landing/captain-partner.png",
-  captainWebp: "/images/landing/captain-partner.webp",
-  captainPng: "/images/landing/captain-partner.png",
-  captainHires: "/images/landing/captain-partner-hires.webp",
-  captain2x: "/images/landing/captain-partner-2x.webp",
-  captainLandscape: "/images/landing/captain-partner-landscape.webp",
+  /** Captain partner — ship only files that exist in /public/images. */
+  captain: "/images/img15.png",
+  captainWebp: "/images/captain_cta.webp",
+  captainPng: "/images/img15.png",
+  captainHires: "/images/img15-2x.webp",
+  captain2x: "/images/img15-2x.webp",
+  captainLandscape: "/images/img15.png",
 } as const;
 
 /** Captains hero fallback — img15 webp/png twins. */
@@ -71,14 +71,12 @@ export const CAPTAINS_HERO_FALLBACKS = [
   BRAND_PHOTOS.streetCab,
 ] as const;
 
-/** Captain hero fallback chain — partner photo only (PNG first, then webp twins). */
+/** Captain hero fallback chain — only assets present in the production zip. */
 export const CAPTAIN_PARTNER_FALLBACKS = [
   BRAND_PHOTOS.captainPng,
-  BRAND_PHOTOS.captainHires,
-  BRAND_PHOTOS.captain2x,
+  BRAND_PHOTOS.captainsHero2x,
   BRAND_PHOTOS.captainWebp,
-  "/images/captain_cta.png",
-  "/images/captain_cta.webp",
+  BRAND_PHOTOS.streetCab,
 ] as const;
 
 export const BRAND_IMAGES = {
@@ -137,7 +135,7 @@ export const HERO_STAGE_ASSETS = {
   parcel: "/images/landing/brand/parcel-delivery.png",
   parcelFallback: "/images/services/parcel.png",
   ambulance: "/images/landing/brand/ambulance.png",
-  ambulanceFallback: "/images/services/ambulance.png",
+  ambulanceFallback: "/images/services/ambulance-cutout.png",
 } as const;
 
 export const BRAND_IMAGE_SIZES = {
@@ -174,6 +172,9 @@ export function brandPhotoFit(src: string): "contain" | "cover" {
     path.includes("pic-14") ||
     path.includes("e-rickshaw") ||
     path.includes("cab-lime") ||
+    path.includes("ambulance-lime") ||
+    path.includes("ambulance-studio") ||
+    path.includes("ambulance-cutout") ||
     path.includes("/services/") ||
     path.includes("/landing/brand/")
   ) {

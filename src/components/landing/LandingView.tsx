@@ -10,23 +10,26 @@ import { LandingLuxuryHero } from "@/components/landing/LandingLuxuryHero";
 import { LandingPremiumExperience } from "@/components/landing/LandingPremiumExperience";
 import { LandingPremiumGallery } from "@/components/landing/LandingPremiumGallery";
 import { LandingServicesSection } from "@/components/landing/LandingServicesSection";
+import { LandingFaqSection } from "@/components/landing/LandingFaqSection";
 import { ROUTES } from "@/constants/routes";
 import {
   type LandingBookingTab,
   type ServiceItem,
 } from "@/constants/services";
 import { fetchLandingServices } from "@/lib/landing-api";
+import type { LandingFaq } from "@/lib/landing-api";
 import { warmBackend } from "@/lib/api";
 import {
+  clearLandingBookingDraft,
   normalizeScheduledAt,
   patchLandingBookingSchedule,
-  readLandingBookingDraft,
   saveLandingBookingDraft,
   syncScheduledAtQuery,
 } from "@/lib/landing-booking-draft";
 import { buildLocationSearchUrl, isLandingBookingTab } from "@/lib/location-search";
 import type { LocationFieldType } from "@/lib/location-search";
 import { buildBookUrl } from "@/lib/ride-booking";
+import { resolveAddressCoords } from "@/lib/places-api";
 import { fetchSchedulePreview } from "@/lib/schedule-api";
 import { cn } from "@/lib/utils";
 import { useActiveRideGuard } from "@/hooks/useActiveRideGuard";
@@ -59,11 +62,6 @@ const LandingCaptainsSection = dynamic(
     ),
   { ssr: false, loading: () => <SectionSkeleton className="min-h-[18rem]" /> },
 );
-const LandingFaqSection = dynamic(
-  () =>
-    import("@/components/landing/LandingFaqSection").then((m) => m.LandingFaqSection),
-  { ssr: false, loading: () => <SectionSkeleton className="min-h-[20rem]" /> },
-);
 
 function getDropoffLocationCopy(tab: LandingBookingTab) {
   if (tab === "parcel") {
@@ -87,7 +85,11 @@ function getDropoffLocationCopy(tab: LandingBookingTab) {
   };
 }
 
-export function LandingView() {
+export function LandingView({
+  faqs,
+}: {
+  faqs?: LandingFaq[];
+} = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { guardBooking, blockDialog } = useActiveRideGuard();
@@ -178,25 +180,31 @@ export function LandingView() {
   }, []);
 
   useEffect(() => {
-    const urlPickup = searchParams.get("pickup");
-    const urlDropoff = searchParams.get("dropoff");
+    const urlPickup = searchParams.get("pickup")?.trim() || "";
+    const urlDropoff = searchParams.get("dropoff")?.trim() || "";
     const urlTab = searchParams.get("tab");
     const urlScheduled = normalizeScheduledAt(searchParams.get("scheduled_at"));
-    const fromLocationPicker = Boolean(urlPickup || urlDropoff || urlTab);
-    const draft = readLandingBookingDraft();
+    const hashIsBook =
+      typeof window !== "undefined" && window.location.hash === "#book";
+    const fromLocationRoute =
+      typeof document !== "undefined" &&
+      /\/location(\?|$|#)/.test(document.referrer || "");
+    // Addresses only when the user is mid booking (location return / #book).
+    const restorePlaces =
+      hashIsBook ||
+      fromLocationRoute ||
+      Boolean(searchParams.get("plat") && searchParams.get("plng"));
 
-    if (urlPickup) setPickup(urlPickup);
-    else if (!hydratedOnce.current && draft?.pickup) setPickup(draft.pickup);
+    if (restorePlaces && urlPickup) setPickup(urlPickup);
+    else if (!hydratedOnce.current) setPickup("");
 
-    if (urlDropoff) setDropoff(urlDropoff);
-    else if (!hydratedOnce.current && draft?.dropoff) setDropoff(draft.dropoff);
+    if (restorePlaces && urlDropoff) setDropoff(urlDropoff);
+    else if (!hydratedOnce.current) setDropoff("");
 
     if (isLandingBookingTab(urlTab)) setActiveTab(urlTab);
-    else if (!hydratedOnce.current && draft?.tab) setActiveTab(draft.tab);
+    else if (!hydratedOnce.current) setActiveTab("rides");
 
-    // Default is always "When to go". Schedule only if the user already chose one
-    // in this flow (returning from location search with their selection).
-    if (fromLocationPicker && urlScheduled) {
+    if (restorePlaces && urlScheduled) {
       setScheduledAt(urlScheduled);
     } else if (!hydratedOnce.current) {
       setScheduledAt(null);
@@ -204,15 +212,46 @@ export function LandingView() {
       patchLandingBookingSchedule(null);
     }
 
-    // Strip sticky ?scheduled_at= from the address bar so refresh doesn't look pre-scheduled.
-    if (searchParams.has("scheduled_at")) {
+    if (!hydratedOnce.current && !restorePlaces) {
+      clearLandingBookingDraft();
+      // Drop sticky ?pickup=&dropoff= leftovers so a refresh of `/` stays empty.
+      try {
+        const url = new URL(window.location.href);
+        let dirty = false;
+        for (const key of [
+          "pickup",
+          "dropoff",
+          "plat",
+          "plng",
+          "dlat",
+          "dlng",
+          "scheduled_at",
+        ]) {
+          if (url.searchParams.has(key)) {
+            url.searchParams.delete(key);
+            dirty = true;
+          }
+        }
+        if (dirty) {
+          window.history.replaceState(
+            window.history.state,
+            "",
+            `${url.pathname}${url.search}${url.hash}`,
+          );
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    if (searchParams.has("scheduled_at") && restorePlaces) {
       syncScheduledAtQuery(null, window.location.hash || "#book");
     }
 
     hydratedOnce.current = true;
     setDraftHydrated(true);
 
-    if (fromLocationPicker || window.location.hash === "#book") {
+    if (restorePlaces || hashIsBook) {
       const scrollToBookWidget = () => {
         document.getElementById("book")?.scrollIntoView({
           behavior: "auto",
@@ -252,11 +291,16 @@ export function LandingView() {
 
   useEffect(() => {
     if (!draftHydrated) return;
+    // Only persist mid-flow state when the user actually chose locations
+    // (or returned from the location picker via URL). Never invent defaults.
+    if (!pickup && !dropoff) {
+      clearLandingBookingDraft();
+      return;
+    }
     saveLandingBookingDraft({
       pickup,
       dropoff,
       tab: activeTab,
-      // Landing draft never stores a default schedule — only pickup/drop/tab.
       scheduledAt: null,
       pickupLat: tripCoords.pickupLat,
       pickupLng: tripCoords.pickupLng,
@@ -321,26 +365,73 @@ export function LandingView() {
     const proceedToBook = async () => {
       setIsBooking(true);
       try {
+        let nextCoords = { ...tripCoords };
+
+        const needsPickup =
+          nextCoords.pickupLat == null || nextCoords.pickupLng == null;
+        const needsDropoff =
+          nextCoords.dropoffLat == null || nextCoords.dropoffLng == null;
+
+        if (needsPickup || needsDropoff) {
+          const [pickupResolved, dropoffResolved] = await Promise.all([
+            needsPickup
+              ? resolveAddressCoords(pickup)
+              : Promise.resolve(null),
+            needsDropoff
+              ? resolveAddressCoords(dropoff)
+              : Promise.resolve(null),
+          ]);
+
+          if (needsPickup && pickupResolved) {
+            nextCoords = {
+              ...nextCoords,
+              pickupLat: pickupResolved.latitude,
+              pickupLng: pickupResolved.longitude,
+            };
+          }
+          if (needsDropoff && dropoffResolved) {
+            nextCoords = {
+              ...nextCoords,
+              dropoffLat: dropoffResolved.latitude,
+              dropoffLng: dropoffResolved.longitude,
+            };
+          }
+
+          if (
+            nextCoords.pickupLat == null ||
+            nextCoords.pickupLng == null ||
+            nextCoords.dropoffLat == null ||
+            nextCoords.dropoffLng == null
+          ) {
+            openLocationSearch(
+              nextCoords.pickupLat == null || nextCoords.pickupLng == null
+                ? "pickup"
+                : "dropoff",
+            );
+            return;
+          }
+        }
+
         if (scheduleIso) {
           await applySchedulePreview(scheduleIso);
         }
+
+        startTransition(() => {
+          router.push(
+            buildBookUrl(pickup, dropoff, activeTab, undefined, {
+              pickupLat: nextCoords.pickupLat,
+              pickupLng: nextCoords.pickupLng,
+              dropoffLat: nextCoords.dropoffLat,
+              dropoffLng: nextCoords.dropoffLng,
+              scheduledAt: scheduleIso,
+            }),
+          );
+        });
       } catch {
-        // Fare preview is best-effort before navigation.
+        openLocationSearch("pickup");
       } finally {
         setIsBooking(false);
       }
-
-      startTransition(() => {
-        router.push(
-          buildBookUrl(pickup, dropoff, activeTab, undefined, {
-            pickupLat: tripCoords.pickupLat,
-            pickupLng: tripCoords.pickupLng,
-            dropoffLat: tripCoords.dropoffLat,
-            dropoffLng: tripCoords.dropoffLng,
-            scheduledAt: scheduleIso,
-          }),
-        );
-      });
     };
 
     void guardBooking(() => {
@@ -391,7 +482,7 @@ export function LandingView() {
 
       <LandingCaptainsSection />
 
-      <LandingFaqSection />
+      <LandingFaqSection initialFaqs={faqs} />
 
       <LandingFooter />
 

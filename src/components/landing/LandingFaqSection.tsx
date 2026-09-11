@@ -14,7 +14,6 @@ import { ROUTES } from "@/constants/routes";
 import { getProtectedPath } from "@/lib/auth-session";
 import { fetchLandingFaqs, type LandingFaq } from "@/lib/landing-api";
 import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
-import { allowDemoDataFallbacks } from "@/lib/app-env";
 import { cn } from "@/lib/utils";
 
 function toDisplayFaqs(items: LandingFaq[]): LandingFaq[] {
@@ -24,8 +23,7 @@ function toDisplayFaqs(items: LandingFaq[]): LandingFaq[] {
   }));
 }
 
-function initialFaqs(): LandingFaq[] {
-  if (!allowDemoDataFallbacks()) return [];
+function bundledFaqs(): LandingFaq[] {
   return toDisplayFaqs(
     landingFaqItems.map(({ id, question, answer }) => ({
       id,
@@ -35,14 +33,18 @@ function initialFaqs(): LandingFaq[] {
   );
 }
 
-export function LandingFaqSection() {
+interface LandingFaqSectionProps {
+  /** Server-fetched FAQs — must match FAQPage JSON-LD for Google rich results. */
+  initialFaqs?: LandingFaq[];
+}
+
+export function LandingFaqSection({ initialFaqs }: LandingFaqSectionProps) {
   const reduceMotion = useReducedMotion();
   const headingId = useId();
-  const [faqItems, setFaqItems] = useState<LandingFaq[]>(initialFaqs);
-  const [faqsLoaded, setFaqsLoaded] = useState(false);
-  const [openId, setOpenId] = useState<string | null>(
-    () => initialFaqs()[0]?.id ?? null,
-  );
+  const seed = initialFaqs?.length ? toDisplayFaqs(initialFaqs) : bundledFaqs();
+  const [faqItems, setFaqItems] = useState<LandingFaq[]>(seed);
+  const [faqsLoaded, setFaqsLoaded] = useState(Boolean(initialFaqs?.length));
+  const [openId, setOpenId] = useState<string | null>(() => seed[0]?.id ?? null);
   const [helpHref, setHelpHref] = useState<string>(ROUTES.login);
 
   useEffect(() => {
@@ -53,10 +55,12 @@ export function LandingFaqSection() {
     let cancelled = false;
     void fetchLandingFaqs()
       .then((items) => {
-        if (cancelled) return;
+        if (cancelled || items.length === 0) return;
         const next = toDisplayFaqs(items);
         setFaqItems(next);
-        setOpenId(next[0]?.id ?? null);
+        setOpenId((prev) =>
+          next.some((item) => item.id === prev) ? prev : (next[0]?.id ?? null),
+        );
       })
       .finally(() => {
         if (!cancelled) setFaqsLoaded(true);
@@ -102,7 +106,7 @@ export function LandingFaqSection() {
                 </span>
               </h2>
               <p className="mt-3 text-[13px] leading-relaxed text-[#5A6158] sm:mt-3.5 sm:text-[15px]">
-                Rides, parcels, SOS, payments — the essentials, fast.
+                Rides, parcels, ambulance, payments — the essentials, fast.
               </p>
             </header>
 
@@ -192,33 +196,45 @@ export function LandingFaqSection() {
                       </button>
                     </h3>
 
-                    <AnimatePresence initial={false}>
+                    {/* Keep answers in the HTML for Google FAQ rich results (accordion only hides visually). */}
+                    <div
+                      id={panelId}
+                      role="region"
+                      aria-labelledby={buttonId}
+                      className={cn(
+                        "overflow-hidden",
+                        !isOpen && "sr-only",
+                      )}
+                    >
                       {isOpen ? (
-                        <motion.div
-                          id={panelId}
-                          role="region"
-                          aria-labelledby={buttonId}
-                          initial={
-                            reduceMotion ? false : { height: 0, opacity: 0.5 }
-                          }
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={
-                            reduceMotion
-                              ? undefined
-                              : { height: 0, opacity: 0.5 }
-                          }
-                          transition={{
-                            duration: 0.26,
-                            ease: [0.22, 1, 0.36, 1],
-                          }}
-                          className="overflow-hidden"
-                        >
-                          <p className="border-t border-[#eef2e0] px-3.5 pt-3 pb-4 pl-[3.35rem] text-[13px] leading-relaxed text-[#5A6158] sm:px-5 sm:pt-3.5 sm:pb-5 sm:pl-[4.25rem] sm:text-sm">
-                            {item.answer}
-                          </p>
-                        </motion.div>
-                      ) : null}
-                    </AnimatePresence>
+                        <AnimatePresence initial={false}>
+                          <motion.div
+                            key="open"
+                            initial={
+                              reduceMotion ? false : { height: 0, opacity: 0.5 }
+                            }
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={
+                              reduceMotion
+                                ? undefined
+                                : { height: 0, opacity: 0.5 }
+                            }
+                            transition={{
+                              duration: 0.26,
+                              ease: [0.22, 1, 0.36, 1],
+                            }}
+                          >
+                            <p className="border-t border-[#eef2e0] px-3.5 pt-3 pb-4 pl-[3.35rem] text-[13px] leading-relaxed text-[#5A6158] sm:px-5 sm:pt-3.5 sm:pb-5 sm:pl-[4.25rem] sm:text-sm">
+                              {item.answer}
+                            </p>
+                          </motion.div>
+                        </AnimatePresence>
+                      ) : (
+                        <p className="px-3.5 pb-4 pl-[3.35rem] text-[13px] leading-relaxed text-[#5A6158] sm:px-5 sm:pl-[4.25rem] sm:text-sm">
+                          {item.answer}
+                        </p>
+                      )}
+                    </div>
                   </article>
                 </StaggerItem>
               );

@@ -65,19 +65,34 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   async headers() {
+    const longCache = [
+      {
+        key: "Cache-Control",
+        value: "public, max-age=31536000, immutable",
+      },
+      {
+        key: "X-Content-Type-Options",
+        value: "nosniff",
+      },
+    ];
     return [
       {
         source: "/:path*",
         headers: securityHeaders,
       },
+      // Fast image delivery for every public asset folder shipped in the zip.
+      { source: "/images/:path*", headers: longCache },
+      { source: "/gallery/:path*", headers: longCache },
+      { source: "/landing/:path*", headers: longCache },
+      { source: "/brand/:path*", headers: longCache },
+      { source: "/icons/:path*", headers: longCache },
+      { source: "/media/:path*", headers: longCache },
+      { source: "/assets/:path*", headers: longCache },
+      { source: "/static/:path*", headers: longCache },
       {
-        source: "/images/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
+        source:
+          "/:file(favicon.png|icon.png|icon-192.png|icon-512.png|apple-touch-icon.png|bwride.png)",
+        headers: longCache,
       },
     ];
   },
@@ -85,11 +100,11 @@ const nextConfig: NextConfig = {
     // Serve public assets as static files. The /_next/image optimizer 404s on
     // many hosts and is why photos look fine locally but vanish in production.
     unoptimized: true,
-    formats: ["image/webp"],
-    deviceSizes: [640, 828, 1080, 1280],
-    imageSizes: [32, 64, 96, 128, 256],
+    formats: ["image/webp", "image/avif"],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1280, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     qualities: [60, 70, 75, 85, 90],
-    minimumCacheTTL: 60 * 60 * 24 * 30,
+    minimumCacheTTL: 60 * 60 * 24 * 365,
     remotePatterns: [
       {
         protocol: "https",

@@ -26,6 +26,8 @@ export interface TripLocationParams {
   promoCode?: string;
   scheduledAt?: string;
   notes?: string;
+  /** Existing ride — resume captain search without creating a duplicate booking. */
+  rideId?: string;
 }
 
 function setCoordParams(
@@ -56,6 +58,7 @@ function applyExtras(
   if (extras.promoCode) params.set("promo", extras.promoCode);
   if (extras.scheduledAt) params.set("scheduled_at", extras.scheduledAt);
   if (extras.notes) params.set("notes", extras.notes);
+  if (extras.rideId) params.set("rideId", extras.rideId);
 }
 
 export function parseTripCoords(searchParams: {

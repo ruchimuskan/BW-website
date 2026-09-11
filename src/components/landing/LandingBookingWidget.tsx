@@ -40,7 +40,7 @@ const tabMeta: Record<
     hint: "Same-city deliveries with live tracking",
   },
   ambulance: {
-    photo: "/images/services/ambulance.png",
+    photo: "/images/services/ambulance-cutout.png",
     photoAlt: "Emergency",
     hint: "Verified medical transport, 24×7",
   },
@@ -50,18 +50,22 @@ function TabPhoto({
   src,
   alt,
   active,
+  emergency = false,
   className,
 }: {
   src: string;
   alt: string;
   active: boolean;
+  emergency?: boolean;
   className?: string;
 }) {
   return (
     <span
       className={cn(
-        "relative h-7 w-7 shrink-0 overflow-hidden rounded-md ring-1 sm:h-8 sm:w-8",
-        active ? "ring-white/70" : "ring-black/10",
+        "relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-md sm:h-8 sm:w-8",
+        emergency
+          ? "bg-transparent ring-0"
+          : cn("ring-1", active ? "ring-white/70 bg-white/10" : "ring-black/10 bg-white/5"),
         className,
       )}
     >
@@ -70,9 +74,15 @@ function TabPhoto({
         alt=""
         fill
         sizes="36px"
-        className="object-cover"
+        className={cn(
+          emergency ? "object-contain p-0.5" : "object-cover",
+        )}
         aria-hidden
-        fallbackSrc={BRAND_PHOTOS.streetCab}
+        fallbackSrc={
+          emergency
+            ? "/images/services/ambulance-cutout.png"
+            : BRAND_PHOTOS.streetCab
+        }
       />
       <span className="sr-only">{alt}</span>
     </span>
@@ -255,9 +265,16 @@ export function LandingBookingWidget({
                   src={photo.photo}
                   alt={photo.photoAlt}
                   active={isActive}
+                  emergency={emergency}
                   className="hidden min-[360px]:block"
                 />
-                <span className="truncate leading-tight">
+                <span
+                  className={cn(
+                    "truncate leading-tight",
+                    emergency && !isActive && "text-[#fca5a5]",
+                    emergency && isActive && "text-white",
+                  )}
+                >
                   {tab.id === "ambulance" ? (
                     <>
                       <span className="min-[420px]:hidden">SOS</span>

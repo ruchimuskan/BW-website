@@ -30,7 +30,7 @@ export const VEHICLE_TO_CATEGORY_SLUG: Partial<Record<RideVehicleId, string>> = 
 
 export function vehicleImageForSlug(slug: string): string {
   const normalized = slug.toLowerCase();
-  if (normalized.includes("ambulance")) return "/images/img-3.png";
+  if (normalized.includes("ambulance")) return "/images/services/ambulance-cutout.png";
   if (normalized.includes("parcel")) return "/images/img-2.png";
   if (normalized.includes("travel") || normalized.includes("stay")) {
     return "/images/pic-6.png";
@@ -86,8 +86,10 @@ const DISTINCT_VEHICLE_IMAGES = [
   "/images/services/auto.png",
   "/images/services/cab-lime.png",
   "/images/services/car.webp",
+  "/images/services/ambulance-cutout.png",
+  "/images/services/ambulance-studio.png",
+  "/images/services/ambulance.png",
   "/images/img-2.png",
-  "/images/img-3.png",
   "/images/pic-6.png",
 ] as const;
 
