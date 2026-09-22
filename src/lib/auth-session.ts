@@ -8,6 +8,7 @@ import {
   PROFILE_COMPLETE_COOKIE,
 } from "@/constants/auth";
 import { ROUTES } from "@/constants/routes";
+import { getEmailValidationError } from "@/lib/auth-validation";
 
 export interface AuthSession {
   phone: string;
@@ -22,10 +23,31 @@ export interface AuthSession {
 /** Password kept only in memory for the signup OTP step — never sessionStorage. */
 let pendingSignupPasswordMemory: string | null = null;
 
-export function needsProfileSetup(name?: string | null): boolean {
+export function needsProfileSetup(
+  name?: string | null,
+  email?: string | null,
+): boolean {
   const trimmed = name?.trim();
   if (!trimmed) return true;
-  return trimmed.toLowerCase() === "user";
+  if (isPlaceholderDisplayName(trimmed)) return true;
+  return (
+    getEmailValidationError(email ?? "", {
+      required: true,
+      fullName: trimmed,
+    }) !== null
+  );
+}
+
+/** Backend/register often stores first_name "User" when no real name was collected yet. */
+export function isPlaceholderDisplayName(name?: string | null): boolean {
+  const trimmed = name?.trim().toLowerCase() || "";
+  if (!trimmed) return true;
+  return (
+    trimmed === "user" ||
+    trimmed === "rider" ||
+    trimmed === "bw rides user" ||
+    trimmed === "bw rides"
+  );
 }
 
 function cookieSecureSuffix() {
@@ -187,7 +209,8 @@ export function patchAuthSession(updates: Partial<AuthSession>) {
 export function setAuthSession(session: AuthSession) {
   if (typeof window === "undefined") return;
   const profileComplete =
-    session.profileComplete ?? !needsProfileSetup(session.name);
+    session.profileComplete === true &&
+    !needsProfileSetup(session.name, session.email);
   const normalized: AuthSession = { ...session, profileComplete };
   sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(normalized));
 
@@ -216,7 +239,10 @@ export function markProfileComplete(updates?: { name?: string; email?: string })
 export function isProfileComplete(): boolean {
   const session = getAuthSession();
   if (!session) return false;
-  return session.profileComplete ?? !needsProfileSetup(session.name);
+  return (
+    session.profileComplete === true &&
+    !needsProfileSetup(session.name, session.email)
+  );
 }
 
 export function getAuthSession(): AuthSession | null {
@@ -226,6 +252,8 @@ export function getAuthSession(): AuthSession | null {
     if (!raw) return null;
     const session = JSON.parse(raw) as AuthSession;
     if (session.verified !== true || !session.phone) return null;
+    // Cookie alone is not a login — require a backend access token.
+    if (!session.accessToken?.trim()) return null;
     return session;
   } catch {
     return null;
@@ -236,7 +264,8 @@ function refreshAuthCookie(session: AuthSession) {
   if (typeof document === "undefined") return;
   writeClientCookie(AUTH_COOKIE_NAME, "1", 86400);
   syncProfileCompleteCookie(
-    session.profileComplete ?? !needsProfileSetup(session.name),
+    session.profileComplete === true &&
+      !needsProfileSetup(session.name, session.email),
   );
 }
 

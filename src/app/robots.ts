@@ -10,7 +10,6 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         disallow: [
-          // Keep private app surfaces out of the index — public sitelink pages stay allowed.
           "/otp",
           "/start",
           "/create-profile",
@@ -26,6 +25,10 @@ export default function robots(): MetadataRoute.Robots {
           "/rental",
           "/corporate/portal",
         ],
+      },
+      {
+        userAgent: "Googlebot",
+        allow: ["/", "/images/", "/gallery/", "/landing/", "/uploads/", "/brand/", "/icons/"],
       },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,

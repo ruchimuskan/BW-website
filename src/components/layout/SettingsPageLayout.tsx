@@ -30,7 +30,7 @@ export function SettingsPageLayout({
   wide = false,
 }: SettingsPageLayoutProps) {
   return (
-    <div className={cn(SETTINGS_PAGE_BG, "flex flex-col pb-10", className)}>
+    <div className={cn(SETTINGS_PAGE_BG, "flex min-w-0 flex-col overflow-x-clip pb-10", className)}>
       <SettingsHeader title={title} backHref={backHref} onBack={onBack} />
       <div
         className={cn(

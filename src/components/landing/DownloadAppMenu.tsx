@@ -192,7 +192,7 @@ export function DownloadAppMenu({
                 <span>
                   <span className="block leading-tight">{androidOptionLabel}</span>
                   <span className="mt-0.5 block text-[11px] font-normal text-[#5A6158]">
-                    APK download
+                    Google Play
                   </span>
                 </span>
               </button>

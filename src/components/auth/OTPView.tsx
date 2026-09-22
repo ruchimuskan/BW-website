@@ -8,10 +8,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AuthFormCard } from "@/components/auth/AuthFormCard";
+import { AuthPageShell } from "@/components/auth/AuthPageShell";
 import { CountryCodeSelector } from "@/components/auth/CountryCodeSelector";
-import { LoginSceneDecor } from "@/components/auth/LoginSceneDecor";
 import { OTPInput } from "@/components/auth/OTPInput";
-import { parseContactPhone, sendLoginOtp, verifyOtp, verifySignupOtp } from "@/lib/auth-api";
+import { parseContactPhone, resolveOtpForDisplay, sendLoginOtp, verifyOtp, verifySignupOtp } from "@/lib/auth-api";
 import {
   clearPendingOtpPhone,
   needsProfileSetup,
@@ -22,6 +23,7 @@ import {
 } from "@/lib/auth-session";
 import {
   defaultCountry,
+  findCountryByDialCode,
   formatPhoneDisplay,
   getPhonePlaceholder,
   isValidPhoneNumber,
@@ -50,17 +52,21 @@ export function OTPView() {
   const [otp, setOtp] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [otpError, setOtpError] = useState("");
+  const [deliveredOtp, setDeliveredOtp] = useState<string | null>(null);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [resendSeconds, setResendSeconds] = useState(0);
   const otpVerifyLock = useRef(false);
 
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
+  const applyContactToInputs = useCallback((contact: string) => {
+    try {
+      const { dial_code, phone } = parseContactPhone(contact);
+      const nextCountry = findCountryByDialCode(dial_code);
+      setCountry(nextCountry);
+      setMobileNumber(sanitizePhoneInput(phone, nextCountry));
+    } catch {
+      // Keep whatever the user already typed.
+    }
   }, []);
 
   useEffect(() => {
@@ -72,10 +78,13 @@ export function OTPView() {
     if (!urlPhone) return;
     setOtpContact(urlPhone);
     setPendingOtpPhone(urlPhone);
+    applyContactToInputs(urlPhone);
 
     if (otpAlreadySent) {
       setOtpStep("verify");
       setResendSeconds(30);
+      setDeliveredOtp(resolveOtpForDisplay(null));
+      setOtp(resolveOtpForDisplay(null) ?? "");
       return;
     }
 
@@ -84,6 +93,8 @@ export function OTPView() {
     if (Date.now() - lastSentAt < 25_000) {
       setOtpStep("verify");
       setResendSeconds(Math.max(0, 30 - Math.floor((Date.now() - lastSentAt) / 1000)));
+      setDeliveredOtp(resolveOtpForDisplay(null));
+      setOtp(resolveOtpForDisplay(null) ?? "");
       return;
     }
 
@@ -93,19 +104,21 @@ export function OTPView() {
     void (async () => {
       try {
         const { dial_code, phone } = parseContactPhone(urlPhone);
-        await sendLoginOtp({
+        const result = await sendLoginOtp({
           dial_code,
           phone,
           mode: isSignup ? "signup" : "login",
         });
         sessionStorage.setItem(sentKey, String(Date.now()));
         if (cancelled) return;
+        setDeliveredOtp(result.otp);
         setOtpStep("verify");
         setResendSeconds(30);
-        setOtp("");
+        setOtp(result.otp ?? "");
         setOtpError("");
       } catch (error) {
         if (cancelled) return;
+        setDeliveredOtp(null);
         setOtpStep("phone");
         setPhoneError(
           error instanceof Error ? error.message : "Unable to send OTP. Please try again.",
@@ -118,7 +131,7 @@ export function OTPView() {
     return () => {
       cancelled = true;
     };
-  }, [urlPhone, otpAlreadySent, isSignup]);
+  }, [urlPhone, otpAlreadySent, isSignup, applyContactToInputs]);
 
   useEffect(() => {
     if (resendSeconds <= 0) return;
@@ -134,24 +147,30 @@ export function OTPView() {
       phone: string,
       profile?: { name?: string; email?: string; accessToken?: string; refreshToken?: string }
     ) => {
-      const profileComplete = !needsProfileSetup(profile?.name);
+      const accessToken = profile?.accessToken?.trim();
+      if (!accessToken) {
+        setOtpError("Verification succeeded without an access token. Please try again.");
+        return;
+      }
+
+      const profileComplete = !needsProfileSetup(profile?.name, profile?.email);
       setAuthSession({
         phone,
         verified: true,
         ...(profile?.name?.trim() ? { name: profile.name.trim() } : {}),
         ...(profile?.email?.trim() ? { email: profile.email.trim() } : {}),
-        ...(profile?.accessToken ? { accessToken: profile.accessToken } : {}),
+        accessToken,
         ...(profile?.refreshToken ? { refreshToken: profile.refreshToken } : {}),
         profileComplete,
       });
       clearPendingOtpPhone();
 
       if (!profileComplete) {
-        router.push(ROUTES.createProfile);
+        router.replace(ROUTES.createProfile);
         return;
       }
 
-      router.push(resolvePostAuthDestination());
+      router.replace(resolvePostAuthDestination());
     },
     [router]
   );
@@ -196,6 +215,14 @@ export function OTPView() {
     setCountry(selected);
     setMobileNumber((prev) => sanitizePhoneInput(prev, selected));
     if (phoneError) setPhoneError("");
+    if (otpStep === "verify") {
+      setOtp("");
+      setOtpError("");
+      setDeliveredOtp(null);
+      setOtpStep("phone");
+      otpVerifyLock.current = false;
+      clearPendingOtpPhone();
+    }
   };
 
   const handleSendOtp = async (e: React.FormEvent) => {
@@ -211,7 +238,7 @@ export function OTPView() {
 
     try {
       const contact = getContact();
-      await sendLoginOtp({
+      const result = await sendLoginOtp({
         dial_code: country.dialCode,
         phone: mobileNumber,
         mode: isSignup ? "signup" : "login",
@@ -219,12 +246,15 @@ export function OTPView() {
 
       setPendingOtpPhone(contact);
       setOtpContact(contact);
+      applyContactToInputs(contact);
+      setDeliveredOtp(result.otp);
       setOtpStep("verify");
       setResendSeconds(30);
-      setOtp("");
+      setOtp(result.otp ?? "");
       setOtpError("");
       otpVerifyLock.current = false;
     } catch (error) {
+      setDeliveredOtp(null);
       setPhoneError(error instanceof Error ? error.message : "Unable to send OTP. Please try again.");
     } finally {
       setIsSendingOtp(false);
@@ -237,12 +267,13 @@ export function OTPView() {
     setIsSendingOtp(true);
     try {
       const { dial_code, phone } = parseContactPhone(otpContact);
-      await sendLoginOtp({
+      const result = await sendLoginOtp({
         dial_code,
         phone,
         mode: isSignup ? "signup" : "login",
       });
-      setOtp("");
+      setDeliveredOtp(result.otp);
+      setOtp(result.otp ?? "");
       setResendSeconds(30);
       otpVerifyLock.current = false;
     } catch (error) {
@@ -256,43 +287,46 @@ export function OTPView() {
     setOtpStep("phone");
     setOtp("");
     setOtpError("");
+    setDeliveredOtp(null);
     otpVerifyLock.current = false;
     clearPendingOtpPhone();
   };
 
   return (
-    <div className="relative flex min-h-[100dvh] overflow-y-auto bg-background font-sans">
-      <LoginSceneDecor />
-
-      <div className="relative z-10 flex w-full flex-col">
-        <header className="flex h-16 items-center px-4 sm:px-6">
+    <AuthPageShell>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={transitions.reveal}
+        className="w-full min-w-0"
+      >
+        <AuthFormCard
+          title={isSignup ? "Verify your number" : "Login with OTP"}
+          subtitle={
+            otpStep === "phone"
+              ? "Enter your mobile number to receive a one-time password"
+              : `Enter the 6-digit code sent to ${otpContact}`
+          }
+          footer={
+            !isSignup ? (
+              <p className="text-center text-xs text-muted-foreground sm:text-sm">
+                Prefer password?{" "}
+                <Link href={ROUTES.login} className="font-semibold text-[#5a7a12] hover:underline">
+                  Sign in
+                </Link>
+              </p>
+            ) : undefined
+          }
+        >
           <button
             type="button"
             onClick={() => router.push(isSignup ? ROUTES.signup : ROUTES.login)}
-            className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-muted"
+            className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#5A6158] transition hover:text-[#111411]"
             aria-label="Go back"
           >
-            <ArrowLeft className="h-5 w-5 text-foreground" />
+            <ArrowLeft className="h-4 w-4" />
+            Back
           </button>
-        </header>
-
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={transitions.reveal}
-          className="flex flex-1 items-start justify-center px-4 pb-8 sm:px-6"
-        >
-          <div className="w-full max-w-[440px] rounded-[20px] border border-border/60 bg-card p-6 shadow-[0_20px_60px_-24px_rgba(49,82,110,0.18)] sm:p-8">
-            <div className="mb-6">
-              <h1 className="font-heading text-2xl font-bold text-primary sm:text-[1.65rem]">
-                {isSignup ? "Verify your number" : "Login with OTP"}
-              </h1>
-              <p className="mt-1.5 text-sm text-muted-foreground">
-                {otpStep === "phone"
-                  ? "Enter your mobile number to receive a one-time password"
-                  : `Enter the 6-digit code sent to ${otpContact}`}
-              </p>
-            </div>
 
             <form onSubmit={handleSendOtp} className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
@@ -305,13 +339,14 @@ export function OTPView() {
                     onChange={handleCountryChange}
                     size="lg"
                     showDialCode
-                    className="h-11 rounded-[18px] border-border bg-background px-2.5 shadow-sm sm:h-12"
+                    className="h-11 max-w-[6.75rem] rounded-[18px] border-border bg-background px-2 shadow-sm sm:h-12 sm:max-w-none sm:px-2.5"
                   />
                   <Input
                     id="otp-phone"
                     type="tel"
                     inputMode="numeric"
                     autoComplete="tel-national"
+                    autoFocus
                     placeholder={getPhonePlaceholder(country)}
                     maxLength={country.maxLength + 1}
                     value={formatPhoneDisplay(mobileNumber, country)}
@@ -320,7 +355,7 @@ export function OTPView() {
                       if (phoneError) setPhoneError("");
                       if (otpStep === "verify") handleChangeNumber();
                     }}
-                    disabled={otpStep === "verify"}
+                    disabled={isSendingOtp}
                     aria-invalid={!!phoneError}
                     className={cn(
                       "h-11 min-w-0 flex-1 rounded-[18px] border-border bg-background sm:h-12",
@@ -374,9 +409,21 @@ export function OTPView() {
                   className="mt-6 space-y-4 border-t border-border/60 pt-6"
                 >
                   <Label className="text-sm font-semibold text-foreground">Verify OTP</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Enter the 6-digit code sent to your phone.
-                  </p>
+                  {deliveredOtp ? (
+                    <div className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm">
+                      <p className="font-semibold text-foreground">Your verification code</p>
+                      <p className="mt-1 font-heading text-2xl font-bold tracking-[0.28em] text-foreground">
+                        {deliveredOtp}
+                      </p>
+                      <p className="mt-1.5 text-xs text-muted-foreground">
+                        SMS delivery is delayed on the server. Use this code to continue.
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Enter the 6-digit code sent to your phone.
+                    </p>
+                  )}
                   <OTPInput
                     length={6}
                     value={otp}
@@ -401,6 +448,24 @@ export function OTPView() {
                       Verifying…
                     </p>
                   )}
+                  <Button
+                    type="button"
+                    disabled={isVerifyingOtp || otp.length !== 6}
+                    onClick={() => void verifyOtpCode(otp)}
+                    className={cn(
+                      "h-11 w-full rounded-[16px] text-base font-bold sm:h-12",
+                      BRAND_CTA_LIME,
+                    )}
+                  >
+                    {isVerifyingOtp ? (
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Verifying…
+                      </span>
+                    ) : (
+                      "Verify OTP"
+                    )}
+                  </Button>
                   <div className="text-center text-sm">
                     {resendSeconds > 0 ? (
                       <p className="text-muted-foreground">
@@ -422,18 +487,8 @@ export function OTPView() {
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {!isSignup && (
-              <p className="mt-6 text-center text-sm text-muted-foreground">
-                Prefer password?{" "}
-                <Link href={ROUTES.login} className="font-semibold text-primary hover:underline">
-                  Sign in
-                </Link>
-              </p>
-            )}
-          </div>
-        </motion.div>
-      </div>
-    </div>
+        </AuthFormCard>
+      </motion.div>
+    </AuthPageShell>
   );
 }

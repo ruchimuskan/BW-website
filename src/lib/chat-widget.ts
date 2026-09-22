@@ -1,28 +1,18 @@
 import { ROUTES } from "@/constants/routes";
 
-/** Hide the assistant on auth, corporate, and full-screen flows. */
+/** Hide the assistant only on phone-auth screens so OTPs stay unobstructed. */
 export function isChatHiddenPath(pathname: string): boolean {
-  if (
+  return (
     pathname === ROUTES.login ||
     pathname === ROUTES.signup ||
-    pathname === ROUTES.otp ||
-    pathname === ROUTES.createProfile ||
-    pathname.startsWith(`${ROUTES.createProfile}/`)
-  ) {
-    return true;
-  }
-  if (pathname.startsWith("/corporate/")) return true;
-  if (pathname === ROUTES.location || pathname.startsWith(`${ROUTES.location}/`)) {
-    return true;
-  }
-  return false;
+    pathname === ROUTES.otp
+  );
 }
 
 export function isChatWidgetPath(pathname: string): boolean {
   return !isChatHiddenPath(pathname);
 }
 
-/** Profile / info screens that hide the bottom nav bar. */
 const NO_BOTTOM_NAV_PREFIXES = [
   ROUTES.notifications,
   ROUTES.profileSavedPlaces,
@@ -56,34 +46,18 @@ function pathHasBottomNav(pathname: string): boolean {
   );
 }
 
-/** Extra bottom offset so the FAB does not cover nav or sticky CTAs. */
-export function chatFabOffsetClass(pathname: string): string {
-  const safe = "env(safe-area-inset-bottom)";
-
-  // Sticky book/ambulance footers — keep elevation on desktop too.
-  const stickyCta =
+function pathHasStickyCta(pathname: string): boolean {
+  return (
     pathname === ROUTES.book ||
     pathname === "/ambulance/type" ||
     pathname === "/ambulance/request" ||
     pathname === "/ambulance/assigned" ||
-    pathname.startsWith("/ambulance/tracking");
-
-  if (stickyCta) {
-    return `bottom-[calc(11.75rem+${safe})] lg:bottom-[calc(8.5rem+${safe})]`;
-  }
-
-  if (pathHasBottomNav(pathname)) {
-    return `bottom-[calc(5.75rem+${safe})] lg:bottom-7`;
-  }
-
-  return `bottom-[calc(1.5rem+${safe})] sm:bottom-[calc(1.75rem+${safe})]`;
+    pathname.startsWith("/ambulance/tracking")
+  );
 }
 
-/** Same as {@link chatFabOffsetClass} but scoped to `lg+` (mobile sheet uses `bottom-0`). */
-export function chatFabLgOffsetClass(pathname: string): string {
-  return chatFabOffsetClass(pathname)
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((token) => `lg:${token}`)
-    .join(" ");
+export function chatFabDockClass(pathname: string): string {
+  if (pathHasStickyCta(pathname)) return "bw-chat-fab-dock bw-chat-fab-dock--cta";
+  if (pathHasBottomNav(pathname)) return "bw-chat-fab-dock bw-chat-fab-dock--nav";
+  return "bw-chat-fab-dock";
 }

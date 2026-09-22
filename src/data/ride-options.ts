@@ -1,7 +1,10 @@
 export type RideVehicleId =
   | "bike"
   | "auto"
+  | "e-rickshaw"
   | "cab"
+  | "cab-xl"
+  | "cab-premium"
   | "parcel"
   | "travel"
   | "ambulance";
@@ -25,13 +28,31 @@ export const RIDE_VEHICLE_OPTIONS: RideVehicleOption[] = [
     id: "auto",
     name: "Electric Auto",
     tagline: "No haggling, just easy rides",
-    image: "/images/services/auto.png",
+    image: "/images/gallery/shoot-auto.png",
+  },
+  {
+    id: "e-rickshaw",
+    name: "E-Rickshaw",
+    tagline: "Local electric hops",
+    image: "/images/services/e-rickshaw.png",
   },
   {
     id: "cab",
     name: "Cab",
     tagline: "Comfortable rides for you",
+    image: "/images/services/cab-lime.png",
+  },
+  {
+    id: "cab-xl",
+    name: "Cab XL",
+    tagline: "Extra space for groups",
     image: "/images/services/car.webp",
+  },
+  {
+    id: "cab-premium",
+    name: "Cab Premium",
+    tagline: "Premium comfort rides",
+    image: "/images/landing/brand/lime-cab.png",
   },
   {
     id: "parcel",

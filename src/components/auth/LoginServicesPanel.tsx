@@ -41,9 +41,10 @@ function authImageForCategory(category: VehicleCategory): string {
   if (
     key.includes("electric-auto") ||
     key.includes("e-auto") ||
-    /\bauto\b/.test(key)
+    /(^|[\s_-])auto([\s_-]|$)/.test(key) ||
+    key === "auto"
   ) {
-    return "/images/services/auto.png";
+    return "/images/gallery/shoot-auto.png";
   }
   if (
     key.includes("cab") ||

@@ -38,14 +38,14 @@ export function PhoneInput({
       >
         Mobile number
       </Label>
-      <div className="flex gap-2">
+      <div className="flex min-w-0 gap-2">
         <CountryCodeSelector
           value={country}
           onChange={(selected) => {
             onCountryChange(selected);
             onPhoneChange(sanitizePhoneInput(phone, selected));
           }}
-          className="h-11 rounded-xl border-[#d7e0c0] bg-[#f7f8f3] px-2 shadow-sm sm:h-12 sm:rounded-2xl"
+          className="h-11 max-w-[6.75rem] rounded-xl border-[#d7e0c0] bg-[#f7f8f3] px-2 shadow-sm sm:h-12 sm:max-w-none sm:rounded-2xl"
         />
         <Input
           id="phone-input"

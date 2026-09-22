@@ -93,7 +93,7 @@ export function UserProfileNameCard({
           )}
           suppressHydrationWarning
         >
-          {user.name}
+          {user.name?.trim() || (user.isLoading ? "…" : "Your profile")}
         </p>
         <p
           className={cn(

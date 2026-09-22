@@ -88,7 +88,7 @@ export function CountryCodeSelector({
       </button>
 
       {open && (
-        <div className="absolute left-0 top-[calc(100%+6px)] z-50 w-[min(100vw-2rem,360px)] overflow-hidden rounded-xl border border-border bg-card shadow-lg">
+        <div className="absolute left-0 top-[calc(100%+6px)] z-50 w-[min(18.5rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-border bg-card shadow-lg">
           <div className="border-b border-border p-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />

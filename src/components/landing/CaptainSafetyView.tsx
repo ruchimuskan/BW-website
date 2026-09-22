@@ -56,8 +56,8 @@ export function CaptainSafetyView() {
               <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row">
                 <Button
                   size="lg"
-                  className="h-12 rounded-xl px-7 font-semibold shadow-[0_14px_32px_-18px_rgba(184,217,38,0.55)]"
-                  onClick={() => router.push(`${ROUTES.landing}#captains`)}
+                  className="h-12 rounded-xl bg-primary px-7 font-semibold text-white shadow-[0_14px_32px_-18px_rgba(184,217,38,0.55)] hover:bg-[#D4F04A] hover:text-white"
+                  onClick={() => router.push(ROUTES.captains)}
                 >
                   Become a captain
                 </Button>
@@ -102,7 +102,7 @@ export function CaptainSafetyView() {
                   aria-hidden
                   className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_0%_0%,rgba(200,232,74,0.28),transparent_60%)]"
                 />
-                <p className="text-[10px] font-semibold tracking-[0.24em] uppercase text-secondary">
+                <p className="text-[10px] font-semibold tracking-[0.24em] uppercase text-primary">
                   Partner protection
                 </p>
                 <h2
@@ -154,12 +154,12 @@ export function CaptainSafetyView() {
               href={APP_DOWNLOAD.captainAndroidPlayStoreUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-gradient-to-r from-primary to-[#9BB820] px-7 text-sm font-semibold text-[#38471B] shadow-[0_14px_32px_-18px_rgba(56,71,27,0.38)] transition-opacity hover:opacity-95"
+              className="inline-flex h-12 items-center justify-center rounded-xl bg-gradient-to-r from-primary to-[#9BB820] px-7 text-sm font-semibold text-white shadow-[0_14px_32px_-18px_rgba(56,71,27,0.38)] transition-opacity hover:opacity-95"
             >
               Get Captain App
             </a>
             <Link
-              href={`${ROUTES.landing}#captains`}
+              href={ROUTES.captains}
               className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.14em] uppercase text-primary transition-colors hover:text-secondary sm:text-sm"
             >
               Learn more

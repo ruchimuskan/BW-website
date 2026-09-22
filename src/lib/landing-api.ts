@@ -1,15 +1,18 @@
 import { landingFaqItems, shortenLandingFaqQuestion } from "@/constants/landing-faq";
+import { ROUTES } from "@/constants/routes";
 import { landingServices, type ServiceItem } from "@/constants/services";
 import {
   getVehicleCategories,
   isAmbulanceVehicle,
+  preferAmbulanceCategory,
+  withSingleAmbulanceOption,
   type VehicleCategory,
 } from "@/lib/home-api";
 import { getFaqs, type FaqItem } from "@/lib/support-api";
 import {
   displayVehicleName,
   homeRouteForCategory,
-  vehicleImageForCategory,
+  vehicleImageForSlug,
 } from "@/lib/vehicle-map";
 
 export type LandingFaq = {
@@ -18,27 +21,30 @@ export type LandingFaq = {
   answer: string;
 };
 
+/** Prefer fast local studio art — never block the landing grid on remote S3 icons. */
+function landingImageForCategory(category: VehicleCategory): string {
+  return vehicleImageForSlug(`${category.slug || ""} ${category.name || ""}`);
+}
+
 function slugKey(category: VehicleCategory): string {
   return `${category.slug ?? ""} ${category.name ?? ""}`.toLowerCase();
 }
 
-function mapCategoryToService(
-  category: VehicleCategory,
-  usedImages: Set<string>,
-): ServiceItem {
+function mapCategoryToService(category: VehicleCategory): ServiceItem {
   return {
     name: displayVehicleName(category.name, category.slug),
     description: category.description?.trim() || "Book in the BW Rides app",
-    image: vehicleImageForCategory(category, usedImages),
+    image: landingImageForCategory(category),
     route: homeRouteForCategory(category),
   };
 }
 
 function pickLandingCategories(categories: VehicleCategory[]): VehicleCategory[] {
-  const ride = categories.filter(
+  const collapsed = withSingleAmbulanceOption(categories);
+  const ride = collapsed.filter(
     (c) => !isAmbulanceVehicle(c) && (c.service_group ?? "ride") === "ride",
   );
-  const ambulance = categories.filter(isAmbulanceVehicle);
+  const ambulanceOne = preferAmbulanceCategory(collapsed);
 
   const pick = (
     list: VehicleCategory[],
@@ -64,7 +70,7 @@ function pickLandingCategories(categories: VehicleCategory[]): VehicleCategory[]
     k.includes("suv") ||
     k.includes("premium");
 
-  // Curated landing set: Bike · Auto · Cab · Ambulance
+  // Curated landing set: Bike · Auto · E-Rickshaw · Cab · Ambulance
   add(pick(ride, (k) => k.includes("bike") && !k.includes("parcel")));
   add(
     pick(
@@ -73,12 +79,10 @@ function pickLandingCategories(categories: VehicleCategory[]): VehicleCategory[]
         (k.includes("electric-auto") ||
           k.includes("e-auto") ||
           (k.includes("auto") && !k.includes("rickshaw"))) &&
-        !k.includes("ambulance"),
+        !isAmbulanceVehicle({ slug: k, name: k }),
     ),
   );
-  if (!picks.some((c) => /auto|rickshaw|e-rick/i.test(slugKey(c)))) {
-    add(pick(ride, (k) => k.includes("rickshaw") || k.includes("e-rick")));
-  }
+  add(pick(ride, (k) => k.includes("rickshaw") || k.includes("e-rick")));
   add(
     pick(
       ride,
@@ -93,12 +97,12 @@ function pickLandingCategories(categories: VehicleCategory[]): VehicleCategory[]
   if (!picks.some((c) => isCabLike(slugKey(c)))) {
     add(pick(ride, isCabLike));
   }
-  add(pick(ambulance.length ? ambulance : ride, (k) => k.includes("ambulance")));
+  add(ambulanceOne ?? undefined);
 
-  if (picks.length >= 4) return picks.slice(0, 4);
+  if (picks.length >= 5) return picks.slice(0, 5);
 
-  for (const cat of [...ride, ...ambulance]) {
-    if (picks.length >= 4) break;
+  for (const cat of ride) {
+    if (picks.length >= 5) break;
     const key = slugKey(cat);
     const hasThreeWheeler = picks.some((c) =>
       /auto|rickshaw|e-rick/i.test(slugKey(c)),
@@ -109,28 +113,142 @@ function pickLandingCategories(categories: VehicleCategory[]): VehicleCategory[]
     add(cat);
   }
 
+  if (ambulanceOne && !picks.some(isAmbulanceVehicle)) {
+    add(ambulanceOne);
+  }
+
   return picks;
 }
 
-/** Vehicle tiles for the landing “Choose how you move” section — live API first. */
+const AMBULANCE_SERVICE: ServiceItem = {
+  name: "Ambulance",
+  description: "Book Ambulance free",
+  image: "/images/services/ambulance-studio.png",
+  route: `${ROUTES.start}?tab=ambulance&vehicle=ambulance`,
+};
+
+const ERICKSHAW_SERVICE: ServiceItem = {
+  name: "E-Rickshaw",
+  description: "Local electric hops",
+  image: "/images/services/e-rickshaw.png",
+  route: `${ROUTES.start}?tab=rides&vehicle=e-rickshaw`,
+};
+
+function isAmbulanceItem(s: ServiceItem): boolean {
+  const key = `${s.name} ${s.route}`.toLowerCase();
+  return (
+    key.includes("ambulance") ||
+    key.includes("emergency") ||
+    /\bbls\b/.test(key) ||
+    /\bals\b/.test(key) ||
+    key.includes("patient transport") ||
+    key.includes("patient-transport")
+  );
+}
+
+function isRickshawItem(s: ServiceItem): boolean {
+  return /rickshaw|e-rick/i.test(s.name);
+}
+
+/**
+ * Always show Bike · Auto · E-Rickshaw · Cab · Ambulance with branded studio art.
+ * API categories fill ride slots when available; ambulance is never dropped.
+ */
+function finalizeLandingServices(mapped: ServiceItem[]): ServiceItem[] {
+  const rides = mapped.filter((s) => !isAmbulanceItem(s));
+  const next = [...rides];
+
+  if (!next.some(isRickshawItem)) {
+    const cabIdx = next.findIndex((s) =>
+      /cab|economy|car|sedan/i.test(s.name),
+    );
+    next.splice(
+      cabIdx >= 0 ? cabIdx : Math.min(2, next.length),
+      0,
+      ERICKSHAW_SERVICE,
+    );
+  }
+
+  const uniqueRides: ServiceItem[] = [];
+  const seen = new Set<string>();
+  for (const item of next) {
+    const key = item.name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const localImage = vehicleImageForSlug(`${item.name} ${item.image}`);
+    uniqueRides.push({
+      ...item,
+      image: isRickshawItem(item)
+        ? "/images/services/e-rickshaw.png"
+        : localImage.startsWith("/images/")
+          ? localImage
+          : item.image.startsWith("/images/")
+            ? item.image
+            : localImage,
+    });
+    if (uniqueRides.length >= 4) break;
+  }
+
+  while (uniqueRides.length < 4) {
+    const fallback = landingServices.find(
+      (s) =>
+        !isAmbulanceItem(s) &&
+        !uniqueRides.some((u) => u.name.toLowerCase() === s.name.toLowerCase()),
+    );
+    if (!fallback) break;
+    uniqueRides.push(fallback);
+  }
+
+  return [
+    ...uniqueRides.slice(0, 4),
+    {
+      ...AMBULANCE_SERVICE,
+      route: mapped.find(isAmbulanceItem)?.route || AMBULANCE_SERVICE.route,
+    },
+  ];
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error(`${label} timed out`)),
+      ms,
+    );
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
+/** Vehicle tiles for the landing “Choose how you move” section — local art first, API names/routes when fast. */
 export async function fetchLandingServices(): Promise<ServiceItem[]> {
   try {
-    const [rideCategories, ambulanceCategories] = await Promise.all([
-      getVehicleCategories("ride"),
-      getVehicleCategories("ambulance").catch(() => [] as VehicleCategory[]),
-    ]);
+    const [rideCategories, ambulanceCategories] = await withTimeout(
+      Promise.all([
+        getVehicleCategories("ride"),
+        getVehicleCategories("ambulance").catch(() => [] as VehicleCategory[]),
+      ]),
+      6_000,
+      "Landing vehicle types",
+    );
 
     const merged = [...rideCategories, ...ambulanceCategories];
     const picked = pickLandingCategories(merged);
     if (picked.length > 0) {
-      const usedImages = new Set<string>();
-      return picked.map((category) => mapCategoryToService(category, usedImages));
+      const mapped = picked.map((category) => mapCategoryToService(category));
+      return finalizeLandingServices(mapped);
     }
   } catch {
     // Fall through to curated marketing tiles so production never shows an empty grid.
   }
 
-  // Curated service tiles (not trip mocks) — keep the landing usable when CMS is empty.
   return landingServices;
 }
 

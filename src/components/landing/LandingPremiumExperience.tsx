@@ -1,309 +1,212 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { ArrowUpRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { startTransition } from "react";
 import { ResilientImage } from "@/components/brand/ResilientImage";
 import { BRAND_PHOTO_CLASS } from "@/components/brand/BrandImageOverlay";
 import { SectionHeading } from "@/components/landing/SectionHeading";
-import { AnimateIn } from "@/components/motion";
+import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
 import { BRAND_IMAGES } from "@/constants/brand-images";
 import { NEXT_IMAGE_QUALITY } from "@/constants/images";
+import { ROUTES } from "@/constants/routes";
+import { getProtectedPath } from "@/lib/auth-session";
 import { landingShell, LANDING_SECTION_PY } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 
-const AUTO_MS = 5500;
+type ExperienceItem = {
+  src: string;
+  alt: string;
+  title: string;
+  tagline: string;
+  description: string;
+  objectPosition?: string;
+  href: string;
+  /** Renders title with “Ambulance” in red when set. */
+  ambulanceTitle?: boolean;
+};
 
-const experiences = [
+const experiences: ExperienceItem[] = [
   {
     src: BRAND_IMAGES.limeCab,
-    alt: "Premium lime BW Rides sedan",
+    alt: "BW Rides premium cab",
     title: "Polished rides",
-    tagline: "Premium cab experience",
+    tagline: "Cab & city travel",
     description:
-      "Clean vehicles and courteous service for a calm, premium experience.",
+      "Well-kept vehicles and verified captains for everyday trips across the city.",
     objectPosition: "center center",
+    href: `${ROUTES.start}?tab=rides&vehicle=cab`,
   },
   {
     src: BRAND_IMAGES.parcelDelivery,
-    alt: "Doorstep parcel delivery in brand lime",
-    title: "On your schedule",
-    tagline: "Parcel at your door",
+    alt: "BW Rides parcel delivery at the door",
+    title: "Parcels, door to door",
+    tagline: "Secure handoff",
     description:
-      "24×7 availability with average pickups under five minutes in active zones.",
+      "Send packages with live tracking and confirmation when they reach the recipient.",
     objectPosition: "62% center",
+    href: `${ROUTES.start}?tab=parcel&vehicle=parcel`,
   },
   {
-    src: BRAND_IMAGES.ambulanceBrand,
-    alt: "BW Rides emergency ambulance",
-    title: "Safety first",
-    tagline: "Emergency SOS",
+    src: "/images/services/ambulance-studio.png",
+    alt: "BW Rides ambulance",
+    title: "Book Ambulance free",
+    tagline: "Emergency support",
     description:
-      "Verified captains, trip sharing, and SOS tools built into every journey.",
+      "Request medical transport when you need it — booking is free, with priority support on the way.",
     objectPosition: "center center",
+    href: ROUTES.ambulanceBook,
+    ambulanceTitle: true,
   },
   {
     src: BRAND_IMAGES.cityBike,
-    alt: "BW Rides premium bike",
+    alt: "BW Rides bike with live tracking",
     title: "Live tracking",
     tagline: "Every mile, visible",
     description:
-      "Follow your captain in real time with precise ETAs from pickup to drop.",
+      "Follow your captain on the map with clear ETAs from pickup through drop-off.",
     objectPosition: "center center",
+    href: `${ROUTES.start}?tab=rides&vehicle=bike`,
   },
-] as const;
+];
 
-function ExperiencePanel({
-  item,
-  index,
-  active,
-  onActivate,
-  reduceMotion,
-}: {
-  item: (typeof experiences)[number];
-  index: number;
-  active: boolean;
-  onActivate: () => void;
-  reduceMotion: boolean | null;
-}) {
-  const number = String(index + 1).padStart(2, "0");
+function ExperienceTitle({ item }: { item: ExperienceItem }) {
+  if (!item.ambulanceTitle) {
+    return (
+      <h3 className="font-heading text-lg font-semibold tracking-tight text-[#111411] sm:text-xl">
+        {item.title}
+      </h3>
+    );
+  }
 
   return (
-    <motion.article
-      layout={!reduceMotion}
-      role="button"
-      tabIndex={0}
-      aria-expanded={active}
-      aria-label={`${item.title} — ${item.description}`}
-      onMouseEnter={onActivate}
-      onFocus={onActivate}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onActivate();
-        }
-      }}
-      className={cn(
-        "group relative min-w-0 overflow-hidden rounded-[1.25rem] border bg-[#f7fbe8] outline-none sm:rounded-[1.35rem]",
-        "transition-[border-color,box-shadow] duration-500",
-        active
-          ? "border-[#C8E84A]/45 shadow-[0_28px_56px_-22px_rgba(184,217,38,0.55)] ring-1 ring-[#C8E84A]/20"
-          : "cursor-pointer border-[#38471B]/80 hover:border-[#B8D926]/35",
-        "lg:min-h-0 lg:h-full lg:flex-1",
-        active ? "lg:flex-[2.75]" : "lg:flex-[0.85]",
-      )}
-      transition={
-        reduceMotion
-          ? { duration: 0.2 }
-          : { type: "spring", stiffness: 260, damping: 32 }
-      }
-    >
-      {/* Active lime rail */}
-      <span
-        aria-hidden
-        className={cn(
-          "absolute inset-y-0 left-0 z-20 w-1 origin-top bg-gradient-to-b from-[#C8E84A] via-[#B8D926] to-transparent transition-transform duration-500",
-          active ? "scale-y-100" : "scale-y-0",
-        )}
-      />
-
-      <div className="relative aspect-[4/3] w-full sm:aspect-[16/10] lg:absolute lg:inset-0 lg:aspect-auto">
-        <ResilientImage
-          src={item.src}
-          alt={item.alt}
-          fill
-          quality={NEXT_IMAGE_QUALITY.high}
-          sizes={
-            active
-              ? "(max-width: 1024px) 100vw, 42vw"
-              : "(max-width: 1024px) 100vw, 18vw"
-          }
-          className={cn(
-            BRAND_PHOTO_CLASS,
-            "transition-transform duration-[850ms] ease-out",
-            active ? "scale-100" : "scale-110 grayscale-[0.15]",
-            "group-hover:scale-105",
-          )}
-          style={{ objectPosition: item.objectPosition }}
-          priority={index === 0}
-          fallbackSrc={BRAND_IMAGES.cityCab}
-        />
-      </div>
-
-      {/* Watermark number */}
-      <span
-        aria-hidden
-          className={cn(
-            "pointer-events-none absolute font-heading font-bold leading-none text-[#38471B] transition-all duration-500",
-            active
-              ? "right-4 top-3 text-[4.5rem] opacity-[0.08] sm:text-[5.5rem] lg:right-6 lg:top-4 lg:text-[7rem]"
-              : "right-3 top-3 text-3xl opacity-[0.12] lg:right-4 lg:top-5 lg:text-4xl",
-          )}
-      >
-        {number}
-      </span>
-
-      {/* Collapsed vertical label — desktop only */}
-      <div
-        className={cn(
-          "pointer-events-none absolute inset-x-0 bottom-0 hidden items-end justify-center pb-8 lg:flex",
-          active && "opacity-0",
-        )}
-      >
-        <p
-          className="text-[11px] font-semibold tracking-[0.28em] text-[#38471B]/70 uppercase [writing-mode:vertical-rl]"
-          style={{ transform: "rotate(180deg)" }}
-        >
-          {item.title}
-        </p>
-      </div>
-
-      {/* Content panel — desktop accordion */}
-      <div
-        className={cn(
-          "absolute inset-x-0 bottom-0 z-10 hidden p-4 sm:p-5 lg:block lg:p-6",
-          "bg-[#f7fbe8]/92 backdrop-blur-[2px]",
-          "transition-all duration-500",
-          active ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
-        )}
-      >
-        <p className="text-[10px] font-semibold tracking-[0.24em] text-[#4A5824] uppercase">
-          {number} · {item.tagline}
-        </p>
-        <h3 className="mt-1.5 font-heading text-xl font-semibold text-[#38471B] sm:text-2xl">
-          {item.title}
-        </h3>
-        <p className="mt-2 max-w-md text-[13px] font-light leading-relaxed text-[#4A5824] sm:text-sm">
-          {item.description}
-        </p>
-        <span
-          className={cn(
-            "mt-3 block h-0.5 rounded-full bg-[#B8D926] transition-all duration-500",
-            active ? "w-14" : "w-8",
-          )}
-        />
-      </div>
-
-      {/* Mobile / tablet — caption under the image so artwork stays fully visible */}
-      <div className="border-t border-[#e8f0c8] bg-[#f7fbe8] p-4 sm:p-5 lg:hidden">
-        <p className="text-[10px] font-semibold tracking-[0.24em] text-[#4A5824] uppercase">
-          {number}
-        </p>
-        <h3 className="mt-1 font-heading text-lg font-semibold text-[#38471B] sm:text-xl">
-          {item.title}
-        </h3>
-        <p className="mt-1.5 line-clamp-2 text-[13px] font-light leading-relaxed text-[#4A5824] sm:text-sm">
-          {item.description}
-        </p>
-        <span className="mt-3 block h-0.5 w-10 rounded-full bg-[#B8D926]" />
-      </div>
-    </motion.article>
+    <h3 className="font-heading text-lg font-semibold tracking-tight text-[#111411] sm:text-xl">
+      Book <span className="text-[#c62828]">Ambulance</span> free
+    </h3>
   );
 }
 
 export function LandingPremiumExperience() {
+  const router = useRouter();
   const reduceMotion = useReducedMotion();
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
 
-  const activate = useCallback((index: number) => {
-    setActive(index);
-  }, []);
-
-  useEffect(() => {
-    if (reduceMotion || paused) return;
-    const timer = window.setInterval(() => {
-      setActive((current) => (current + 1) % experiences.length);
-    }, AUTO_MS);
-    return () => window.clearInterval(timer);
-  }, [reduceMotion, paused]);
+  const open = (href: string) => {
+    startTransition(() => {
+      router.push(getProtectedPath(href));
+    });
+  };
 
   return (
     <section
       id="experience"
       className={cn(
-        "relative scroll-mt-20 overflow-hidden bw-section-glow",
+        "relative scroll-mt-20 overflow-hidden bg-[#f7f8f3]",
         LANDING_SECTION_PY,
       )}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_80%_0%,rgba(200,232,74,0.08),transparent_55%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_40%_at_15%_0%,rgba(198,227,26,0.14),transparent_55%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-32 top-1/3 h-64 w-64 rounded-full bg-[#B8D926]/10 blur-3xl"
+        className="pointer-events-none absolute -right-20 bottom-0 h-56 w-56 rounded-full bg-[#ef4444]/6 blur-3xl"
       />
 
       <div className={landingShell("relative z-10")}>
         <AnimateIn>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <SectionHeading
-              eyebrow="Experience"
-              title="Designed like a premium service"
-              description="Every detail — from matching to arrival — is crafted for composure and confidence."
-              className="max-w-2xl"
-            />
-
-            {/* Step indicators — desktop */}
-            <div
-              className="hidden shrink-0 items-center gap-2 lg:flex"
-              role="tablist"
-              aria-label="Experience highlights"
-            >
-              {experiences.map((item, index) => {
-                const isActive = active === index;
-                return (
-                  <button
-                    key={item.title}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    aria-label={item.title}
-                    onClick={() => activate(index)}
-                    className={cn(
-                      "flex h-11 min-w-[2.75rem] items-center justify-center rounded-full border text-xs font-semibold tracking-wider transition-all duration-300",
-                      isActive
-                        ? "border-[#B8D926] bg-[#B8D926] text-[#38471B] shadow-[0_8px_20px_-8px_rgba(184,217,38,0.8)]"
-                        : "border-[#B8D926]/25 bg-white/80 text-[#38471B]/70 hover:border-[#B8D926]/50 hover:bg-[#f7fbe8]",
-                    )}
-                  >
-                    {String(index + 1).padStart(2, "0")}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <SectionHeading
+            eyebrow="Experience"
+            title="Designed like a premium service"
+            description="From booking to arrival — clear fares, live tracking, and support you can trust."
+            className="mx-auto max-w-2xl text-center"
+          />
         </AnimateIn>
 
-        {/* Mobile / tablet — stacked cinematic cards */}
-        <div className="mt-8 flex flex-col gap-4 sm:mt-10 lg:hidden">
-          {experiences.map((item, index) => (
-            <ExperiencePanel
-              key={item.title}
-              item={item}
-              index={index}
-              active
-              onActivate={() => activate(index)}
-              reduceMotion={reduceMotion}
-            />
-          ))}
-        </div>
+        <Stagger className="mt-8 grid grid-cols-1 gap-3.5 sm:mt-10 sm:grid-cols-2 sm:gap-4 lg:mt-12 lg:grid-cols-4 lg:gap-5">
+          {experiences.map((item, index) => {
+            const isAmbulance = Boolean(item.ambulanceTitle);
+            const number = String(index + 1).padStart(2, "0");
 
-        {/* Desktop — expanding accordion strip */}
-        <div className="mt-8 hidden h-[min(480px,52vh)] min-h-[380px] lg:flex lg:gap-3">
-          {experiences.map((item, index) => (
-            <ExperiencePanel
-              key={item.title}
-              item={item}
-              index={index}
-              active={active === index}
-              onActivate={() => activate(index)}
-              reduceMotion={reduceMotion}
-            />
-          ))}
-        </div>
+            return (
+              <StaggerItem key={item.title} index={index} className="min-w-0">
+                <motion.button
+                  type="button"
+                  initial={false}
+                  whileHover={reduceMotion ? undefined : { y: -3 }}
+                  transition={{ duration: 0.25 }}
+                  onClick={() => open(item.href)}
+                  aria-label={item.title}
+                  className={cn(
+                    "group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-[1.35rem] border bg-white text-left sm:rounded-[1.5rem]",
+                    "shadow-[0_14px_32px_-22px_rgba(17,20,17,0.35)] transition-[border-color,box-shadow] duration-300",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f8f3]",
+                    isAmbulance
+                      ? "border-[#f0c7c2] hover:border-[#ef4444]/50 focus-visible:ring-[#ef4444]/40"
+                      : "border-[#e4e9d8] hover:border-[#C6E31A]/65 focus-visible:ring-[#C6E31A]",
+                  )}
+                >
+                  <div className="relative aspect-[5/4] w-full shrink-0 overflow-hidden bg-[#eef2e0] sm:aspect-[4/3]">
+                    <ResilientImage
+                      src={item.src}
+                      alt={item.alt}
+                      fill
+                      quality={NEXT_IMAGE_QUALITY.high}
+                      sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
+                      className={cn(
+                        BRAND_PHOTO_CLASS,
+                        "object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]",
+                      )}
+                      style={{ objectPosition: item.objectPosition }}
+                      priority={index === 0}
+                      fallbackSrc={BRAND_IMAGES.cityCab}
+                    />
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-[0.16em] uppercase backdrop-blur-sm sm:left-3.5 sm:top-3.5",
+                        isAmbulance
+                          ? "bg-white/90 text-[#c62828]"
+                          : "bg-white/90 text-[#5a7a12]",
+                      )}
+                    >
+                      {number}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-1 flex-col px-4 pb-4 pt-3.5 sm:px-5 sm:pb-5 sm:pt-4">
+                    <p
+                      className={cn(
+                        "text-[10px] font-semibold tracking-[0.2em] uppercase",
+                        isAmbulance ? "text-[#c62828]/80" : "text-[#5a7a12]",
+                      )}
+                    >
+                      {item.tagline}
+                    </p>
+                    <div className="mt-1.5 flex items-start justify-between gap-2">
+                      <ExperienceTitle item={item} />
+                      <span
+                        className={cn(
+                          "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors",
+                          isAmbulance
+                            ? "border-[#f0c7c2] text-[#c62828] group-hover:bg-[#c62828] group-hover:text-white"
+                            : "border-[#dce8a8] text-[#5a7a12] group-hover:bg-[#111411] group-hover:text-white group-hover:border-[#111411]",
+                        )}
+                        aria-hidden
+                      >
+                        <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={2.25} />
+                      </span>
+                    </div>
+                    <p className="mt-2 text-[13px] leading-relaxed text-[#5a6330] sm:text-sm">
+                      {item.description}
+                    </p>
+                  </div>
+                </motion.button>
+              </StaggerItem>
+            );
+          })}
+        </Stagger>
       </div>
     </section>
   );

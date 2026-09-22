@@ -40,6 +40,8 @@ export type LocationCardMode = "ride" | "parcel" | "ambulance";
 interface LocationCardProps {
   pickup: string;
   dropoff: string;
+  /** True while GPS + backend reverse-geocode is resolving pickup. */
+  pickupLocating?: boolean;
   onSwap: () => void;
   returnTo?: string;
   coords?: LocationCoords;
@@ -56,6 +58,7 @@ interface LocationCardProps {
 export function LocationCard({
   pickup,
   dropoff,
+  pickupLocating = false,
   onSwap,
   returnTo = ROUTES.home,
   coords,
@@ -320,11 +323,19 @@ export function LocationCard({
               tone="pickup"
               label="Pickup"
               value={pickup}
-              placeholder="Current location"
+              placeholder={
+                pickupLocating
+                  ? "Detecting current location…"
+                  : "Current location"
+              }
               icon={
                 <Navigation2 className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
               }
               onClick={() => openLocationSearch("pickup")}
+              className={cn(
+                pickupLocating && "border-[#C6E31A]/45 bg-[#f8fbe8]/90",
+                pickup && "border-[#C6E31A]/35 bg-[#f8fbe8]/70",
+              )}
             />
 
             {!isParcel && !isAmbulance
@@ -522,7 +533,7 @@ function LocationField({
       onClick={onClick}
       className={cn(
         "group flex w-full items-start gap-3 rounded-2xl border px-3.5 py-3.5 text-left transition-all duration-150 sm:px-4 sm:py-4",
-        "border-border/80 bg-white hover:border-primary/35 hover:shadow-[0_12px_28px_-18px_rgba(184,217,38,0.35)]",
+        "border-[#e4e9d8] bg-[#fafcf4] hover:border-[#C6E31A]/55 hover:bg-white hover:shadow-[0_12px_28px_-18px_rgba(184,217,38,0.4)]",
         className,
       )}
     >
@@ -530,7 +541,7 @@ function LocationField({
         className={cn(
           "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border transition-colors duration-150",
           isPickup
-            ? "border-secondary/30 bg-secondary/10 text-secondary group-hover:border-secondary group-hover:bg-secondary group-hover:text-white"
+            ? "border-[#C6E31A]/45 bg-[#C6E31A]/18 text-[#5a7a12] group-hover:border-[#C6E31A] group-hover:bg-[#C6E31A] group-hover:text-[#111411]"
             : "border-primary/30 bg-primary/10 text-primary group-hover:border-primary group-hover:bg-primary group-hover:text-white",
         )}
       >

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
@@ -13,13 +13,15 @@ import { AppFooter } from "@/components/layout/AppFooter";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { useAuthUser } from "@/hooks/useAuthUser";
+import { useBackendGpsPickup } from "@/hooks/useBackendGpsPickup";
 import { useHomeDashboard } from "@/hooks/useHomeDashboard";
+import { fetchFreeRideEligibility } from "@/lib/free-rides";
 import {
   normalizeScheduledAt,
   patchLandingBookingSchedule,
   syncScheduledAtQuery,
 } from "@/lib/landing-booking-draft";
-import { reverseGeocode } from "@/lib/places-api";
+import { syncCurrentLocationPlace } from "@/lib/profile-api";
 import {
   formatActiveRideStatus,
   buildActiveRideViewUrl,
@@ -34,6 +36,8 @@ import {
   uniqueVehicleCategories,
   vehicleImageForCategory,
 } from "@/lib/vehicle-map";
+import { isAmbulanceVehicle, withSingleAmbulanceOption } from "@/lib/home-api";
+import { isPlaceholderDisplayName } from "@/lib/auth-session";
 import { BrandImageOverlay, BRAND_PHOTO_CLASS } from "@/components/brand/BrandImageOverlay";
 import { BrandPromoBanner } from "@/components/brand/BrandPromoBanner";
 import { ViewBookingsButton } from "@/components/bookings/ViewBookingsButton";
@@ -55,16 +59,26 @@ export function HomeView() {
   const [stops, setStops] = useState<TripStop[]>([]);
   const [scheduledAt, setScheduledAt] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [freeRideMessage, setFreeRideMessage] = useState<string | null>(null);
   const user = useAuthUser();
   const { data: dashboard, unreadCount, isLoading: dashboardLoading, error: dashboardError } =
     useHomeDashboard();
-  const displayName = dashboard?.greeting_name || user.name;
+  const greeting = dashboard?.greeting_name?.trim() || "";
+  const displayName =
+    (!isPlaceholderDisplayName(greeting) ? greeting : "") ||
+    user.name?.trim() ||
+    (user.isLoading ? "…" : "");
+  const hasUrlPickup = Boolean(searchParams.get("pickup")?.trim());
+  const gpsPickup = useBackendGpsPickup(!hasUrlPickup);
+  const locationSynced = useRef(false);
 
-  const rideCategories = uniqueVehicleCategories(
-    (dashboard?.vehicle_categories ?? []).filter(
-      (category) =>
-        (category.service_group ?? "ride") !== "rental" &&
-        isListedRideCategory(category),
+  const rideCategories = withSingleAmbulanceOption(
+    uniqueVehicleCategories(
+      (dashboard?.vehicle_categories ?? []).filter(
+        (category) =>
+          (category.service_group ?? "ride") !== "rental" &&
+          isListedRideCategory(category),
+      ),
     ),
   );
 
@@ -77,7 +91,7 @@ export function HomeView() {
       `Book ${displayVehicleName(category.name, category.slug)} instantly`,
     image: vehicleImageForCategory(category, rideImages),
     route: homeRouteForCategory(category),
-    isAmbulance: category.slug.toLowerCase().includes("ambulance"),
+    isAmbulance: isAmbulanceVehicle(category),
   }));
 
   const rentalImages = new Set<string>();
@@ -92,6 +106,23 @@ export function HomeView() {
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchFreeRideEligibility()
+      .then((eligibility) => {
+        if (cancelled || !eligibility.enabled) return;
+        setFreeRideMessage(
+          eligibility.message || "First 5 rides free (up to 5 km)",
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setFreeRideMessage(null);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -116,35 +147,20 @@ export function HomeView() {
   }, [searchParams]);
 
   useEffect(() => {
-    const hasUrlPickup = Boolean(searchParams.get("pickup"));
-    if (hasUrlPickup || !navigator.geolocation) return;
+    if (!gpsPickup.place) return;
+    const label = gpsPickup.place.label?.trim() || "Current location";
+    setPickup((current) => current || label);
+    setPickupLat((current) => current ?? gpsPickup.place?.latitude);
+    setPickupLng((current) => current ?? gpsPickup.place?.longitude);
 
-    let cancelled = false;
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const place = await reverseGeocode(
-            position.coords.latitude,
-            position.coords.longitude,
-          );
-          if (cancelled) return;
-          setPickup((current) => current || place.label);
-          setPickupLat((current) => current ?? place.latitude);
-          setPickupLng((current) => current ?? place.longitude);
-        } catch {
-          // Keep empty pickup; user can select manually.
-        }
-      },
-      () => {
-        // Permission denied — user can pick manually.
-      },
-      { enableHighAccuracy: true, timeout: 12000 },
-    );
-
-    return () => {
-      cancelled = true;
-    };
-  }, [searchParams]);
+    if (locationSynced.current) return;
+    locationSynced.current = true;
+    void syncCurrentLocationPlace({
+      label,
+      latitude: gpsPickup.place.latitude,
+      longitude: gpsPickup.place.longitude,
+    });
+  }, [gpsPickup.place]);
 
   const handleSwap = () => {
     setPickup(dropoff);
@@ -161,7 +177,7 @@ export function HomeView() {
     <div className="flex min-h-[100dvh] w-full min-w-0 overflow-x-clip bg-muted">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-      <div className="flex min-h-[100dvh] w-full min-w-0 flex-1 flex-col pb-[calc(5.5rem+env(safe-area-inset-bottom))] lg:pb-0 lg:pl-[280px]">
+      <div className="flex min-h-[100dvh] w-full min-w-0 flex-1 flex-col pb-[calc(4.75rem+env(safe-area-inset-bottom))] lg:pb-0 lg:pl-[280px]">
         {/* Hero — welcome + trip planner */}
         <section className="relative overflow-hidden bg-gradient-to-b from-[#1f2a10] via-[#38471B] to-[#C4E832]">
           <div
@@ -224,9 +240,9 @@ export function HomeView() {
                   </div>
                   <h1
                     suppressHydrationWarning
-                    className="mt-0.5 truncate font-heading text-[1.55rem] font-semibold leading-tight tracking-tight text-white drop-shadow-sm sm:mt-1 sm:text-3xl lg:text-[2.15rem]"
+                    className="mt-0.5 break-words font-heading text-[1.35rem] font-semibold leading-tight tracking-tight text-white drop-shadow-sm sm:mt-1 sm:truncate sm:text-3xl lg:text-[2.15rem]"
                   >
-                    {displayName}
+                    {displayName || (user.isLoading ? "…" : "Welcome")}
                   </h1>
                   <p className="mt-1 line-clamp-2 text-xs font-light leading-snug text-white/78 sm:text-sm">
                     Ready for your next premium journey?
@@ -257,6 +273,7 @@ export function HomeView() {
                 <HomeBookingPanel
                   pickup={pickup}
                   dropoff={dropoff}
+                  pickupLocating={gpsPickup.locating}
                   onSwap={handleSwap}
                   coords={{
                     pickupLat,
@@ -373,11 +390,33 @@ export function HomeView() {
                       <div className="min-w-0 flex-1">
                         <p className="font-heading text-base font-semibold tracking-tight sm:text-lg">
                           {dashboard?.banners[0]?.title ??
+                            freeRideMessage ??
                             "Ride smarter with BW Rides"}
                         </p>
                         <p className="mt-2 text-sm leading-relaxed text-white/80">
-                          {dashboard?.banners[0]?.subtitle ??
-                            "Book rides, send parcels, or request emergency ambulance — all in one app."}
+                          {dashboard?.banners[0]?.subtitle ? (
+                            dashboard.banners[0].subtitle
+                          ) : freeRideMessage ? (
+                            <>
+                              Your first 5 rides can be{" "}
+                              <span className="font-semibold text-[#C6E31A]">
+                                FREE
+                              </span>{" "}
+                              under 5 km. Emergency{" "}
+                              <span className="font-semibold text-[#ffb4a8]">
+                                Ambulance
+                              </span>{" "}
+                              booking stays free.
+                            </>
+                          ) : (
+                            <>
+                              Book rides, send parcels, or request emergency{" "}
+                              <span className="font-semibold text-[#ffb4a8]">
+                                Ambulance
+                              </span>{" "}
+                              — all in one app.
+                            </>
+                          )}
                         </p>
                       </div>
                     </div>
@@ -459,7 +498,7 @@ export function HomeView() {
                 />
               </div>
 
-              <div className="grid w-full min-w-0 grid-cols-1 gap-3 min-[380px]:grid-cols-2 min-[380px]:gap-3.5 sm:gap-4 lg:grid-cols-3 lg:gap-5">
+              <div className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-5">
                 {services.map((service, index) => (
                   <ServiceTile
                     key={service.key}
@@ -507,7 +546,7 @@ export function HomeView() {
                 </p>
               </div>
 
-              <div className="grid w-full min-w-0 grid-cols-1 gap-3 min-[380px]:grid-cols-2 min-[380px]:gap-3.5 sm:gap-4 lg:gap-5">
+              <div className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-5">
                 {rentalServices.map((service, index) => (
                   <ServiceTile
                     key={service.key}

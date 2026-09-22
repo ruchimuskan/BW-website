@@ -115,3 +115,45 @@ export const defaultCountry = countries.find((c) => c.code === "IN") ?? countrie
 export function findCountryByCode(code: string): Country {
   return countries.find((c) => c.code === code) ?? defaultCountry;
 }
+
+export function findCountryByDialCode(dialCode: string): Country {
+  const normalized = dialCode.startsWith("+")
+    ? dialCode
+    : `+${dialCode.replace(/\D/g, "")}`;
+  const matches = countries.filter((country) => country.dialCode === normalized);
+  if (matches.length === 1) return matches[0];
+  if (matches.length > 1) {
+    return (
+      matches.find((country) => country.code === "IN") ??
+      matches.find((country) => country.code === "US") ??
+      matches[0]
+    );
+  }
+  return defaultCountry;
+}
+
+/** Longest matching dial code first so `+910961621252` parses as +91, not +9109. */
+export function splitE164ByCountry(raw: string): { country: Country; national: string } | null {
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return null;
+
+  const ranked = [...countries].sort(
+    (a, b) => b.dialCode.replace(/\D/g, "").length - a.dialCode.replace(/\D/g, "").length,
+  );
+
+  for (const country of ranked) {
+    const cc = country.dialCode.replace(/\D/g, "");
+    if (!digits.startsWith(cc)) continue;
+    const national = digits.slice(cc.length).replace(/^0+/, "") || digits.slice(cc.length);
+    if (national.length < country.minLength) continue;
+    return { country, national: national.slice(0, country.maxLength) };
+  }
+
+  if (
+    digits.length >= defaultCountry.minLength &&
+    digits.length <= defaultCountry.maxLength
+  ) {
+    return { country: defaultCountry, national: digits };
+  }
+  return null;
+}

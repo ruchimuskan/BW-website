@@ -15,6 +15,7 @@ interface BookingOffersSheetProps {
   open: boolean;
   orderAmount: number;
   vehicleTypeId?: string;
+  distanceKm?: number | null;
   appliedCode?: string | null;
   onClose: () => void;
   onApply: (applied: AppliedCoupon) => void;
@@ -25,6 +26,7 @@ export function BookingOffersSheet({
   open,
   orderAmount,
   vehicleTypeId,
+  distanceKm,
   appliedCode,
   onClose,
   onApply,
@@ -64,7 +66,12 @@ export function BookingOffersSheet({
     setApplying(trimmed.toUpperCase());
     setError(null);
     try {
-      const applied = await validateCoupon(trimmed, orderAmount, vehicleTypeId);
+      const applied = await validateCoupon(
+        trimmed,
+        orderAmount,
+        vehicleTypeId,
+        distanceKm,
+      );
       onApply(applied);
       onClose();
     } catch (err) {

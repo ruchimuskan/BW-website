@@ -7,7 +7,7 @@ import { ArrowLeft, Loader2, ShieldCheck, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AuthFormCard } from "@/components/auth/AuthFormCard";
-import { LoginSceneDecor } from "@/components/auth/LoginSceneDecor";
+import { AuthPageShell } from "@/components/auth/AuthPageShell";
 import { LoginServicesPanel } from "@/components/auth/LoginServicesPanel";
 import { OTPInput } from "@/components/OTPInput";
 import {
@@ -22,6 +22,7 @@ import {
   resolvePostAuthDestination,
   setAuthSession,
   setPostLoginRedirect,
+  isAuthenticated,
 } from "@/lib/auth-session";
 import { sendLoginOtp, verifyOtp } from "@/lib/auth-api";
 import { defaultCountry, type Country } from "@/lib/countries";
@@ -42,6 +43,7 @@ export function PhoneLogin() {
   const [phoneError, setPhoneError] = useState("");
   const [otpError, setOtpError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [deliveredOtp, setDeliveredOtp] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [resendSeconds, setResendSeconds] = useState(0);
@@ -55,23 +57,15 @@ export function PhoneLogin() {
   }, [searchParams]);
 
   useEffect(() => {
+    if (!isAuthenticated()) return;
+    router.replace(resolvePostAuthDestination());
+  }, [router]);
+
+  useEffect(() => {
     if (resendSeconds <= 0) return;
     const timer = window.setTimeout(() => setResendSeconds((s) => s - 1), 1000);
     return () => window.clearTimeout(timer);
   }, [resendSeconds]);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const apply = () => {
-      document.body.style.overflow = mq.matches ? "hidden" : "";
-    };
-    apply();
-    mq.addEventListener("change", apply);
-    return () => {
-      mq.removeEventListener("change", apply);
-      document.body.style.overflow = "";
-    };
-  }, []);
 
   const finishLogin = useCallback(
     (
@@ -83,23 +77,29 @@ export function PhoneLogin() {
         email?: string;
       },
     ) => {
-      const profileComplete = !needsProfileSetup(tokens.name);
+      const accessToken = tokens.accessToken?.trim();
+      if (!accessToken) {
+        setPhoneError("Login succeeded without an access token. Please try again.");
+        return;
+      }
+
+      const profileComplete = !needsProfileSetup(tokens.name, tokens.email);
       setAuthSession({
         phone: phoneDisplay,
         verified: true,
         ...(tokens.name ? { name: tokens.name } : {}),
         ...(tokens.email ? { email: tokens.email } : {}),
-        accessToken: tokens.accessToken,
+        accessToken,
         ...(tokens.refreshToken ? { refreshToken: tokens.refreshToken } : {}),
         profileComplete,
       });
 
       if (!profileComplete) {
-        router.push(ROUTES.createProfile);
+        router.replace(ROUTES.createProfile);
         return;
       }
 
-      router.push(resolvePostAuthDestination());
+      router.replace(resolvePostAuthDestination());
     },
     [router],
   );
@@ -117,17 +117,23 @@ export function PhoneLogin() {
     setIsSending(true);
 
     try {
-      await sendLoginOtp({
+      const result = await sendLoginOtp({
         dial_code: country.dialCode,
         phone,
         mode: "login",
       });
       setE164Phone(toE164Phone(country, phone));
+      setDeliveredOtp(result.otp);
       setStep("verify");
       setResendSeconds(30);
-      setOtp("");
-      setSuccessMessage("OTP sent to your mobile number.");
+      setOtp(result.otp ?? "");
+      setSuccessMessage(
+        result.otp
+          ? "OTP ready — enter the code below to continue."
+          : "OTP sent to your mobile number.",
+      );
     } catch (error) {
+      setDeliveredOtp(null);
       setPhoneError(
         error instanceof Error
           ? error.message
@@ -139,8 +145,8 @@ export function PhoneLogin() {
     }
   };
 
-  const handleVerifyOtp = async () => {
-    if (verifyLock.current || otp.length < 4) return;
+  const handleVerifyOtp = async (code = otp) => {
+    if (verifyLock.current || code.length !== 6) return;
 
     verifyLock.current = true;
     setOtpError("");
@@ -150,7 +156,7 @@ export function PhoneLogin() {
       const result = await verifyOtp({
         dial_code: country.dialCode,
         phone,
-        otp,
+        otp: code,
         mode: "login",
       });
       finishLogin(result.user.phone, {
@@ -186,19 +192,14 @@ export function PhoneLogin() {
   })();
 
   return (
-    <div className="relative min-h-[100dvh] overflow-x-hidden overflow-y-auto font-sans lg:h-[100dvh] lg:overflow-hidden">
-      <LoginSceneDecor />
-
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-stretch justify-center gap-4 px-3 py-4 sm:px-5 sm:py-5 lg:flex-row lg:items-stretch lg:gap-7 lg:px-8 lg:py-6 xl:gap-10">
-        <aside className="hidden min-h-0 w-full flex-1 lg:flex lg:max-w-[52%]">
-          <LoginServicesPanel compact className="w-full" />
-        </aside>
-
+    <AuthPageShell
+      aside={<LoginServicesPanel compact className="w-full" />}
+    >
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={transitions.reveal}
-          className="mx-auto flex w-full max-w-[420px] flex-col justify-center lg:mx-0 lg:max-w-[430px] lg:flex-none xl:max-w-[450px]"
+          className="w-full min-w-0"
         >
           <AuthFormCard
             title={step === "phone" ? "Login with mobile" : "Enter OTP"}
@@ -234,6 +235,7 @@ export function PhoneLogin() {
                   setOtp("");
                   setOtpError("");
                   setSuccessMessage("");
+                  setDeliveredOtp(null);
                 }}
                 className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#5A6158] transition hover:text-[#111411]"
               >
@@ -292,9 +294,31 @@ export function PhoneLogin() {
               </div>
             ) : (
               <div className="flex flex-col gap-4 sm:gap-5">
+                {deliveredOtp ? (
+                  <div className="rounded-xl border border-[#dce8a8] bg-[#f5f9e8] px-4 py-3 text-sm text-[#283614]">
+                    <p className="font-semibold tracking-wide">Your verification code</p>
+                    <p className="mt-1 font-heading text-2xl font-bold tracking-[0.18em] text-[#111411] sm:tracking-[0.28em]">
+                      {deliveredOtp}
+                    </p>
+                    <p className="mt-1.5 text-xs leading-relaxed text-[#5a6330]">
+                      SMS delivery is delayed on the server. Use this code to verify
+                      your number.
+                    </p>
+                  </div>
+                ) : null}
+
                 <OTPInput
                   value={otp}
-                  onChange={setOtp}
+                  onChange={(val) => {
+                    setOtp(val);
+                    if (otpError) setOtpError("");
+                    if (val.length < 6) {
+                      verifyLock.current = false;
+                      setIsVerifying(false);
+                      return;
+                    }
+                    void handleVerifyOtp(val);
+                  }}
                   error={!!otpError}
                   length={6}
                 />
@@ -310,7 +334,7 @@ export function PhoneLogin() {
                       "h-11 w-full rounded-xl text-sm font-bold tracking-wide sm:h-12 sm:rounded-[14px] sm:text-[15px]",
                       BRAND_CTA_LIME,
                     )}
-                    disabled={isVerifying || otp.length < 4}
+                    disabled={isVerifying || otp.length !== 6}
                     onClick={() => void handleVerifyOtp()}
                   >
                     {isVerifying ? (
@@ -346,7 +370,6 @@ export function PhoneLogin() {
             )}
           </AuthFormCard>
         </motion.div>
-      </div>
-    </div>
+    </AuthPageShell>
   );
 }

@@ -13,17 +13,24 @@ interface OTPInputProps {
 export function OTPInput({ length = 6, value, onChange, error }: OTPInputProps) {
   const [otp, setOtp] = useState<string[]>(new Array(length).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const onChangeRef = useRef(onChange);
+  const lastEmitted = useRef("");
+  onChangeRef.current = onChange;
 
   useEffect(() => {
-    // Sync external value with internal state
     if (value.length <= length) {
-      const newValue = value.split("");
-      const newOtp = new Array(length).fill("");
-      newValue.forEach((char, index) => {
-        newOtp[index] = char;
+      const next = new Array(length).fill("");
+      value.split("").forEach((char, index) => {
+        next[index] = char;
       });
-      setOtp(newOtp);
+      setOtp(next);
     }
+    // Parent-filled dummy/backend OTP never fires input onChange — emit once when complete.
+    if (value.length === length && lastEmitted.current !== value) {
+      lastEmitted.current = value;
+      onChangeRef.current(value);
+    }
+    if (value.length < length) lastEmitted.current = "";
   }, [value, length]);
 
   const focusInput = (index: number) => {
@@ -87,20 +94,22 @@ export function OTPInput({ length = 6, value, onChange, error }: OTPInputProps) 
   };
 
   return (
-    <div className="flex justify-between gap-2">
+    <div className="flex w-full min-w-0 justify-between gap-1.5 sm:gap-2">
       {otp.map((digit, index) => (
         <input
           key={index}
           ref={(el) => { inputRefs.current[index] = el; }}
           type="text"
           inputMode="numeric"
+          autoComplete="one-time-code"
           maxLength={1}
           value={digit}
           onChange={(e) => handleChange(index, e)}
           onKeyDown={(e) => handleKeyDown(index, e)}
           onPaste={handlePaste}
           className={cn(
-            "h-14 w-12 rounded-[16px] border bg-background text-center text-lg font-semibold shadow-sm transition-all focus:outline-none focus:ring-2",
+            "h-11 min-w-0 flex-1 rounded-xl border bg-background text-center text-base font-semibold shadow-sm transition-all focus:outline-none focus:ring-2 sm:h-14 sm:rounded-[16px] sm:text-lg",
+            "max-w-12 sm:max-w-none",
             error
               ? "border-destructive focus:ring-destructive/30"
               : "border-input focus:border-primary focus:ring-primary/20",

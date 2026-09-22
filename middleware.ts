@@ -7,142 +7,18 @@ import {
 } from "@/constants/auth";
 import { ROUTES } from "@/constants/routes";
 import { isProductionEnv } from "@/lib/app-env";
+import { isProtectedPath, isPublicPath } from "@/lib/route-access";
 
 /**
- * Full route access map for the user panel.
- * Public = no rider login required. Protected = auth cookie + profile complete.
- * Corporate routes use their own session in the UI; they stay public at the edge.
- * Static images under /public must never be gated — zip/production deploys rely on this.
+ * Edge gate: auth cookie flag + profile-complete cookie.
+ * Real JWT lives in sessionStorage — AuthSessionGuard clears stale cookies
+ * and redirects when the backend token is missing.
+ * Static images, uploads, and media proxies must never be gated.
  */
 
-/** Exact paths anyone can open without rider login. */
-const PUBLIC_PATHS = new Set<string>([
-  // Marketing
-  ROUTES.landing,
-  ROUTES.about,
-  ROUTES.careers,
-  ROUTES.blogs,
-  ROUTES.safety,
-  ROUTES.sos,
-  ROUTES.captains,
-  ROUTES.ride,
-  ROUTES.download,
-  ROUTES.terms,
-  ROUTES.privacy,
-  ROUTES.legalSafety,
-  ROUTES.siteMap,
-  // Auth / onboarding
-  ROUTES.login,
-  ROUTES.signup,
-  ROUTES.otp,
-  ROUTES.createProfile,
-  `${ROUTES.createProfile}/download`,
-  // Guest fare browse (login only when booking)
-  ROUTES.location,
-  ROUTES.book,
-  // Corporate / Business (separate company auth in the client)
-  ROUTES.corporateRegister,
-  ROUTES.corporateLogin,
-  ROUTES.corporatePortal,
-  // Site metadata / icons (also covered by static matcher)
-  "/robots.txt",
-  "/sitemap.xml",
-  "/manifest.webmanifest",
-  "/opengraph-image",
-  "/twitter-image",
-  "/icon",
-  "/apple-icon",
-  "/apple-touch-icon.png",
-  "/icon-192.png",
-  "/icon-512.png",
-  "/favicon.png",
-  "/icon.png",
-  "/file.svg",
-  "/globe.svg",
-  "/next.svg",
-  "/vercel.svg",
-  "/window.svg",
-  "/app-release-driver.apk",
-  "/app-release-user.apk",
-]);
+const IMAGE_EXT =
+  /\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm|css|js|map)$/i;
 
-/** Nested public sections. */
-const PUBLIC_PREFIXES = [
-  `${ROUTES.blogs}/`,
-  `${ROUTES.safety}/`,
-  "/legal/",
-  "/corporate/",
-] as const;
-
-/**
- * Exact protected app routes (rider must be logged in).
- * Listed explicitly so every screen has a defined access rule.
- */
-const PROTECTED_PATHS = new Set<string>([
-  ROUTES.home,
-  ROUTES.start,
-  ROUTES.activity,
-  ROUTES.bookings,
-  ROUTES.bookingDetail,
-  ROUTES.notifications,
-  ROUTES.wallet,
-  ROUTES.walletWithdraw,
-  ROUTES.profile,
-  ROUTES.profileAccountSettings,
-  ROUTES.profileEmergencyContact,
-  ROUTES.profilePhone,
-  ROUTES.profilePhoneVerify,
-  ROUTES.profileEmail,
-  ROUTES.profileEmailVerify,
-  ROUTES.profileSavedPlaces,
-  ROUTES.profileHelp,
-  ROUTES.profileHelpMessages,
-  ROUTES.profileAbout,
-  ROUTES.profileSubscription,
-  ROUTES.profileStudentPass,
-  ROUTES.profileReferEarn,
-  ROUTES.bookSearching,
-  ROUTES.bookTracking,
-  ROUTES.ambulance,
-  ROUTES.ambulanceHistory,
-  ROUTES.rental,
-  ROUTES.rentalSelfDrive,
-  // Ambulance flow screens
-  "/ambulance/type",
-  "/ambulance/form",
-  "/ambulance/hospitals",
-  "/ambulance/request",
-  "/ambulance/searching",
-  "/ambulance/assigned",
-  "/ambulance/tracking",
-]);
-
-/** Nested protected sections (profile help articles, etc.). */
-const PROTECTED_PREFIXES = [
-  `${ROUTES.profile}/`,
-  `${ROUTES.bookings}/`,
-  `${ROUTES.wallet}/`,
-  `${ROUTES.ambulance}/`,
-  `${ROUTES.book}/`,
-  `${ROUTES.rental}/`,
-] as const;
-
-function isPublicPath(pathname: string) {
-  if (PUBLIC_PATHS.has(pathname)) return true;
-  return PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
-}
-
-function isProtectedPath(pathname: string) {
-  if (PROTECTED_PATHS.has(pathname)) return true;
-  // /book itself is public for guest fare browse; only nested book/* is protected.
-  if (pathname === ROUTES.book) return false;
-  return PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
-}
-
-/**
- * Static files must never hit auth redirects.
- * Covers every folder shipped in /public for production zips.
- */
 function isStaticAssetPath(pathname: string): boolean {
   if (
     pathname.startsWith("/_next/") ||
@@ -156,13 +32,47 @@ function isStaticAssetPath(pathname: string): boolean {
     pathname.startsWith("/icons/") ||
     pathname.startsWith("/media/") ||
     pathname.startsWith("/assets/") ||
-    pathname.startsWith("/static/")
+    pathname.startsWith("/static/") ||
+    pathname.startsWith("/services/") ||
+    pathname.startsWith("/chat/") ||
+    pathname.startsWith("/opengraph-image") ||
+    pathname.startsWith("/twitter-image") ||
+    pathname.startsWith("/icon") ||
+    pathname.startsWith("/apple-icon") ||
+    pathname.startsWith("/apple-touch-icon") ||
+    pathname.startsWith("/favicon")
   ) {
     return true;
   }
-  return /\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm|css|js|map)$/i.test(
-    pathname,
+  return IMAGE_EXT.test(pathname);
+}
+
+function isCacheableMediaPath(pathname: string): boolean {
+  return (
+    pathname.startsWith("/images/") ||
+    pathname.startsWith("/gallery/") ||
+    pathname.startsWith("/landing/") ||
+    pathname.startsWith("/uploads/") ||
+    pathname.startsWith("/brand/") ||
+    pathname.startsWith("/icons/") ||
+    pathname.startsWith("/media/") ||
+    pathname.startsWith("/assets/") ||
+    pathname.startsWith("/static/") ||
+    pathname.startsWith("/services/") ||
+    IMAGE_EXT.test(pathname)
   );
+}
+
+function passthrough(pathname: string) {
+  const response = NextResponse.next();
+  if (isCacheableMediaPath(pathname)) {
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=31536000, immutable",
+    );
+    response.headers.set("X-Content-Type-Options", "nosniff");
+  }
+  return response;
 }
 
 function postAuthDestination(request: NextRequest, profileComplete: boolean) {
@@ -190,9 +100,8 @@ function safeReturnPath(pathname: string, search: string): string {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Always allow static assets (images, fonts, APKs) — never auth-gate them.
   if (isStaticAssetPath(pathname)) {
-    return NextResponse.next();
+    return passthrough(pathname);
   }
 
   const isAuthenticated = request.cookies.get(AUTH_COOKIE_NAME)?.value === "1";
@@ -200,7 +109,6 @@ export function middleware(request: NextRequest) {
   const isReturningVisitor =
     request.cookies.get(RETURNING_VISITOR_COOKIE)?.value === "1";
 
-  // Production: always show landing. Staging/dev: first visit can funnel to signup.
   if (pathname === ROUTES.landing && !isAuthenticated && !isReturningVisitor) {
     if (isProductionEnv()) {
       return markReturningVisitor(NextResponse.next());
@@ -216,11 +124,7 @@ export function middleware(request: NextRequest) {
     ) {
       return NextResponse.redirect(postAuthDestination(request, profileComplete));
     }
-    if (isAuthenticated && pathname === ROUTES.createProfile && profileComplete) {
-      return NextResponse.redirect(new URL(ROUTES.home, request.url));
-    }
 
-    // Visiting auth pages also marks the visitor as returning.
     if (
       !isReturningVisitor &&
       (pathname === ROUTES.signup || pathname === ROUTES.login || pathname === ROUTES.otp)
@@ -231,7 +135,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Known protected routes + any other non-public app path require login.
   const needsAuth = isProtectedPath(pathname) || !isPublicPath(pathname);
   if (needsAuth && !isAuthenticated) {
     const authUrl = new URL(
@@ -255,10 +158,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * App routes only — skip Next internals and every static asset folder/extension
-     * so production image loads stay fast and never redirect to login.
-     */
-    "/((?!_next/static|_next/image|_next/data|images|gallery|landing|uploads|api|fonts|brand|icons|media|assets|static|favicon\\.ico|robots\\.txt|sitemap\\.xml|manifest\\.webmanifest|opengraph-image|twitter-image|icon|apple-icon|.*\\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm|css|js|map)$).*)",
+    "/((?!_next/static|_next/image|_next/data|images|gallery|landing|uploads|api|fonts|brand|icons|media|assets|static|services|chat|favicon\\.ico|robots\\.txt|sitemap\\.xml|manifest\\.webmanifest|opengraph-image|twitter-image|icon|apple-icon|apple-touch-icon|.*\\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm|css|js|map)$).*)",
   ],
 };

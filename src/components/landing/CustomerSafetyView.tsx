@@ -24,7 +24,7 @@ function VerificationAccordion({
 }: {
   items: readonly { id: string; title: string; content: string }[];
 }) {
-  const [openId, setOpenId] = useState<string | null>(items[0]?.id ?? null);
+  const [openId, setOpenId] = useState<string | null>(null);
   const reduceMotion = useReducedMotion();
 
   return (

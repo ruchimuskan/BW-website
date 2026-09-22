@@ -10,7 +10,7 @@ export interface ServiceItem {
 
 export const homeServices: ServiceItem[] = [
   { name: "Bike", description: "Beat the traffic, save money", image: BRAND_PHOTOS.studioBike, route: `${ROUTES.start}?tab=rides&vehicle=bike` },
-  { name: "Electric Auto", description: "No haggling, just easy rides",     image: "/images/services/auto.png",
+  { name: "Electric Auto", description: "No haggling, just easy rides",     image: "/images/gallery/shoot-auto.png",
     route: `${ROUTES.start}?tab=rides&vehicle=auto`,
   },
   { name: "Cab", description: "Comfortable rides for you", image: BRAND_PHOTOS.studioCab, route: `${ROUTES.start}?tab=rides&vehicle=cab` },
@@ -57,8 +57,14 @@ export const landingServices: ServiceItem[] = [
   {
     name: "Auto",
     description: "Everyday rides",
-    image: "/images/services/auto.png",
+    image: "/images/gallery/shoot-auto.png",
     route: `${ROUTES.start}?tab=rides&vehicle=auto`,
+  },
+  {
+    name: "E-Rickshaw",
+    description: "Local electric hops",
+    image: "/images/services/e-rickshaw.png",
+    route: `${ROUTES.start}?tab=rides&vehicle=e-rickshaw`,
   },
   {
     name: "Cab",
@@ -68,8 +74,8 @@ export const landingServices: ServiceItem[] = [
   },
   {
     name: "Ambulance",
-    description: "Book for free",
-    image: "/images/services/ambulance-cutout.png",
+    description: "Book Ambulance free",
+    image: "/images/services/ambulance-studio.png",
     route: `${ROUTES.start}?tab=ambulance&vehicle=ambulance`,
   },
 ];
@@ -111,7 +117,7 @@ export const landingAssets = {
   bestFares: BRAND_IMAGES.featureFares,
   neverTooFar: BRAND_IMAGES.featureCoverage,
   serviceBike: "/images/services/bike.webp",
-  serviceAuto: "/images/services/auto.png",
+  serviceAuto: "/images/gallery/shoot-auto.png",
   serviceERickshaw: "/images/services/e-rickshaw.png",
   serviceCab: "/images/services/car.webp",
   serviceParcel: "/images/services/parcel.png",

@@ -17,19 +17,37 @@ import {
 } from "@/lib/location-search";
 import {
   DEFAULT_PLACE_BIAS,
+  fetchSuggestedPlaces,
   formatDistanceKm,
+  resolveCurrentGpsPlace,
   resolvePlaceDetails,
-  reverseGeocode,
   searchPlaces,
   type PlaceSearchBias,
   type PlaceSuggestion,
   type SelectedPlace,
 } from "@/lib/places-api";
+import {
+  listAddresses,
+  rememberTripPlace,
+  syncCurrentLocationPlace,
+  type ProfileAddress,
+} from "@/lib/profile-api";
 import { MAX_STOPS, parseStopsFromParams, type TripStop } from "@/lib/trip-stops";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 import { ambulanceLocationTheme, rideLocationTheme } from "@/lib/ambulance-theme";
 import { LocationPickerMap } from "@/components/location/LocationPickerMap";
+
+function addressToSuggestion(row: ProfileAddress): PlaceSuggestion {
+  return {
+    id: row.id || `saved-${row.label}-${row.address_line}`,
+    name: row.label || row.address_line,
+    address: row.address_line || row.label,
+    latitude: row.latitude,
+    longitude: row.longitude,
+    source: "saved",
+  };
+}
 
 function SuggestionList({
   title,
@@ -173,12 +191,28 @@ export function LocationSearchView() {
 
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<PlaceSuggestion[]>([]);
+  const [savedPlaces, setSavedPlaces] = useState<PlaceSuggestion[]>([]);
+  const [suggestedPlaces, setSuggestedPlaces] = useState<PlaceSuggestion[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoadingIdle, setIsLoadingIdle] = useState(true);
   const [isResolving, setIsResolving] = useState(false);
   const [locateError, setLocateError] = useState<string | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [mapLat, setMapLat] = useState<number | undefined>(initialMapLat);
   const [mapLng, setMapLng] = useState<number | undefined>(initialMapLng);
   const [searchBias, setSearchBias] = useState<PlaceSearchBias>(() => {
+    // Dropoff suggestions should stay near the chosen pickup when available.
+    if (
+      field === "dropoff" &&
+      savedPlat != null &&
+      savedPlng != null
+    ) {
+      return {
+        latitude: savedPlat,
+        longitude: savedPlng,
+        radiusMeters: 40_000,
+      };
+    }
     if (initialMapLat != null && initialMapLng != null) {
       return {
         latitude: initialMapLat,
@@ -188,9 +222,12 @@ export function LocationSearchView() {
     }
     return DEFAULT_PLACE_BIAS;
   });
-  const [biasLabel, setBiasLabel] = useState(
-    initialMapLat != null ? "Near your pin" : "Near Delhi",
-  );
+  const [biasLabel, setBiasLabel] = useState(() => {
+    if (field === "dropoff" && savedPlat != null && savedPlng != null) {
+      return "Near your pickup";
+    }
+    return initialMapLat != null ? "Near your pin" : "Near Delhi";
+  });
   const inputRef = useRef<HTMLInputElement>(null);
   const copy = getLocationSearchCopy(field, tab, stopIndex);
 
@@ -239,16 +276,62 @@ export function LocationSearchView() {
     });
   }, [mapLat, mapLng, biasLabel]);
 
+  // Idle: saved places from backend + nearby suggestions near GPS/pin.
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoadingIdle(true);
+
+    const loadIdle = async () => {
+      const savedPromise = listAddresses()
+        .then((rows) => rows.map(addressToSuggestion))
+        .catch(() => [] as PlaceSuggestion[]);
+
+      const suggestedPromise = fetchSuggestedPlaces(field, searchBias).catch(
+        () => [] as PlaceSuggestion[],
+      );
+
+      // Don't leave the sidebar spinning if one backend call hangs.
+      const timed = <T,>(promise: Promise<T>, fallback: T, ms: number) =>
+        Promise.race([
+          promise,
+          new Promise<T>((resolve) => {
+            window.setTimeout(() => resolve(fallback), ms);
+          }),
+        ]);
+
+      const [saved, suggested] = await Promise.all([
+        timed(savedPromise, [], 6_000),
+        timed(suggestedPromise, [], 9_000),
+      ]);
+
+      if (cancelled) return;
+      setSavedPlaces(saved);
+      const savedIds = new Set(saved.map((row) => row.id));
+      setSuggestedPlaces(
+        suggested.filter((row) => !savedIds.has(row.id)).slice(0, 8),
+      );
+      setIsLoadingIdle(false);
+    };
+
+    void loadIdle();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [field, searchBias.latitude, searchBias.longitude]);
+
   useEffect(() => {
     const trimmed = query.trim();
     if (trimmed.length < 2) {
       setResults([]);
       setIsSearching(false);
+      setSearchError(null);
       return;
     }
 
     let cancelled = false;
     setIsSearching(true);
+    setSearchError(null);
     const timer = window.setTimeout(async () => {
       try {
         const places = await searchPlaces(trimmed, {
@@ -257,7 +340,10 @@ export function LocationSearchView() {
         });
         if (!cancelled) setResults(places);
       } catch {
-        if (!cancelled) setResults([]);
+        if (!cancelled) {
+          setResults([]);
+          setSearchError("Unable to load places from the server. Try again.");
+        }
       } finally {
         if (!cancelled) setIsSearching(false);
       }
@@ -268,6 +354,13 @@ export function LocationSearchView() {
       window.clearTimeout(timer);
     };
   }, [query, searchBias]);
+
+  const persistPlace = (place: SelectedPlace) => {
+    void rememberTripPlace(place, field);
+    if (field === "pickup") {
+      void syncCurrentLocationPlace(place);
+    }
+  };
 
   const baseCoords = {
     pickupLat: savedPlat,
@@ -304,6 +397,8 @@ export function LocationSearchView() {
         nextStops[MAX_STOPS - 1] = stop;
       }
     }
+
+    persistPlace(place);
 
     router.replace(
       buildReturnUrlWithLocations(
@@ -356,35 +451,37 @@ export function LocationSearchView() {
 
     setIsResolving(true);
     setLocateError(null);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
-          setMapLat(latitude);
-          setMapLng(longitude);
+
+    void resolveCurrentGpsPlace({ timeoutMs: 15_000, refineMs: 3_500 })
+      .then((place) => {
+        if (place.latitude != null && place.longitude != null) {
+          setMapLat(place.latitude);
+          setMapLng(place.longitude);
           setSearchBias({
-            latitude,
-            longitude,
+            latitude: place.latitude,
+            longitude: place.longitude,
             radiusMeters: 40_000,
           });
           setBiasLabel("Near your GPS");
-          const place = await reverseGeocode(latitude, longitude);
-          navigateWithPlace(place);
-        } catch {
-          setLocateError("Unable to fetch current location.");
-          setIsResolving(false);
         }
-      },
-      () => {
-        setLocateError("Location permission denied. Enable GPS and try again.");
+        void syncCurrentLocationPlace(place);
+        navigateWithPlace(place);
+      })
+      .catch((err: unknown) => {
+        const code =
+          err && typeof err === "object" && "code" in err
+            ? Number((err as GeolocationPositionError).code)
+            : NaN;
+        setLocateError(
+          code === 1
+            ? "Location permission denied. Enable GPS and try again."
+            : "Unable to fetch current location.",
+        );
         setIsResolving(false);
-      },
-      { enableHighAccuracy: true, timeout: 15000 },
-    );
+      });
   };
 
   const showSearchResults = query.trim().length >= 2;
-  const showCurrentLocation = field === "pickup" || field === "stop";
   const isAmbulanceTab = tab === "ambulance";
   const theme = isAmbulanceTab ? ambulanceLocationTheme : rideLocationTheme;
 
@@ -510,7 +607,7 @@ export function LocationSearchView() {
               transition={{ duration: 0.28 }}
               className="space-y-3.5"
             >
-              {showCurrentLocation && !showSearchResults && (
+              {!showSearchResults && (
                 <button
                   type="button"
                   onClick={handleCurrentLocation}
@@ -525,13 +622,49 @@ export function LocationSearchView() {
                   </span>
                   <span className="min-w-0">
                     <span className={cn("block text-sm font-semibold", theme.ink)}>
-                      Use current location
+                      Use current location (GPS)
                     </span>
                     <span className={cn("mt-0.5 block text-[13px]", theme.muted)}>
-                      Detect from GPS and pin on map
+                      Detect from GPS, reverse-geocode on server, and pin on map
                     </span>
                   </span>
                 </button>
+              )}
+
+              {!showSearchResults && (
+                <>
+                  <SuggestionList
+                    title="Saved places"
+                    items={savedPlaces}
+                    isLoading={isLoadingIdle && savedPlaces.length === 0}
+                    onSelect={handleSelect}
+                    theme={theme}
+                  />
+                  <SuggestionList
+                    title={
+                      field === "dropoff"
+                        ? "Suggested dropoffs nearby"
+                        : "Suggested places nearby"
+                    }
+                    items={suggestedPlaces}
+                    isLoading={isLoadingIdle && suggestedPlaces.length === 0}
+                    onSelect={handleSelect}
+                    theme={theme}
+                  />
+                  {!isLoadingIdle &&
+                    savedPlaces.length === 0 &&
+                    suggestedPlaces.length === 0 && (
+                      <p
+                        className={cn(
+                          "rounded-2xl border px-4 py-5 text-center text-sm",
+                          theme.card,
+                          theme.muted,
+                        )}
+                      >
+                        Type at least 2 letters to search places near you.
+                      </p>
+                    )}
+                </>
               )}
 
               {showSearchResults && (
@@ -544,7 +677,16 @@ export function LocationSearchView() {
                 />
               )}
 
-              {showSearchResults && !isSearching && results.length === 0 && (
+              {showSearchResults && searchError && !isSearching && (
+                <p className={cn("rounded-2xl border px-4 py-5 text-center text-sm", theme.card, theme.muted)}>
+                  {searchError}
+                </p>
+              )}
+
+              {showSearchResults &&
+                !isSearching &&
+                !searchError &&
+                results.length === 0 && (
                 <p className={cn("rounded-2xl border px-4 py-5 text-center text-sm", theme.card, theme.muted)}>
                   No locations found — try a different search.
                 </p>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronRight, Minus, Plus, ShieldCheck } from "lucide-react";
@@ -78,6 +79,8 @@ type CollageImage = {
   featured?: boolean;
   imageClassName?: string;
   fallbackSrc?: string;
+  /** When set, the tile navigates on click (e.g. ambulance booking). */
+  href?: string;
 };
 
 export function SafetyImageCollage({
@@ -87,6 +90,8 @@ export function SafetyImageCollage({
   images: readonly CollageImage[];
   className?: string;
 }) {
+  const router = useRouter();
+
   return (
     <div
       className={cn(
@@ -103,6 +108,51 @@ export function SafetyImageCollage({
         <div className="grid grid-cols-3 items-end gap-2 sm:gap-2.5 md:gap-3 lg:gap-4">
           {images.map((img, i) => {
             const isFeatured = img.featured ?? i === 1;
+            const isAmbulance = /ambulance/i.test(img.label ?? img.alt);
+            const tile = (
+              <div
+                className={cn(
+                  "group relative overflow-hidden rounded-xl border border-white/70 shadow-[0_18px_44px_-26px_rgba(184,217,38,0.5)] ring-1 ring-primary/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_24px_52px_-24px_rgba(184,217,38,0.55)] sm:rounded-2xl",
+                  isFeatured
+                    ? "aspect-[3/4] origin-bottom scale-[1.05] sm:aspect-[4/5] sm:scale-[1.07] lg:scale-[1.08]"
+                    : "aspect-[3/4] sm:aspect-[4/5]",
+                  isFeatured &&
+                    (isAmbulance
+                      ? "ring-2 ring-[#ef4444]/35"
+                      : "ring-2 ring-primary/25"),
+                )}
+              >
+                <ResilientImage
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  priority={isFeatured}
+                  quality={NEXT_IMAGE_QUALITY.medium}
+                  className={cn(
+                    BRAND_PHOTO_CLASS,
+                    "transition-transform duration-700 group-hover:scale-[1.03]",
+                    img.imageClassName,
+                  )}
+                  sizes="(max-width: 640px) 28vw, (max-width: 1024px) 22vw, 200px"
+                  fallbackSrc={img.fallbackSrc}
+                />
+                <BrandImageOverlay variant="card" />
+                <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10" />
+
+                {img.label ? (
+                  <figcaption className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-[#111411]/80 via-[#111411]/35 to-transparent px-2 pb-2 pt-8 sm:px-2.5 sm:pb-2.5 sm:pt-10">
+                    <span
+                      className={cn(
+                        "block truncate text-center text-[9px] font-semibold tracking-[0.14em] uppercase sm:text-[10px]",
+                        isAmbulance ? "text-[#ffb4a8]" : "text-white",
+                      )}
+                    >
+                      {img.label}
+                    </span>
+                  </figcaption>
+                ) : null}
+              </div>
+            );
 
             return (
               <figure
@@ -113,40 +163,20 @@ export function SafetyImageCollage({
                   i === 1 ? "safety-float-delay" : "",
                 )}
               >
-                <div
-                  className={cn(
-                    "group relative overflow-hidden rounded-xl border border-white/70 shadow-[0_18px_44px_-26px_rgba(184,217,38,0.5)] ring-1 ring-primary/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_24px_52px_-24px_rgba(184,217,38,0.55)] sm:rounded-2xl",
-                    isFeatured
-                      ? "aspect-[3/4] origin-bottom scale-[1.05] sm:aspect-[4/5] sm:scale-[1.07] lg:scale-[1.08]"
-                      : "aspect-[3/4] sm:aspect-[4/5]",
-                    isFeatured && "ring-2 ring-primary/25",
-                  )}
-                >
-                  <ResilientImage
-                    src={img.src}
-                    alt={img.alt}
-                    fill
-                    priority={isFeatured}
-                    quality={NEXT_IMAGE_QUALITY.medium}
-                    className={cn(
-                      BRAND_PHOTO_CLASS,
-                      "transition-transform duration-700 group-hover:scale-[1.03]",
-                      img.imageClassName,
-                    )}
-                    sizes="(max-width: 640px) 28vw, (max-width: 1024px) 22vw, 200px"
-                    fallbackSrc={img.fallbackSrc}
-                  />
-                  <BrandImageOverlay variant="card" />
-                  <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10" />
-
-                  {img.label ? (
-                    <figcaption className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-[#111411]/80 via-[#111411]/35 to-transparent px-2 pb-2 pt-8 sm:px-2.5 sm:pb-2.5 sm:pt-10">
-                      <span className="block truncate text-center text-[9px] font-semibold tracking-[0.14em] text-white uppercase sm:text-[10px]">
-                        {img.label}
-                      </span>
-                    </figcaption>
-                  ) : null}
-                </div>
+                {img.href ? (
+                  <button
+                    type="button"
+                    aria-label={img.alt}
+                    className="block w-full cursor-pointer text-left"
+                    onClick={() =>
+                      router.push(getProtectedPath(img.href!))
+                    }
+                  >
+                    {tile}
+                  </button>
+                ) : (
+                  tile
+                )}
               </figure>
             );
           })}
@@ -252,7 +282,7 @@ export function SafetyWayForward({
       />
       <div className="wavego-luxury-grid absolute inset-0 opacity-20" aria-hidden />
       <div className="relative">
-        <ShieldCheck className="h-9 w-9 text-secondary" strokeWidth={1.5} />
+        <ShieldCheck className="h-9 w-9 text-white" strokeWidth={1.5} />
         <h2 className="mt-4 font-heading text-2xl font-light tracking-tight text-white sm:text-3xl lg:text-4xl">
           {title}
         </h2>
@@ -261,10 +291,10 @@ export function SafetyWayForward({
         </p>
         <Link
           href={getProtectedPath(href)}
-          className="mt-7 inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-2.5 text-xs font-semibold tracking-[0.14em] uppercase text-white backdrop-blur-sm transition-all hover:border-white/35 hover:bg-white/15 sm:text-sm"
+          className="mt-7 inline-flex items-center gap-2 rounded-xl border border-white/40 bg-white/15 px-5 py-2.5 text-xs font-semibold tracking-[0.14em] uppercase text-white shadow-[0_10px_24px_-16px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-all hover:border-white/55 hover:bg-white/25 hover:text-white sm:text-sm"
         >
           {linkLabel}
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4 text-white" />
         </Link>
       </div>
     </div>
@@ -281,7 +311,7 @@ export function SafetyFaqAccordion({
   limit?: number;
 }) {
   const list = limit ? items.slice(0, limit) : items;
-  const [openId, setOpenId] = useState<string | null>(list[0]?.id ?? null);
+  const [openId, setOpenId] = useState<string | null>(null);
   const reduceMotion = useReducedMotion();
 
   return (

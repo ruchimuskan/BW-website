@@ -2,10 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { AuthSession } from "@/lib/auth-session";
-import { getAuthSession } from "@/lib/auth-session";
+import { getEmailValidationError } from "@/lib/auth-validation";
+import { getAuthSession, isPlaceholderDisplayName } from "@/lib/auth-session";
 import { getProfile, type Profile } from "@/lib/profile-api";
-
-const DEFAULT_RATING = 4.9;
 
 export interface AuthUserDisplay {
   name: string;
@@ -18,11 +17,11 @@ export interface AuthUserDisplay {
 }
 
 const DEFAULT_USER: AuthUserDisplay = {
-  name: "BW Rides User",
+  name: "",
   phone: "",
-  email: "Add email",
+  email: "",
   initial: "?",
-  rating: DEFAULT_RATING,
+  rating: 0,
   isLoading: true,
 };
 
@@ -37,23 +36,30 @@ export function getNameInitial(name: string): string {
 }
 
 export function getDisplayName(session: Pick<AuthSession, "name">): string {
-  const name = session.name?.trim();
-  return name || "BW Rides User";
+  const name = session.name?.trim() || "";
+  return isPlaceholderDisplayName(name) ? "" : name;
 }
 
 export function sessionToUserDisplay(
   session: AuthSession,
   profile?: Profile | null
 ): AuthUserDisplay {
-  const name = profile?.full_name?.trim() || getDisplayName(session);
-  const email = profile?.email?.trim() || session.email?.trim();
+  const rawName = profile?.full_name?.trim() || getDisplayName(session);
+  const name = isPlaceholderDisplayName(rawName) ? "" : rawName;
+  const rawEmail = profile?.email?.trim() || session.email?.trim() || "";
+  const emailOk =
+    rawEmail &&
+    getEmailValidationError(rawEmail, {
+      required: true,
+      fullName: name,
+    }) === null;
 
   return {
     name,
     phone: profile?.phone || session.phone,
-    email: email || "Add email",
+    email: emailOk ? rawEmail : "",
     initial: getNameInitial(name),
-    rating: profile?.rating_avg ?? DEFAULT_RATING,
+    rating: typeof profile?.rating_avg === "number" ? profile.rating_avg : 0,
     profileImageUrl: profile?.profile_image_url,
     isLoading: false,
   };
@@ -65,7 +71,7 @@ export function useAuthUser(): AuthUserDisplay {
   const sync = useCallback(async () => {
     const session = getAuthSession();
     if (!session?.accessToken) {
-      setUser(session ? { ...sessionToUserDisplay(session), isLoading: false } : { ...DEFAULT_USER, isLoading: false });
+      setUser({ ...DEFAULT_USER, isLoading: false, name: "" });
       return;
     }
 

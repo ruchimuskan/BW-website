@@ -19,7 +19,8 @@ export function isProductionEnv(): boolean {
   return getAppEnvironment() === "production";
 }
 
-/** Demo hubs, mock trips, and hardcoded rental SKUs — dev/staging only. */
+/** Demo OTP / mock SKUs — off unless explicitly enabled (never in production). */
 export function allowDemoDataFallbacks(): boolean {
-  return !isProductionEnv();
+  if (isProductionEnv()) return false;
+  return process.env.NEXT_PUBLIC_ALLOW_DEMO_OTP === "1";
 }

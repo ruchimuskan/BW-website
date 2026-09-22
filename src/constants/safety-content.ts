@@ -44,18 +44,25 @@ const safetyCollageCaptain = {
 
 export const safetyHeroImages = [
   {
-    src: BRAND_PHOTOS.streetCab,
-    alt: "BW Rides customer in a street cab",
+    src: "/images/services/cab-lime.png",
+    alt: "BW Rides premium street cab",
     label: "Street Cab",
+    fallbackSrc: BRAND_PHOTOS.streetCab,
+  },
+  {
+    src: "/images/services/ambulance-studio.png",
+    alt: "BW Rides ambulance — book free",
+    label: "Ambulance",
+    featured: true,
+    href: ROUTES.ambulanceBook,
+    fallbackSrc: BRAND_PHOTOS.ambulance,
   },
   {
     src: BRAND_PHOTOS.studioBike,
-    alt: "BW Rides rider on a bike taxi",
+    alt: "BW Rides bike taxi",
     label: "Bike Taxi",
-    featured: true,
     fallbackSrc: "/images/pic-14.png",
   },
-  safetyCollageCaptain,
 ] as const;
 
 export const coversEveryoneCards = [

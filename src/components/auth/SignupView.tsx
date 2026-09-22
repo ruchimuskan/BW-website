@@ -9,12 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthFormCard } from "@/components/auth/AuthFormCard";
+import { AuthPageShell } from "@/components/auth/AuthPageShell";
 import { CountryCodeSelector } from "@/components/auth/CountryCodeSelector";
-import { LoginSceneDecor } from "@/components/auth/LoginSceneDecor";
 import { LoginServicesPanel } from "@/components/auth/LoginServicesPanel";
 import { ROUTES } from "@/constants/routes";
 import { setPendingOtpPhone } from "@/lib/auth-session";
 import { sendSignupOtp } from "@/lib/auth-api";
+import { checkEmailMailbox } from "@/lib/email-verify-api";
 import {
   defaultCountry,
   formatPhoneDisplay,
@@ -96,7 +97,10 @@ export function SignupView() {
       next.phone = "Please enter a valid phone number";
     }
 
-    const emailError = getEmailValidationError(email);
+    const emailError = getEmailValidationError(email, {
+      required: true,
+      fullName,
+    });
     if (emailError) next.email = emailError;
 
     const passwordError = getPasswordValidationError(password);
@@ -128,11 +132,12 @@ export function SignupView() {
     setIsSubmitting(true);
 
     try {
+      await checkEmailMailbox(email, fullName.trim());
       const result = await sendSignupOtp({
         dial_code: country.dialCode,
         phone: mobileNumber,
         full_name: fullName.trim(),
-        email: email.trim() || undefined,
+        email: email.trim().toLowerCase(),
         password,
         confirm_password: confirmPassword,
         terms_agreed: termsAgreed,
@@ -165,20 +170,14 @@ export function SignupView() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35, ease: easeOut }}
-      className="relative min-h-[100dvh] overflow-x-hidden overflow-y-auto font-sans"
+      className="flex min-h-[100dvh] w-full flex-1 flex-col"
     >
-      <LoginSceneDecor />
-
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-stretch justify-center gap-4 px-3 py-4 sm:px-5 sm:py-5 lg:min-h-[100dvh] lg:flex-row lg:items-center lg:gap-7 lg:px-8 lg:py-6 xl:gap-10">
-        <aside className="hidden min-h-0 w-full max-h-[min(88dvh,52rem)] flex-1 lg:flex lg:max-w-[52%]">
-          <LoginServicesPanel compact className="w-full" />
-        </aside>
-
+      <AuthPageShell aside={<LoginServicesPanel compact className="w-full" />}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...transitions.reveal, delay: 0.05 }}
-          className="mx-auto flex w-full max-w-[420px] flex-col justify-center lg:mx-0 lg:max-w-[430px] lg:flex-none xl:max-w-[450px]"
+          className="w-full min-w-0"
         >
           <AuthFormCard
             title="Join BW Rides"
@@ -248,7 +247,7 @@ export function SignupView() {
                     }}
                     size="default"
                     showDialCode
-                    className="h-10 max-w-[7.5rem] rounded-xl border-[#d7e0c0] bg-[#fbfcf6] px-2 shadow-sm sm:h-11 sm:max-w-none sm:rounded-2xl sm:px-2.5"
+                    className="h-10 max-w-[6.75rem] rounded-xl border-[#d7e0c0] bg-[#fbfcf6] px-2 shadow-sm sm:h-11 sm:max-w-none sm:rounded-2xl sm:px-2.5"
                   />
                     <Input
                       id="phone"
@@ -282,7 +281,7 @@ export function SignupView() {
 
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="email" className="text-xs font-semibold text-[#38471B] sm:text-sm">
-                    Email <span className="font-normal text-muted-foreground">(optional)</span>
+                    Email
                   </Label>
                   <div className="relative">
                     <Mail className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#5a6330]/70 sm:h-4 sm:w-4" />
@@ -290,7 +289,7 @@ export function SignupView() {
                       id="email"
                       type="email"
                       autoComplete="email"
-                      placeholder="name@email.com"
+                      placeholder="you@gmail.com"
                       value={email}
                       onChange={(e) => {
                         setEmail(e.target.value);
@@ -492,7 +491,7 @@ export function SignupView() {
             </form>
           </AuthFormCard>
         </motion.div>
-      </div>
+      </AuthPageShell>
     </motion.div>
   );
 }

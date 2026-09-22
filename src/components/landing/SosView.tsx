@@ -80,16 +80,18 @@ export function SosView() {
                 className="mt-4 font-heading text-[2rem] font-light leading-[1.15] tracking-tight sm:text-5xl bw-title"
               >
                 Need help fast?
-                <span className="mt-1 block font-semibold text-destructive">
-                  Choose & book ambulance for free.
+                <span className="mt-1 block font-semibold text-[#111411]">
+                  Choose & book{" "}
+                  <span className="text-destructive">Ambulance</span> for free.
                 </span>
               </h1>
             </AnimateIn>
             <AnimateIn delay={0.12}>
               <p className="mt-5 max-w-lg text-sm font-light leading-relaxed text-[#4a5228] sm:text-lg">
-                When every second counts, BW Rides helps you choose and book
-                ambulance for free — with verified medical transport, live ETA,
-                and family updates.
+                When every second counts, BW Rides helps you choose and book{" "}
+                <span className="font-semibold text-destructive">Ambulance</span>{" "}
+                for free — with verified medical transport, live ETA, and family
+                updates.
               </p>
             </AnimateIn>
             <AnimateIn delay={0.18}>
@@ -117,7 +119,7 @@ export function SosView() {
                       "h-12 w-full bg-destructive px-8 font-semibold text-white hover:bg-destructive/90 sm:w-auto",
                     )}
                   >
-                    Book ambulance for free
+                    Book Ambulance for free
                   </Link>
                 </motion.div>
                 <Link

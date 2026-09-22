@@ -29,45 +29,83 @@ import {
 import { getProtectedPath } from "@/lib/auth-session";
 import { cn } from "@/lib/utils";
 
+/** Brand-consistent Ambulance mark — always capitalized, red only on the word. */
+function AmbulanceWord({ className }: { className?: string }) {
+  return (
+    <span className={cn("font-semibold text-[#c62828]", className)}>
+      Ambulance
+    </span>
+  );
+}
+
 const differentiators = [
   {
     icon: Gauge,
     title: "Faster through the city",
-    description:
-      "Captains who know peak-hour routes — so you reach on time, not eventually.",
+    description: (
+      <>
+        Captains who know peak-hour routes — so you reach on time, not
+        eventually.
+      </>
+    ),
   },
   {
     icon: Package,
     title: "Parcels, handled with care",
-    description:
-      "Same-city deliveries with live tracking and secure handoffs from pickup to door.",
+    description: (
+      <>
+        Same-city deliveries with live tracking and secure handoffs from pickup
+        to door.
+      </>
+    ),
   },
   {
     icon: Ambulance,
     title: "SOS when seconds matter",
-    description:
-      "Verified medical transport — choose and book ambulance for free in the same app.",
+    isAmbulance: true,
+    description: (
+      <>
+        Verified medical transport — choose and book <AmbulanceWord /> for free
+        in the same app.
+      </>
+    ),
   },
   {
     icon: ShieldCheck,
     title: "Safety, by design",
-    description:
-      "Verified captains, trip sharing, and transparent fares you see before you ride.",
+    description: (
+      <>
+        Verified captains, trip sharing, and transparent fares you see before
+        you ride.
+      </>
+    ),
   },
 ] as const;
 
 const missionPoints = [
   {
     title: "Rides for every moment",
-    body: "Bike, auto, and cab options with live tracking and clear fares.",
+    body: (
+      <>Bike, auto, and cab options with live tracking and clear fares.</>
+    ),
   },
   {
     title: "Built for Indian cities",
-    body: "Dense coverage, late-night reliability, and routes that match how people really move.",
+    body: (
+      <>
+        Dense coverage, late-night reliability, and routes that match how people
+        really move.
+      </>
+    ),
   },
   {
     title: "One app, full care",
-    body: "Parcels and emergency ambulance sit beside everyday rides — no switching apps.",
+    body: (
+      <>
+        Parcels and emergency <AmbulanceWord /> sit beside everyday rides — no
+        switching apps.
+      </>
+    ),
   },
 ] as const;
 
@@ -196,28 +234,30 @@ export function AboutUsView() {
             <AnimateIn delay={0.1}>
               <p className="mt-3 max-w-md text-sm font-light leading-relaxed text-[#4a5228] sm:mt-4 sm:text-base">
                 We are not an option — we are a choice. Millions of riders trust
-                BW Rides for safe, transparently priced journeys from bike
-                to emergency ambulance.
+                BW Rides for safe, transparently priced journeys from bike to
+                emergency <AmbulanceWord />.
               </p>
             </AnimateIn>
 
             <AnimateIn delay={0.14}>
-              <div className="mt-6 flex w-full max-w-md flex-col gap-3 sm:mt-7 sm:flex-row sm:items-center">
+              <div className="mt-6 flex w-full max-w-lg flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
                 <GlowButton
-                  className="w-full sm:w-auto"
+                  className="w-full min-w-[11rem] shadow-[0_14px_32px_-14px_rgba(184,217,38,0.75)] sm:w-auto"
                   onClick={() => router.push(`${ROUTES.landing}#book`)}
                 >
                   Book a ride
-                  <span aria-hidden>→</span>
+                  <span aria-hidden className="ml-1">
+                    →
+                  </span>
                 </GlowButton>
                 <GlowButton
                   tone="outline"
-                  className="w-full sm:w-auto"
+                  className="w-full min-w-[13rem] border-[#ef4444]/45 text-[#c62828] hover:border-[#c62828] hover:bg-[#fff5f4] sm:w-auto"
                   onClick={() =>
                     router.push(getProtectedPath(ROUTES.ambulanceBook))
                   }
                 >
-                  Book ambulance for free
+                  Book <AmbulanceWord /> for free
                 </GlowButton>
               </div>
             </AnimateIn>
@@ -356,6 +396,8 @@ export function AboutUsView() {
           <Stagger className="mt-8 grid grid-cols-1 gap-3.5 min-[520px]:grid-cols-2 sm:mt-10 sm:gap-4 lg:grid-cols-4">
             {differentiators.map((item, index) => {
               const Icon = item.icon;
+              const isAmbulanceCard =
+                "isAmbulance" in item && item.isAmbulance === true;
               return (
                 <StaggerItem key={item.title} index={index}>
                   <motion.article
@@ -364,12 +406,29 @@ export function AboutUsView() {
                         ? undefined
                         : { y: -4, transition: { duration: 0.2 } }
                     }
-                    className="group h-full rounded-2xl border border-[#eef5d4] bg-white p-5 shadow-sm transition hover:border-[#C8E84A]/40 hover:shadow-[0_18px_40px_-24px_rgba(184,217,38,0.4)] sm:p-6"
+                    className={cn(
+                      "group h-full rounded-2xl border bg-white p-5 shadow-sm transition sm:p-6",
+                      isAmbulanceCard
+                        ? "border-[#f0c7c2] hover:border-[#ef4444]/45 hover:shadow-[0_18px_40px_-24px_rgba(198,40,40,0.35)]"
+                        : "border-[#eef5d4] hover:border-[#C8E84A]/40 hover:shadow-[0_18px_40px_-24px_rgba(184,217,38,0.4)]",
+                    )}
                   >
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#dce8a8] bg-[#ffffff] text-[#38471B] transition group-hover:border-[#B8D926] group-hover:bg-[#B8D926] group-hover:text-[#1F2A10]">
+                    <div
+                      className={cn(
+                        "flex h-11 w-11 items-center justify-center rounded-xl border transition",
+                        isAmbulanceCard
+                          ? "border-[#f0c7c2] bg-[#fff8f7] text-[#c62828] group-hover:border-[#c62828] group-hover:bg-[#c62828] group-hover:text-white"
+                          : "border-[#dce8a8] bg-[#ffffff] text-[#38471B] group-hover:border-[#B8D926] group-hover:bg-[#B8D926] group-hover:text-[#1F2A10]",
+                      )}
+                    >
                       <Icon className="h-5 w-5" strokeWidth={1.8} />
                     </div>
-                    <span className="mt-4 block font-heading text-xs tracking-[0.16em] text-[#6B7344]">
+                    <span
+                      className={cn(
+                        "mt-4 block font-heading text-xs tracking-[0.16em]",
+                        isAmbulanceCard ? "text-[#c62828]/80" : "text-[#6B7344]",
+                      )}
+                    >
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <h3 className="mt-1.5 font-heading text-base font-semibold tracking-tight text-[#38471B] sm:text-lg">
@@ -416,7 +475,7 @@ export function AboutUsView() {
             <div className="mt-7 flex w-full max-w-md flex-col items-stretch gap-3 sm:mt-8 sm:max-w-none sm:flex-row sm:justify-center">
               <GlowButton
                 tone="light"
-                className="px-8"
+                className="px-8 shadow-[0_14px_32px_-14px_rgba(255,255,255,0.45)]"
                 onClick={() => router.push(ROUTES.captains)}
               >
                 Become a captain
@@ -427,7 +486,9 @@ export function AboutUsView() {
                 onClick={() => router.push(ROUTES.corporateRegister)}
               >
                 BW Rides Business
-                <span aria-hidden>→</span>
+                <span aria-hidden className="ml-1">
+                  →
+                </span>
               </GlowButton>
             </div>
           </AnimateIn>

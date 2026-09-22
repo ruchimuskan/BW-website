@@ -77,12 +77,13 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
               <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row">
                 <Button
                   size="lg"
-                  className="h-12 rounded-xl px-7 font-semibold shadow-[0_14px_32px_-18px_rgba(184,217,38,0.55)]"
+                  className="h-12 rounded-xl border border-[#f0c7c2] bg-white px-7 font-semibold text-[#111411] shadow-[0_14px_32px_-18px_rgba(185,28,28,0.28)] hover:bg-[#fff5f3]"
                   onClick={() =>
                     router.push(getProtectedPath(ROUTES.ambulanceBook))
                   }
                 >
-                  Book ambulance for free
+                  Book{" "}
+                  <span className="text-[#c62828]">Ambulance</span> for free
                 </Button>
                 <Button
                   size="lg"
@@ -231,7 +232,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
                   aria-hidden
                   className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_0%_0%,rgba(200,232,74,0.28),transparent_60%)]"
                 />
-                <p className="text-[10px] font-semibold tracking-[0.24em] uppercase text-secondary">
+                <p className="text-[10px] font-semibold tracking-[0.24em] uppercase text-primary">
                   Core measures
                 </p>
                 <h2
@@ -306,10 +307,10 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
           <AnimateIn className="mt-8 text-center">
             <Link
               href={getProtectedPath(ROUTES.profileHelp)}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-colors hover:text-secondary"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#38471B] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_-18px_rgba(56,71,27,0.45)] transition-colors hover:bg-[#2f3c17] hover:text-white"
             >
               Visit help center
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4 text-white" />
             </Link>
           </AnimateIn>
         </div>

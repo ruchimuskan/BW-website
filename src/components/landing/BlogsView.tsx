@@ -9,7 +9,7 @@ import { MarketingPageShell } from "@/components/landing/MarketingPageShell";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
 import { BRAND_PHOTOS } from "@/constants/brand-images";
-import { blogCategories, blogPosts, type BlogCategory } from "@/data/blogs";
+import { blogCategories, blogPosts as defaultBlogPosts, type BlogCategory, type BlogPost } from "@/data/blogs";
 import { ROUTES } from "@/constants/routes";
 import { blogPostPath } from "@/lib/blog-routes";
 import { cn } from "@/lib/utils";
@@ -22,15 +22,15 @@ function formatDate(iso: string) {
   });
 }
 
-export function BlogsView() {
+export function BlogsView({ posts = defaultBlogPosts }: { posts?: BlogPost[] }) {
   const [activeCategory, setActiveCategory] = useState<BlogCategory | "All">(
     "All",
   );
 
   const filteredPosts = useMemo(() => {
-    if (activeCategory === "All") return blogPosts;
-    return blogPosts.filter((post) => post.category === activeCategory);
-  }, [activeCategory]);
+    if (activeCategory === "All") return posts;
+    return posts.filter((post) => post.category === activeCategory);
+  }, [activeCategory, posts]);
 
   return (
     <MarketingPageShell>

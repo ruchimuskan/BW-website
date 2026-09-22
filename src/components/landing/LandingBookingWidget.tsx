@@ -95,6 +95,8 @@ export interface LandingBookingWidgetProps {
   pickup: string;
   dropoff: string;
   dropoffEmptyLabel: string;
+  /** Shown when pickup is empty (e.g. while detecting GPS). */
+  pickupEmptyLabel?: string;
   ctaLabel: string;
   onOpenLocation: (field: LocationFieldType) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -170,6 +172,7 @@ export function LandingBookingWidget({
   pickup,
   dropoff,
   dropoffEmptyLabel,
+  pickupEmptyLabel = "Current location",
   ctaLabel,
   onOpenLocation,
   onSubmit,
@@ -313,7 +316,7 @@ export function LandingBookingWidget({
           <LocationFieldButton
             label="Pickup"
             value={pickup}
-            placeholder="Enter your location"
+            placeholder={pickupEmptyLabel}
             icon={Navigation2}
             onClick={() => onOpenLocation("pickup")}
           />

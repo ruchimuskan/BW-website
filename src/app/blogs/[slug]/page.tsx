@@ -2,22 +2,23 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogArticleView } from "@/components/landing/BlogArticleView";
 import { absoluteUrl, SITE_BRAND } from "@/constants/seo";
-import { getBlogPost, blogPosts } from "@/data/blogs";
+import { fetchBlogPost, fetchBlogPosts } from "@/lib/blog-api";
 import { pageMetadata } from "@/lib/page-metadata";
 
 interface BlogArticlePageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }));
+export async function generateStaticParams() {
+  const posts = await fetchBlogPosts();
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: BlogArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await fetchBlogPost(slug);
 
   if (!post) {
     return pageMetadata({
@@ -42,7 +43,7 @@ export async function generateMetadata({
 
 export default async function BlogArticlePage({ params }: BlogArticlePageProps) {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await fetchBlogPost(slug);
 
   if (!post) {
     notFound();

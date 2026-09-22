@@ -34,7 +34,7 @@ export function AuthFormCard({
   return (
     <div
       className={cn(
-        "relative flex w-full min-h-0 flex-col overflow-hidden rounded-[22px] border border-[#dfe4d4] bg-white/95 shadow-[0_28px_64px_-34px_rgba(17,20,17,0.42)] backdrop-blur-sm sm:rounded-[26px]",
+        "relative flex w-full min-h-0 flex-col overflow-visible rounded-2xl border border-[#dfe4d4] bg-white/95 shadow-[0_24px_56px_-32px_rgba(17,20,17,0.4)] backdrop-blur-sm sm:rounded-[26px]",
         className,
       )}
     >
@@ -53,7 +53,7 @@ export function AuthFormCard({
 
       <div
         className={cn(
-          "relative flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-5 lg:px-7 lg:py-6",
+          "relative flex min-h-0 flex-1 flex-col px-4 py-4 sm:px-6 sm:py-6 lg:px-7 lg:py-6",
           bodyClassName,
         )}
       >
@@ -72,10 +72,10 @@ export function AuthFormCard({
 
         <div className="mb-4 shrink-0 sm:mb-5">
           {eyebrow ? <div className="mb-2.5">{eyebrow}</div> : null}
-          <h1 className="font-heading text-[1.4rem] font-bold leading-tight tracking-tight text-[#111411] sm:text-[1.55rem] lg:text-[1.7rem]">
+          <h1 className="font-heading text-[1.35rem] font-bold leading-tight tracking-tight text-[#111411] sm:text-[1.55rem] lg:text-[1.7rem]">
             {title}
           </h1>
-          <p className="mt-1.5 max-w-[34ch] text-[12.5px] leading-relaxed text-[#5A6158] sm:text-[13.5px]">
+          <p className="mt-1.5 max-w-full text-pretty text-[12.5px] leading-relaxed text-[#5A6158] sm:max-w-[42ch] sm:text-[13.5px]">
             {subtitle}
           </p>
         </div>

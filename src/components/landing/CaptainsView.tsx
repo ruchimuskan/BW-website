@@ -206,37 +206,6 @@ export function CaptainsView() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="bw-responsive-section pb-14 sm:pb-20">
-        <AnimateIn className="bw-marketing-container relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#283614] via-[#38471B] to-[#4a5824] px-6 py-10 shadow-[0_28px_56px_-28px_rgba(32,42,16,0.55)] sm:rounded-3xl sm:px-10 sm:py-12">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-16 top-0 h-56 w-56 rounded-full bg-[#C6E31A]/15 blur-3xl"
-          />
-          <div className="relative max-w-xl">
-            <p className="text-[10px] font-semibold tracking-[0.22em] text-[#D4E88A]/85 uppercase">
-              Get started
-            </p>
-            <h2 className="mt-2 font-heading text-2xl font-semibold text-white sm:text-3xl">
-              Ready to partner?
-            </h2>
-            <p className="mt-3 text-sm font-light leading-relaxed text-white/75 sm:text-base">
-              Download the Captain app and start earning with transparent payouts
-              and 24×7 support.
-            </p>
-            <div className="mt-6">
-              <DownloadAppMenu
-                size="lg"
-                label="Get Captain App"
-                buttonClassName="h-12 bg-[#C6E31A] px-8 font-semibold text-[#111411] shadow-[0_12px_28px_-12px_rgba(0,0,0,0.35)] hover:bg-[#D4F04A]"
-                androidApkUrl={APP_DOWNLOAD.captainAndroidApkUrl}
-                iosUrl={APP_DOWNLOAD.captainIosAppStoreUrl}
-              />
-            </div>
-          </div>
-        </AnimateIn>
-      </section>
-
       <LandingFooter />
     </MarketingPageShell>
   );

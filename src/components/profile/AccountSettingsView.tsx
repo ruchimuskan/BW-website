@@ -185,7 +185,7 @@ export function AccountSettingsView() {
   const router = useRouter();
   const user = useAuthUser();
   const { language, setAppLanguage, t } = useAppLanguage();
-  const hasEmail = user.email !== "Add email";
+  const hasEmail = Boolean(user.email?.trim());
   const [languageOpen, setLanguageOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
@@ -226,7 +226,7 @@ export function AccountSettingsView() {
 
   const profileCompletion = useMemo(() => {
     let score = 0;
-    if (user.name && user.name !== "BW Rides User") score += 25;
+    if (user.name?.trim()) score += 25;
     if (user.phone) score += 25;
     if (hasEmail) score += 25;
     if (hasEmergencyContact) score += 25;
@@ -241,7 +241,7 @@ export function AccountSettingsView() {
     {
       id: "name",
       label: t("name"),
-      value: user.name,
+      value: user.name?.trim() || t("notSet"),
       status: null,
       route: null,
       action: null,

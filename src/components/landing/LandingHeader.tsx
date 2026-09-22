@@ -268,7 +268,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
 
             <DownloadAppMenu
               compact
-              className="inline-flex xl:hidden"
+              className="hidden min-[380px]:inline-flex xl:hidden"
               buttonClassName={downloadButtonClass}
             />
             <DownloadAppMenu

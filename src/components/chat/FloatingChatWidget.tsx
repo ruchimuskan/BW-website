@@ -26,9 +26,8 @@ import {
   type AiChatTopicQuestion,
 } from "@/lib/ai-chat-api";
 import {
-  chatFabLgOffsetClass,
-  chatFabOffsetClass,
-  isChatWidgetPath,
+  chatFabDockClass,
+  isChatHiddenPath,
 } from "@/lib/chat-widget";
 import { cn } from "@/lib/utils";
 
@@ -185,7 +184,6 @@ const LOADING_WELCOME: AiChatMessage = {
 
 export function FloatingChatWidget() {
   const pathname = usePathname() || "/";
-  const [showWidget, setShowWidget] = useState(false);
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -250,16 +248,30 @@ export function FloatingChatWidget() {
     }
   }, []);
 
-  useEffect(() => {
-    const allowed = isChatWidgetPath(pathname);
-    setShowWidget(allowed);
-    if (!allowed) setOpen(false);
-  }, [pathname]);
+  const hidden = isChatHiddenPath(pathname);
 
   useEffect(() => {
-    if (!showWidget) return;
+    if (hidden) setOpen(false);
+  }, [hidden]);
+
+  useEffect(() => {
+    if (!open || hidden) return;
+    if (window.matchMedia("(min-width: 1024px)").matches) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open, hidden]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowAssistHint(false), 9000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     void loadBootstrap();
-  }, [showWidget, loadBootstrap]);
+  }, [loadBootstrap]);
 
   useEffect(() => {
     const Recognition = getSpeechRecognitionCtor();
@@ -602,12 +614,8 @@ export function FloatingChatWidget() {
   const activeTopic = topics.find((t) => t.id === activeTopicId) ?? null;
   const followUps = activeTopic?.questions ?? [];
 
-  if (!showWidget) {
-    return null;
-  }
-
   return (
-    <>
+    <div className={cn(hidden && "hidden")} aria-hidden={hidden || undefined}>
       <AnimatePresence>
         {open ? (
           <motion.button
@@ -619,29 +627,40 @@ export function FloatingChatWidget() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={() => setOpen(false)}
-            className="pointer-events-auto fixed inset-0 z-[89] bg-black/35 lg:hidden"
+            className="pointer-events-auto fixed inset-0 z-[119] bg-[#111411]/40 backdrop-blur-[1px] lg:bg-black/20"
           />
         ) : null}
       </AnimatePresence>
 
       <div
         className={cn(
-          "pointer-events-none fixed z-[90] flex flex-col pr-[env(safe-area-inset-right)]",
+          "pointer-events-none fixed z-[120] flex flex-col",
           open
-            ? "inset-x-0 bottom-0 items-stretch gap-0 pb-[env(safe-area-inset-bottom)] lg:inset-x-auto lg:right-7 lg:items-end lg:gap-3 lg:pb-0"
-            : "right-3 items-end gap-2.5 sm:right-4 lg:right-7",
-          open ? chatFabLgOffsetClass(pathname) : chatFabOffsetClass(pathname),
+            ? "inset-x-0 bottom-0 max-w-none items-stretch gap-0 lg:inset-x-auto lg:bottom-8 lg:right-6 lg:max-w-[calc(100vw-1rem)] lg:items-end lg:gap-3"
+            : cn(
+                "items-end gap-2 max-w-[min(100vw-1.25rem,22rem)]",
+                chatFabDockClass(pathname),
+              ),
         )}
       >
         <AnimatePresence>
           {open ? (
             <motion.div
               key="panel"
-              initial={{ opacity: 0, y: 24, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 18, scale: 0.98 }}
+              role="dialog"
+              aria-label="Bullwave Assistant"
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-              className="pointer-events-auto flex min-h-0 max-h-[min(580px,calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-4.5rem))] w-full flex-col overflow-hidden rounded-t-[24px] border border-b-0 border-[#C6E31A]/35 bg-[#f7f9f0] shadow-[0_28px_64px_-18px_rgba(17,20,17,0.5)] lg:max-h-none lg:h-[min(580px,72dvh)] lg:w-[min(400px,calc(100vw-1.5rem))] lg:rounded-[28px] lg:border-b"
+              className={cn(
+                "pointer-events-auto flex min-h-0 w-full flex-col overflow-hidden",
+                "h-[min(88dvh,calc(100dvh-4.25rem))] rounded-t-[1.5rem] border border-b-0 border-[#C6E31A]/35 bg-[#f7f9f0]",
+                "shadow-[0_28px_64px_-18px_rgba(17,20,17,0.5)]",
+                "sm:h-[min(86dvh,620px)]",
+                "lg:mb-0 lg:mr-0 lg:h-[min(580px,72dvh)] lg:w-[min(400px,calc(100vw-2.5rem))] lg:rounded-[1.75rem] lg:border-b",
+                "lg:relative",
+              )}
             >
               <header className="relative overflow-hidden bg-[linear-gradient(160deg,#111411_0%,#1B3A22_48%,#2a4a28_100%)] px-4 py-3.5">
                 <div
@@ -791,7 +810,7 @@ export function FloatingChatWidget() {
                 ) : null}
               </div>
 
-              <div className="border-t border-[#e8eed8] bg-white/95 px-3 pt-2.5 backdrop-blur-sm">
+              <div className="border-t border-[#e8eed8] bg-white/95 px-3 pt-2.5 backdrop-blur-sm pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:pb-3">
                 {topics.length > 0 ? (
                   <div className="flex gap-1.5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     {topics.map((topic) => {
@@ -835,7 +854,7 @@ export function FloatingChatWidget() {
                     {voiceHint}
                   </p>
                 ) : null}
-                <form onSubmit={onSubmit} className="flex items-center gap-2 pb-3">
+                <form onSubmit={onSubmit} className="flex items-center gap-2 pb-1 lg:pb-0">
                   <div className="relative flex h-12 min-w-0 flex-1 items-center">
                     <input
                       ref={inputRef}
@@ -893,6 +912,18 @@ export function FloatingChatWidget() {
           ) : null}
         </AnimatePresence>
 
+        {!open ? (
+          <motion.button
+            type="button"
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            onClick={() => setOpen(true)}
+            className="pointer-events-auto max-w-[min(13rem,calc(100vw-5.5rem))] rounded-2xl rounded-br-md border border-[#C6E31A]/45 bg-white px-3 py-2 text-left text-[12px] font-semibold leading-snug text-[#111411] shadow-[0_12px_28px_-14px_rgba(17,20,17,0.45)] lg:hidden"
+          >
+            How can I help you?
+          </motion.button>
+        ) : null}
+
         {!open && showAssistHint ? (
           <motion.button
             type="button"
@@ -900,9 +931,9 @@ export function FloatingChatWidget() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 8 }}
             onClick={() => setOpen(true)}
-            className="pointer-events-auto mr-1 max-w-[11.5rem] rounded-2xl rounded-br-md border border-[#C6E31A]/45 bg-white px-3 py-2 text-left text-[12px] font-semibold leading-snug text-[#111411] shadow-[0_12px_28px_-14px_rgba(17,20,17,0.45)] sm:max-w-[13rem] sm:text-[13px]"
+            className="pointer-events-auto hidden max-w-[13rem] rounded-2xl rounded-br-md border border-[#C6E31A]/45 bg-white px-3 py-2 text-left text-[13px] font-semibold leading-snug text-[#111411] shadow-[0_12px_28px_-14px_rgba(17,20,17,0.45)] lg:block"
           >
-            How may I assist you?
+            How can I help you?
           </motion.button>
         ) : null}
 
@@ -917,8 +948,8 @@ export function FloatingChatWidget() {
             open
               ? { x: 0, y: 0 }
               : {
-                  x: [0, -5, 0, 5, 0, 0],
-                  y: [0, 0, -5, 0, 5, 0],
+                  x: [0, -4, 0, 4, 0, 0],
+                  y: [0, 0, -4, 0, 4, 0],
                 }
           }
           transition={
@@ -931,8 +962,9 @@ export function FloatingChatWidget() {
                 }
           }
           className={cn(
-            "pointer-events-auto relative flex h-[3.65rem] w-[3.65rem] items-center justify-center overflow-visible rounded-full text-white transition-shadow duration-300",
-            open && "max-lg:hidden",
+            "pointer-events-auto relative flex h-14 w-14 shrink-0 items-center justify-center overflow-visible rounded-full text-white transition-shadow duration-300",
+            "max-lg:h-12 max-lg:w-12",
+            open && "hidden lg:flex",
             open
               ? "border-2 border-[#C6E31A] bg-[#111411] shadow-[0_16px_32px_-10px_rgba(17,20,17,0.55)]"
               : "border-2 border-[#C6E31A]/70 bg-[linear-gradient(160deg,#111411_0%,#1B3A22_100%)] shadow-[0_16px_34px_-8px_rgba(17,20,17,0.6)]",
@@ -978,6 +1010,6 @@ export function FloatingChatWidget() {
           ) : null}
         </motion.button>
       </div>
-    </>
+    </div>
   );
 }

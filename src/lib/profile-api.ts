@@ -82,10 +82,47 @@ function parseAddressList(res: unknown): ProfileAddress[] {
 }
 
 export function getProfile(): Promise<Profile> {
-  return authFetch<Profile>("/profile", undefined, "Unable to load profile");
+  return authFetch<unknown>("/profile", undefined, "Unable to load profile").then(
+    parseProfile,
+  );
 }
 
-export function updateProfile(payload: {
+function parseProfile(res: unknown): Profile {
+  const body = unwrapApiData<unknown>(res);
+  const row =
+    asRecord(unwrapApiData(body)) ?? asRecord(body) ?? asRecord(res) ?? {};
+  const first = String(row.first_name ?? "").trim();
+  const last = String(row.last_name ?? "").trim();
+  const fullName = String(
+    row.full_name ?? row.name ?? `${first} ${last}`.trim(),
+  ).trim();
+  const emailRaw = String(row.email ?? "").trim();
+  const addresses = parseAddressList(row.addresses ?? res);
+  return {
+    id: String(row.id ?? ""),
+    phone: String(row.phone ?? ""),
+    full_name: fullName || null,
+    email: emailRaw || null,
+    profile_image_url: String(
+      row.profile_image_url ?? row.profile_photo ?? "",
+    ).trim() || null,
+    gender: String(row.gender ?? "").trim() || null,
+    emergency_contact_name:
+      String(row.emergency_contact_name ?? "").trim() || null,
+    emergency_contact_phone:
+      String(row.emergency_contact_phone ?? "").trim() || null,
+    default_pickup_address:
+      String(row.default_pickup_address ?? "").trim() || null,
+    referral_code: String(row.referral_code ?? "").trim() || null,
+    rating_avg:
+      typeof row.rating_avg === "number"
+        ? row.rating_avg
+        : Number(row.rating_avg) || 0,
+    addresses,
+  };
+}
+
+export async function updateProfile(payload: {
   full_name?: string;
   email?: string;
   gender?: string;
@@ -94,11 +131,23 @@ export function updateProfile(payload: {
   default_pickup_address?: string;
   referral_code?: string;
 }): Promise<Profile> {
-  return authFetch<Profile>(
-    "/profile",
-    { method: "PATCH", body: JSON.stringify(payload) },
-    "Unable to update profile"
-  );
+  const body = JSON.stringify(payload);
+  try {
+    await authFetch<unknown>(
+      "/profile",
+      { method: "PATCH", body },
+      "Unable to update profile",
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    if (!/405|method not allowed/i.test(message)) throw error;
+    await authFetch<unknown>(
+      "/profile",
+      { method: "PUT", body },
+      "Unable to update profile",
+    );
+  }
+  return getProfile();
 }
 
 export async function listAddresses(): Promise<ProfileAddress[]> {
@@ -205,6 +254,132 @@ export function deleteAddress(addressId: string): Promise<{ message: string }> {
     { method: "DELETE" },
     "Unable to delete place",
   );
+}
+
+/**
+ * Upsert the rider's live GPS place as a saved "Current location" on the backend
+ * (same profile addresses API used by Flutter for saved places).
+ */
+export async function syncCurrentLocationPlace(place: {
+  label: string;
+  latitude?: number;
+  longitude?: number;
+}): Promise<void> {
+  const latitude = place.latitude;
+  const longitude = place.longitude;
+  if (
+    typeof latitude !== "number" ||
+    typeof longitude !== "number" ||
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude)
+  ) {
+    return;
+  }
+
+  const address_line = (place.label || "Current location").trim() || "Current location";
+
+  try {
+    const existing = await listAddresses();
+    const match = existing.find((row) =>
+      /current\s*location/i.test(row.label),
+    );
+
+    if (match) {
+      const sameSpot =
+        match.latitude != null &&
+        match.longitude != null &&
+        Math.abs(match.latitude - latitude) < 0.0008 &&
+        Math.abs(match.longitude - longitude) < 0.0008 &&
+        match.address_line.trim() === address_line;
+      if (sameSpot) return;
+      if (match.id) {
+        await deleteAddress(match.id).catch(() => undefined);
+      }
+    }
+
+    await createAddress({
+      label: "Current location",
+      address_line,
+      latitude,
+      longitude,
+      is_default: true,
+      verified: true,
+    });
+
+    await updateProfile({ default_pickup_address: address_line }).catch(
+      () => undefined,
+    );
+  } catch {
+    // Auth / network failures must not block booking — GPS coords stay on the client.
+  }
+}
+
+/**
+ * Upsert the latest pickup/dropoff selection on the backend as a saved place
+ * so the location search screen can reload it next time.
+ */
+export async function rememberTripPlace(
+  place: {
+    label: string;
+    latitude?: number;
+    longitude?: number;
+  },
+  kind: "pickup" | "dropoff" | "stop",
+): Promise<void> {
+  const latitude = place.latitude;
+  const longitude = place.longitude;
+  const address_line = (place.label || "").trim();
+  if (
+    !address_line ||
+    typeof latitude !== "number" ||
+    typeof longitude !== "number" ||
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude)
+  ) {
+    return;
+  }
+
+  const label =
+    kind === "pickup"
+      ? "Recent pickup"
+      : kind === "dropoff"
+        ? "Recent dropoff"
+        : "Recent stop";
+
+  try {
+    const existing = await listAddresses();
+    const match = existing.find((row) =>
+      new RegExp(`^${label}$`, "i").test(row.label.trim()),
+    );
+    if (match?.id) {
+      await deleteAddress(match.id).catch(() => undefined);
+    }
+
+    // Also skip creating a duplicate of an already-saved exact address.
+    const duplicate = existing.find(
+      (row) =>
+        row.address_line.trim().toLowerCase() === address_line.toLowerCase() &&
+        !new RegExp(`^${label}$`, "i").test(row.label.trim()),
+    );
+    if (duplicate) return;
+
+    await createAddress({
+      label,
+      address_line,
+      latitude,
+      longitude,
+      is_default: kind === "pickup",
+      verified: true,
+    });
+
+    if (kind === "pickup") {
+      await updateProfile({ default_pickup_address: address_line }).catch(
+        () => undefined,
+      );
+    }
+  } catch {
+    // Guest / auth failures — keep trip coords on the client URL only.
+  }
 }
 
 export async function logoutAccount(): Promise<{ message: string }> {

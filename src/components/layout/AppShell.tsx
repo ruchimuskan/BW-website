@@ -57,7 +57,7 @@ export function AppShell({
           className={cn(
             "flex min-h-[100dvh] w-full min-w-0 flex-1 flex-col overflow-x-clip",
             showSidebar && "lg:pl-[280px]",
-            showBottomNav && "pb-[calc(5.5rem+env(safe-area-inset-bottom))] lg:pb-0",
+            showBottomNav && "pb-[calc(4.75rem+env(safe-area-inset-bottom))] lg:pb-0",
             className,
           )}
         >

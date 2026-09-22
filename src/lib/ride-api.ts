@@ -1,4 +1,5 @@
 import { apiFetch, authFetch } from "@/lib/api";
+import { getAuthSession } from "@/lib/auth-session";
 import { directionsQuery, type SelectedPlace } from "@/lib/places-api";
 import {
   stopsToApiPayload,
@@ -298,16 +299,21 @@ export async function getRideDirections(
 interface VehicleFareQuote {
   vehicle_type_id: string;
   name?: string;
+  slug?: string;
   estimated_fare: number;
   original_fare?: number | null;
   member_discount?: number;
   discount_percent?: number;
+  is_free?: boolean;
 }
 
 function parseFareQuotes(res: unknown): {
   discount_percent: number | null;
   distance_km?: number;
   duration_min?: number;
+  free_rides_remaining?: number | null;
+  free_rides_total?: number | null;
+  promo_message?: string | null;
   quotes: Record<string, VehicleFareQuote>;
 } {
   const body = unwrapApiData<Record<string, unknown>>(res);
@@ -326,18 +332,61 @@ function parseFareQuotes(res: unknown): {
     const id = String(item.vehicle_type_id ?? item.id ?? "").trim();
     const fare = Number(item.estimated_fare ?? item.fare ?? item.price ?? NaN);
     if (!id || !Number.isFinite(fare)) continue;
+
+    const componentOriginal =
+      Number(item.base_fare ?? 0) +
+      Number(item.distance_fare ?? 0) +
+      Number(item.time_fare ?? 0) +
+      Number(item.night_charges ?? 0) +
+      Number(item.peak_charges ?? 0) +
+      Number(item.tax_amount ?? 0) +
+      Number(item.platform_fee ?? 0);
+
+    let original =
+      item.original_fare == null ? null : Number(item.original_fare);
+    if (
+      (original == null || !Number.isFinite(original)) &&
+      Number.isFinite(componentOriginal) &&
+      componentOriginal > fare
+    ) {
+      original = componentOriginal;
+    }
+
+    const discountPercent = Number(item.discount_percent ?? 0);
+    const isFree =
+      item.is_free === true ||
+      fare <= 0 ||
+      discountPercent >= 100;
+
+    const slug =
+      typeof item.slug === "string"
+        ? item.slug
+        : typeof item.vehicle_type_slug === "string"
+          ? item.vehicle_type_slug
+          : undefined;
+    const name = typeof item.name === "string" ? item.name : undefined;
+
     const quote: VehicleFareQuote = {
       vehicle_type_id: id,
-      name: typeof item.name === "string" ? item.name : undefined,
+      name,
+      slug,
       estimated_fare: fare,
-      original_fare:
-        item.original_fare == null ? null : Number(item.original_fare),
+      original_fare: original,
       member_discount: Number(item.member_discount ?? 0),
-      discount_percent: Number(item.discount_percent ?? 0),
+      discount_percent: discountPercent,
+      is_free: isFree,
     };
     quotes[id.toLowerCase()] = quote;
-    if (quote.name) quotes[quote.name.toLowerCase()] = quote;
+    if (slug) quotes[slug.toLowerCase()] = quote;
+    if (name) quotes[name.toLowerCase()] = quote;
   }
+
+  const freeRemaining = Number(
+    body.free_rides_remaining ?? body.free_rides_left ?? NaN,
+  );
+  const freeTotal = Number(
+    body.free_rides_total ?? body.free_rides_limit ?? NaN,
+  );
 
   return {
     discount_percent:
@@ -346,6 +395,14 @@ function parseFareQuotes(res: unknown): {
       typeof body.distance_km === "number" ? body.distance_km : undefined,
     duration_min:
       typeof body.duration_min === "number" ? body.duration_min : undefined,
+    free_rides_remaining: Number.isFinite(freeRemaining) ? freeRemaining : null,
+    free_rides_total: Number.isFinite(freeTotal) ? freeTotal : null,
+    promo_message:
+      typeof body.promo_message === "string"
+        ? body.promo_message
+        : typeof body.message === "string" && /free/i.test(body.message)
+          ? body.message
+          : null,
     quotes,
   };
 }
@@ -364,6 +421,9 @@ export async function estimateRideFares(payload: {
   discount_percent: number | null;
   distance_km?: number;
   duration_min?: number;
+  free_rides_remaining?: number | null;
+  free_rides_total?: number | null;
+  promo_message?: string | null;
   quotes: Record<string, VehicleFareQuote>;
 }> {
   const stopsPayload = payload.stops ? stopsToApiPayload(payload.stops) : [];
@@ -371,6 +431,8 @@ export async function estimateRideFares(payload: {
     "/rides/estimate",
     {
       method: "POST",
+      // Guest fare browse on /book — do not fail when session is missing/expired.
+      skipAuth: !getAuthSession()?.accessToken,
       body: JSON.stringify({
         service_group: payload.service_group ?? "ride",
         pickup_lat: payload.pickup_lat,

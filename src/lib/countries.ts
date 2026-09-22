@@ -1,4 +1,11 @@
-export { countries, countryFlagEmoji, defaultCountry, findCountryByCode } from "@/data/countries";
+export {
+  countries,
+  countryFlagEmoji,
+  defaultCountry,
+  findCountryByCode,
+  findCountryByDialCode,
+  splitE164ByCountry,
+} from "@/data/countries";
 export type { Country } from "@/types/country";
 
 export {

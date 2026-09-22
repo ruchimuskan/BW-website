@@ -165,7 +165,7 @@ export async function searchPlaces(
 
   const raw = await apiFetch<unknown>(
     `/public/places/search?${params.toString()}`,
-    undefined,
+    { skipAuth: true, timeoutMs: 8_000, skipRetry: true },
     "Unable to search places",
   );
   const data = unwrapPayload<unknown>(raw);
@@ -188,7 +188,7 @@ export async function getPlaceDetails(placeId: string): Promise<PlaceSuggestion>
   const params = new URLSearchParams({ place_id: placeId });
   const raw = await apiFetch<unknown>(
     `/public/places/details?${params.toString()}`,
-    undefined,
+    { skipAuth: true, timeoutMs: 12_000 },
     "Unable to load place details",
   );
   const parsed = parseSuggestion(unwrapPayload(raw));
@@ -258,6 +258,7 @@ export async function resolveAddressCoords(
   return null;
 }
 
+/** Backend reverse-geocode (same contract as Flutter: GET /public/places/reverse). */
 export async function reverseGeocode(
   lat: number,
   lng: number,
@@ -270,18 +271,26 @@ export async function reverseGeocode(
   try {
     const data = unwrapPayload<{
       address?: string;
+      formatted_address?: string;
+      city?: string | null;
+      state?: string | null;
       latitude?: number;
       longitude?: number;
     }>(
       await apiFetch<unknown>(
         `/public/places/reverse?${params.toString()}`,
-        undefined,
+        { skipAuth: true, timeoutMs: 12_000 },
         "Unable to resolve location",
       ),
     );
 
+    const address =
+      data.address?.trim() ||
+      data.formatted_address?.trim() ||
+      [data.city, data.state].filter(Boolean).join(", ").trim();
+
     return {
-      label: data.address?.trim() || "Current location",
+      label: address || "Current location",
       latitude: toCoord(data.latitude) ?? lat,
       longitude: toCoord(data.longitude) ?? lng,
     };
@@ -292,6 +301,95 @@ export async function reverseGeocode(
       longitude: lng,
     };
   }
+}
+
+function readGpsPosition(
+  options: PositionOptions,
+): Promise<GeolocationPosition> {
+  return new Promise((resolve, reject) => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      reject(new Error("Geolocation unavailable"));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(resolve, reject, options);
+  });
+}
+
+/**
+ * App-style current location: high-accuracy device GPS, optional short refine,
+ * then address + coords from backend `/public/places/reverse`.
+ */
+export async function resolveCurrentGpsPlace(options?: {
+  timeoutMs?: number;
+  /** Wait briefly for a more accurate GPS fix (mobile-app style). */
+  refineMs?: number;
+  signal?: AbortSignal;
+}): Promise<SelectedPlace> {
+  const timeoutMs = options?.timeoutMs ?? 15_000;
+  const refineMs = options?.refineMs ?? 3_500;
+  const signal = options?.signal;
+
+  if (signal?.aborted) {
+    throw new DOMException("Aborted", "AbortError");
+  }
+  if (typeof navigator === "undefined" || !navigator.geolocation) {
+    throw new Error("Geolocation unavailable");
+  }
+
+  const geoOpts: PositionOptions = {
+    enableHighAccuracy: true,
+    timeout: timeoutMs,
+    maximumAge: 0,
+  };
+
+  let best = await readGpsPosition(geoOpts);
+  const accuracy = best.coords.accuracy;
+
+  if (
+    refineMs > 0 &&
+    Number.isFinite(accuracy) &&
+    accuracy > 40 &&
+    typeof navigator.geolocation.watchPosition === "function"
+  ) {
+    best = await new Promise<GeolocationPosition>((resolve) => {
+      let current = best;
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      let settled = false;
+      let watchId = 0;
+
+      const finish = (pos: GeolocationPosition) => {
+        if (settled) return;
+        settled = true;
+        if (timer != null) window.clearTimeout(timer);
+        if (watchId) navigator.geolocation.clearWatch(watchId);
+        resolve(pos);
+      };
+
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          if (
+            !Number.isFinite(current.coords.accuracy) ||
+            pos.coords.accuracy < current.coords.accuracy
+          ) {
+            current = pos;
+          }
+          if (pos.coords.accuracy <= 25) finish(current);
+        },
+        () => finish(current),
+        { enableHighAccuracy: true, maximumAge: 0, timeout: timeoutMs },
+      );
+
+      timer = setTimeout(() => finish(current), refineMs);
+
+      signal?.addEventListener("abort", () => finish(current), { once: true });
+    });
+  }
+
+  if (signal?.aborted) {
+    throw new DOMException("Aborted", "AbortError");
+  }
+
+  return reverseGeocode(best.coords.latitude, best.coords.longitude);
 }
 
 export function directionsQuery(place: SelectedPlace): string {
@@ -306,4 +404,43 @@ export function formatDistanceKm(km: number | null | undefined): string | null {
   if (km < 1) return `${Math.max(100, Math.round(km * 1000))} m away`;
   if (km < 10) return `${km.toFixed(1)} km away`;
   return `${Math.round(km)} km away`;
+}
+
+const SUGGESTION_SEEDS: Record<"pickup" | "dropoff" | "stop", string[]> = {
+  pickup: ["metro", "market"],
+  dropoff: ["metro", "mall", "hospital"],
+  stop: ["metro", "mall"],
+};
+
+/**
+ * Nearby dropoff/pickup suggestions from the public places search API,
+ * biased to the rider GPS / map pin (no dedicated /nearby endpoint).
+ */
+export async function fetchSuggestedPlaces(
+  field: "pickup" | "dropoff" | "stop",
+  bias?: PlaceSearchBias | null,
+): Promise<PlaceSuggestion[]> {
+  const seeds = SUGGESTION_SEEDS[field];
+  const biasPoint = bias ?? DEFAULT_PLACE_BIAS;
+
+  const batches = await Promise.all(
+    seeds.map((seed) =>
+      searchPlaces(seed, { limit: 5, bias: biasPoint }).catch(
+        () => [] as PlaceSuggestion[],
+      ),
+    ),
+  );
+
+  const merged: PlaceSuggestion[] = [];
+  const seen = new Set<string>();
+  for (const batch of batches) {
+    for (const place of batch) {
+      const key = place.id || `${place.name}|${place.address}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(place);
+    }
+  }
+
+  return rankByProximity(merged, biasPoint).slice(0, 8);
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { BlogsView } from "@/components/landing/BlogsView";
 import { SITE_LINK_PAGES } from "@/constants/seo";
+import { fetchBlogPosts } from "@/lib/blog-api";
 import { pageMetadata } from "@/lib/page-metadata";
 
 const page = SITE_LINK_PAGES.find((p) => p.path === "/blogs")!;
@@ -11,6 +12,7 @@ export const metadata: Metadata = pageMetadata({
   path: page.path,
 });
 
-export default function BlogsPage() {
-  return <BlogsView />;
+export default async function BlogsPage() {
+  const posts = await fetchBlogPosts();
+  return <BlogsView posts={posts} />;
 }

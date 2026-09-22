@@ -134,12 +134,16 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/:path*",
-        destination: `${backendUrl}/api/:path*`,
+        source: "/api/v1/:path*",
+        destination: `${backendUrl}/api/v1/:path*`,
       },
       {
         source: "/uploads/:path*",
         destination: `${backendUrl}/uploads/:path*`,
+      },
+      {
+        source: "/media/:path*",
+        destination: `${backendUrl}/api/v1/common/media/:path*`,
       },
     ];
   },

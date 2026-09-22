@@ -66,7 +66,7 @@ export function ServiceTile({
       whileTap={motionEnabled ? { scale: 0.985 } : undefined}
       onClick={onClick}
       className={cn(
-        "group relative flex h-full w-full flex-col overflow-hidden rounded-2xl text-left",
+        "group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl text-left",
         "border shadow-[0_18px_40px_-30px_rgba(40,54,20,0.55)] transition-all duration-300",
         "hover:shadow-[0_26px_52px_-26px_rgba(184,217,38,0.5)]",
         isAmbulance
@@ -84,13 +84,13 @@ export function ServiceTile({
         )}
       />
 
-      {/* Mobile: compact row · sm+: stacked portrait card */}
-      <div className="flex flex-1 items-stretch gap-0 sm:flex-col">
+      {/* Mobile: full-width row · sm+: stacked portrait card */}
+      <div className="flex min-w-0 flex-1 items-stretch gap-0 sm:flex-col">
         {/* Vehicle stage — fluid on every breakpoint */}
         <div
           className={cn(
             "relative isolate flex shrink-0 items-center justify-center overflow-hidden",
-            "h-24 w-24 min-[380px]:h-[6.5rem] min-[380px]:w-[6.5rem]",
+            "h-[5.75rem] w-[5.75rem] min-[380px]:h-24 min-[380px]:w-24",
             "sm:h-auto sm:w-full sm:aspect-[16/10] md:aspect-[16/11]",
             isAmbulance
               ? "bg-gradient-to-b from-[#fff0ec] to-[#fff8f6]"
@@ -175,12 +175,12 @@ export function ServiceTile({
         </div>
 
         {/* Copy */}
-        <div className="flex min-w-0 flex-1 flex-col justify-center px-3.5 py-3.5 sm:px-4 sm:pb-4 sm:pt-2">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
+        <div className="flex min-w-0 flex-1 flex-col justify-center px-3 py-3 sm:px-4 sm:pb-4 sm:pt-2">
+          <div className="flex min-w-0 items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
               <h3
                 className={cn(
-                  "font-heading text-[0.95rem] font-semibold tracking-tight sm:text-[1.05rem]",
+                  "truncate font-heading text-[0.95rem] font-semibold tracking-tight sm:text-[1.05rem]",
                   isAmbulance
                     ? "text-destructive"
                     : "text-[#38471B] group-hover:text-[#B8D926]",
@@ -188,7 +188,7 @@ export function ServiceTile({
               >
                 {name}
               </h3>
-              <p className="mt-1 line-clamp-2 text-[12px] font-light leading-relaxed text-[#5a6330] sm:text-[13px]">
+              <p className="mt-1 line-clamp-2 break-words text-[12px] font-light leading-relaxed text-[#5a6330] sm:text-[13px]">
                 {description}
               </p>
             </div>

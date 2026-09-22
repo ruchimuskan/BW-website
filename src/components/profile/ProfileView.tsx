@@ -93,16 +93,16 @@ export function ProfileView() {
         <button
           type="button"
           onClick={() => router.push(ROUTES.profileSubscription)}
-          className="mb-6 flex w-full items-center gap-4 rounded-2xl bg-gradient-to-br from-[#38471B] via-[#B8D926] to-[#C8E84A] p-5 text-left text-white shadow-[0_20px_44px_-22px_rgba(40,54,20,0.55)] transition hover:brightness-105"
+          className="mb-6 flex w-full min-w-0 items-center gap-3 rounded-2xl bg-gradient-to-br from-[#38471B] via-[#B8D926] to-[#C8E84A] p-4 text-left text-white shadow-[0_20px_44px_-22px_rgba(40,54,20,0.55)] transition hover:brightness-105 sm:gap-4 sm:p-5"
         >
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-white/15">
-            <Crown className="h-7 w-7" />
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-white/15 sm:h-14 sm:w-14">
+            <Crown className="h-5 w-5 sm:h-7 sm:w-7" />
           </div>
           <div className="flex min-w-0 flex-1 flex-col">
-            <h3 className="font-heading text-lg font-semibold">
+            <h3 className="font-heading text-base font-semibold leading-snug sm:text-lg">
               {isFreePlan ? "Upgrade to BW Rides Plus" : `${activePlanName} Member`}
             </h3>
-            <p className="text-sm font-light text-white/85">
+            <p className="text-xs font-light text-white/85 sm:text-sm">
               {isFreePlan ? "Priority rides, ride discounts & more" : activePlanBenefit}
             </p>
           </div>

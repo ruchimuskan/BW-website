@@ -20,8 +20,8 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-primary/10 bg-white/95 px-3 pt-2 shadow-[0_-8px_30px_-18px_rgba(40,54,20,0.35)] backdrop-blur-md supports-[backdrop-filter]:bg-white/88 lg:hidden"
-      style={{ paddingBottom: "max(0.65rem, env(safe-area-inset-bottom))" }}
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-primary/10 bg-white/95 px-2 pt-1 shadow-[0_-8px_30px_-18px_rgba(40,54,20,0.35)] backdrop-blur-md supports-[backdrop-filter]:bg-white/88 sm:px-3 sm:pt-2 lg:hidden"
+      style={{ paddingBottom: "max(0.4rem, env(safe-area-inset-bottom))" }}
     >
       <div className="mx-auto flex w-full max-w-lg items-stretch justify-between gap-1">
         {bottomNavItems.map((item) => {
@@ -39,23 +39,23 @@ export function BottomNav() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex min-h-11 min-w-0 flex-col items-center gap-1 rounded-2xl px-1 py-1.5 transition-colors sm:px-1.5",
+                  "flex min-h-9 min-w-0 flex-col items-center gap-0.5 rounded-2xl px-1 py-1 transition-colors sm:min-h-11 sm:gap-1 sm:px-1.5 sm:py-1.5",
                   active ? "text-primary" : "text-muted-foreground hover:text-primary/80",
                 )}
               >
                 <span
                   className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-[14px] transition-all duration-200",
+                    "flex h-8 w-8 items-center justify-center rounded-[12px] transition-all duration-200 sm:h-10 sm:w-10 sm:rounded-[14px]",
                     active
                       ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
                       : "bg-transparent",
                   )}
                 >
-                  <Icon className="h-5 w-5" strokeWidth={active ? 2.4 : 1.9} />
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={active ? 2.4 : 1.9} />
                 </span>
                 <span
                   className={cn(
-                    "max-w-full truncate text-[10px] leading-none",
+                    "max-w-full truncate text-[9px] leading-none sm:text-[10px]",
                     active ? "font-semibold" : "font-medium",
                   )}
                 >

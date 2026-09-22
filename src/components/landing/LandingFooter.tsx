@@ -148,10 +148,10 @@ function FooterLink({
   }, [href, isProtected]);
 
   const className = cn(
-    "group relative inline-flex min-h-10 w-full max-w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-white/70",
+    "group relative inline-flex min-h-9 w-full max-w-full items-center gap-2 rounded-lg px-2 py-1 text-[13px] text-white/70",
     "transition-colors duration-200 hover:bg-white/5 hover:text-[#C6E31A] active:bg-white/10",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6E31A]/30",
-    "md:w-fit md:gap-1.5 md:px-0 md:hover:bg-transparent",
+    "md:min-h-10 md:w-fit md:gap-1.5 md:px-0 md:py-1.5 md:text-sm md:hover:bg-transparent",
   );
 
   const label = (
@@ -252,7 +252,7 @@ function FooterNavColumn({
         onClick={onToggle}
         whileTap={reduceMotion ? undefined : { scale: 0.99 }}
         transition={transitions.fast}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors duration-200 hover:text-[#C6E31A] active:bg-white/5 md:pointer-events-none md:cursor-default md:px-0 md:py-0 md:pb-3 md:active:bg-transparent"
+        className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors duration-200 hover:text-[#C6E31A] active:bg-white/5 md:pointer-events-none md:cursor-default md:px-0 md:py-0 md:pb-3 md:active:bg-transparent"
         aria-expanded={open}
         aria-controls={navId}
       >
@@ -263,7 +263,7 @@ function FooterNavColumn({
           aria-hidden
           animate={{ rotate: open ? 180 : 0 }}
           transition={accordionTransition}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-[#C6E31A] md:hidden"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-[#C6E31A] md:hidden"
         >
           <ChevronDown className="h-4 w-4" />
         </motion.span>
@@ -304,7 +304,7 @@ function FooterNavColumn({
 export function LandingFooter() {
   const reduceMotion = useReducedMotion();
   const navigate = useFooterNavigate();
-  const [openSection, setOpenSection] = useState<string | null>("Explore");
+  const [openSection, setOpenSection] = useState<string | null>(null);
 
   const toggleSection = useCallback((title: string) => {
     setOpenSection((prev) => (prev === title ? null : title));
@@ -334,27 +334,27 @@ export function LandingFooter() {
       ) : null}
 
       {/* CTA band */}
-      <div className={landingShell("relative z-10 pt-8 sm:pt-10 lg:pt-12")}>
+      <div className={landingShell("relative z-10 pt-5 sm:pt-10 lg:pt-12")}>
         <motion.div
           initial={reduceMotion ? false : { y: 14 }}
           whileInView={{ y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={fastReveal}
-          className="relative overflow-hidden rounded-2xl bg-[#C6E31A] px-5 py-6 shadow-[0_24px_48px_-24px_rgba(0,0,0,0.55)] sm:rounded-3xl sm:px-8 sm:py-7 lg:px-10 lg:py-8"
+          className="relative overflow-hidden rounded-xl bg-[#C6E31A] px-4 py-4 shadow-[0_24px_48px_-24px_rgba(0,0,0,0.55)] sm:rounded-3xl sm:px-8 sm:py-7 lg:px-10 lg:py-8"
         >
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_100%_0%,rgba(255,255,255,0.28),transparent_55%)]"
           />
-          <div className="relative flex flex-col items-start justify-between gap-5 sm:gap-6 lg:flex-row lg:items-center">
+          <div className="relative flex flex-col items-start justify-between gap-3.5 sm:gap-6 lg:flex-row lg:items-center">
             <div className="min-w-0 max-w-xl">
               <p className="text-[10px] font-semibold tracking-[0.22em] text-[#111411]/70 uppercase sm:text-[11px]">
                 Ride with BW Rides
               </p>
-              <h2 className="mt-2 font-heading text-xl font-semibold tracking-tight text-[#111411] sm:text-2xl lg:text-[1.75rem]">
+              <h2 className="mt-1.5 font-heading text-lg font-semibold tracking-tight text-[#111411] sm:mt-2 sm:text-2xl lg:text-[1.75rem]">
                 Ready for your next ride?
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-[#111411]/75 sm:text-[15px]">
+              <p className="mt-1.5 text-xs leading-relaxed text-[#111411]/75 sm:mt-2 sm:text-[15px]">
                 Book in seconds, track live, and travel with verified captains
                 across India.
               </p>
@@ -368,7 +368,7 @@ export function LandingFooter() {
                 transition={transitions.spring}
                 className={cn(
                   buttonVariants({ size: "lg" }),
-                  "h-12 w-full rounded-full bg-[#111411] px-6 text-sm font-semibold text-[#C6E31A] hover:bg-[#1A1F16] sm:w-auto",
+                  "h-10 w-full rounded-full bg-[#111411] px-5 text-sm font-semibold text-[#C6E31A] hover:bg-[#1A1F16] sm:h-12 sm:w-auto sm:px-6",
                 )}
               >
                 Book a ride
@@ -384,7 +384,7 @@ export function LandingFooter() {
                   href={ROUTES.download}
                   className={cn(
                     buttonVariants({ variant: "outline", size: "lg" }),
-                    "h-12 w-full rounded-full border-[#111411]/20 bg-[#111411]/8 px-6 text-sm font-semibold text-[#111411] backdrop-blur-sm hover:bg-[#111411]/12 sm:w-auto",
+                    "h-10 w-full rounded-full border-[#111411]/20 bg-[#111411]/8 px-5 text-sm font-semibold text-[#111411] backdrop-blur-sm hover:bg-[#111411]/12 sm:h-12 sm:w-auto sm:px-6",
                   )}
                 >
                   Download app
@@ -396,7 +396,7 @@ export function LandingFooter() {
       </div>
 
       {/* Feature strip */}
-      <div className={landingShell("relative z-10 pt-6 sm:pt-8")}>
+      <div className={landingShell("relative z-10 pt-4 sm:pt-8")}>
         <motion.div
           initial={reduceMotion ? false : { y: 12 }}
           whileInView={{ y: 0 }}
@@ -419,7 +419,7 @@ export function LandingFooter() {
                   whileHover={reduceMotion ? undefined : { y: -3 }}
                   whileTap={reduceMotion ? undefined : { scale: 0.97 }}
                   className={cn(
-                    "group flex h-full w-full min-w-0 items-start gap-3 px-4 py-4 text-left transition-colors duration-200 hover:bg-white/8 active:bg-white/12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#C6E31A]/30 sm:gap-3.5 sm:px-5 sm:py-5",
+                    "group flex h-full w-full min-w-0 items-start gap-2.5 px-3 py-3 text-left transition-colors duration-200 hover:bg-white/8 active:bg-white/12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#C6E31A]/30 sm:gap-3.5 sm:px-5 sm:py-5",
                     index % 2 === 1 &&
                       "min-[480px]:border-l min-[480px]:border-white/10",
                     index >= 2 &&
@@ -428,11 +428,11 @@ export function LandingFooter() {
                     index === 2 && "min-[480px]:border-l-0 lg:border-l",
                   )}
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#C6E31A] text-[#111411] transition-all duration-200 group-hover:brightness-110 group-active:scale-95">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#C6E31A] text-[#111411] transition-all duration-200 group-hover:brightness-110 group-active:scale-95 sm:h-10 sm:w-10 sm:rounded-xl">
                     <Icon className="h-4 w-4" strokeWidth={2} />
                   </span>
                   <span className="min-w-0 flex-1 pt-0.5">
-                    <span className="block font-heading text-sm font-semibold text-white sm:text-[15px]">
+                    <span className="block font-heading text-[13px] font-semibold text-white sm:text-[15px]">
                       {feature.title}
                     </span>
                     <span className="mt-0.5 block text-xs leading-snug text-white/60 sm:text-[13px]">
@@ -452,8 +452,8 @@ export function LandingFooter() {
       </div>
 
       {/* Brand + nav */}
-      <div className={landingShell("relative z-10 py-9 sm:py-11 lg:py-12")}>
-        <div className="grid gap-6 md:grid-cols-2 md:gap-10 lg:grid-cols-[minmax(0,1.45fr)_repeat(3,minmax(0,1fr))] lg:items-start lg:gap-8 xl:gap-12">
+      <div className={landingShell("relative z-10 py-4 sm:py-11 lg:py-12")}>
+        <div className="grid gap-4 md:grid-cols-2 md:gap-10 lg:grid-cols-[minmax(0,1.45fr)_repeat(3,minmax(0,1fr))] lg:items-start lg:gap-8 xl:gap-12">
           <motion.div
             className="min-w-0 md:col-span-2 lg:col-span-1"
             initial={reduceMotion ? false : { y: 12 }}
@@ -466,14 +466,14 @@ export function LandingFooter() {
               className="inline-flex transition-opacity duration-200 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
               aria-label="BW Rides home"
             >
-              <WaveGoLogo size="md" variant="light" className="h-[4.5rem] w-[4.5rem] sm:h-20 sm:w-20" />
+              <WaveGoLogo size="md" variant="light" className="h-11 w-11 sm:h-20 sm:w-20" />
             </Link>
-            <p className="mt-4 max-w-md text-sm font-light leading-relaxed text-white/65 sm:text-[15px]">
+            <p className="mt-3 max-w-md text-xs font-light leading-relaxed text-white/65 sm:mt-4 sm:text-[15px]">
               Bike, auto, cab, parcel, and book ambulance for free — book, track,
               and ride with verified captains across India.
             </p>
 
-            <div className="mt-5 flex flex-wrap gap-2">
+            <div className="mt-3.5 flex flex-wrap gap-1.5 sm:mt-5 sm:gap-2">
               {quickTags.map((tag) => (
                 <motion.button
                   key={tag.label}
@@ -482,14 +482,14 @@ export function LandingFooter() {
                   whileHover={reduceMotion ? undefined : { y: -2 }}
                   whileTap={reduceMotion ? undefined : { scale: 0.95 }}
                   transition={transitions.spring}
-                  className="inline-flex min-h-9 items-center rounded-full bg-[#C6E31A] px-3.5 text-[11px] font-semibold tracking-[0.12em] uppercase text-[#111411] shadow-sm transition-colors duration-200 hover:bg-[#D4F04A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6E31A]/40"
+                  className="inline-flex min-h-8 items-center rounded-full bg-[#C6E31A] px-3 text-[10px] font-semibold tracking-[0.12em] uppercase text-[#111411] shadow-sm transition-colors duration-200 hover:bg-[#D4F04A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6E31A]/40 sm:min-h-9 sm:px-3.5 sm:text-[11px]"
                 >
                   {tag.label}
                 </motion.button>
               ))}
             </div>
 
-            <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
+            <div className="mt-3.5 flex flex-col gap-2 sm:mt-5 sm:flex-row sm:flex-wrap sm:gap-2.5">
               <motion.a
                 href={APP_DOWNLOAD.androidPlayStoreUrl}
                 target="_blank"
@@ -497,7 +497,7 @@ export function LandingFooter() {
                 whileHover={reduceMotion ? undefined : { y: -2 }}
                 whileTap={reduceMotion ? undefined : { scale: 0.97 }}
                 transition={transitions.spring}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 text-xs font-semibold text-white transition-colors duration-200 hover:border-[#C6E31A]/50 hover:bg-white/10 hover:text-[#C6E31A]"
+                className="inline-flex min-h-9 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3.5 text-xs font-semibold text-white transition-colors duration-200 hover:border-[#C6E31A]/50 hover:bg-white/10 hover:text-[#C6E31A] sm:min-h-11 sm:px-4"
               >
                 <Smartphone className="h-3.5 w-3.5" />
                 Rider app
@@ -509,7 +509,7 @@ export function LandingFooter() {
                 whileHover={reduceMotion ? undefined : { y: -2 }}
                 whileTap={reduceMotion ? undefined : { scale: 0.97 }}
                 transition={transitions.spring}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 text-xs font-semibold text-white transition-colors duration-200 hover:border-[#C6E31A]/50 hover:bg-white/10 hover:text-[#C6E31A]"
+                className="inline-flex min-h-9 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3.5 text-xs font-semibold text-white transition-colors duration-200 hover:border-[#C6E31A]/50 hover:bg-white/10 hover:text-[#C6E31A] sm:min-h-11 sm:px-4"
               >
                 <Smartphone className="h-3.5 w-3.5" />
                 Captain app
@@ -544,7 +544,7 @@ export function LandingFooter() {
           whileInView={{ y: 0 }}
           viewport={{ once: true, margin: "-30px" }}
           transition={fastReveal}
-          className="mt-9 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-5 text-center text-sm text-white/50 sm:mt-10 sm:flex-row sm:gap-4 sm:text-left"
+        className="mt-5 flex flex-col items-center justify-between gap-2 border-t border-white/10 pt-3.5 text-center text-xs text-white/50 sm:mt-10 sm:flex-row sm:gap-4 sm:pt-5 sm:text-left sm:text-sm"
         >
           <p className="min-w-0">
             © 2026 BW Rides Technologies. All rights reserved.

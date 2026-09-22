@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthFormCard } from "@/components/auth/AuthFormCard";
+import { AuthPageShell } from "@/components/auth/AuthPageShell";
 import { CountryCodeSelector } from "@/components/auth/CountryCodeSelector";
-import { LoginSceneDecor } from "@/components/auth/LoginSceneDecor";
 import { LoginServicesPanel } from "@/components/auth/LoginServicesPanel";
 import { ROUTES } from "@/constants/routes";
 import {
@@ -64,19 +64,6 @@ export function LoginView() {
     router.replace(resolvePostAuthDestination());
   }, [router, searchParams]);
 
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const apply = () => {
-      document.body.style.overflow = mq.matches ? "hidden" : "";
-    };
-    apply();
-    mq.addEventListener("change", apply);
-    return () => {
-      mq.removeEventListener("change", apply);
-      document.body.style.overflow = "";
-    };
-  }, []);
-
   const validatePhone = () => {
     if (!isValidPhoneNumber(mobileNumber, country)) {
       setPhoneError("Please enter a valid phone number");
@@ -101,16 +88,21 @@ export function LoginView() {
       refreshToken?: string;
     },
   ) => {
+    const accessToken = profile?.accessToken?.trim();
+    if (!accessToken) {
+      throw new Error("Login succeeded without an access token. Please try again.");
+    }
+
     const next = searchParams.get("next") ?? searchParams.get("redirect");
     if (next) setPostLoginRedirect(next);
 
-    const profileComplete = !needsProfileSetup(profile?.name);
+    const profileComplete = !needsProfileSetup(profile?.name, profile?.email);
     setAuthSession({
       phone,
       verified: true,
       ...(profile?.name?.trim() ? { name: profile.name.trim() } : {}),
       ...(profile?.email?.trim() ? { email: profile.email.trim() } : {}),
-      ...(profile?.accessToken ? { accessToken: profile.accessToken } : {}),
+      accessToken,
       ...(profile?.refreshToken ? { refreshToken: profile.refreshToken } : {}),
       profileComplete,
     });
@@ -122,7 +114,7 @@ export function LoginView() {
       ? resolvePostAuthDestination()
       : ROUTES.createProfile;
     await new Promise((resolve) => setTimeout(resolve, reduceMotion ? 0 : 400));
-    router.push(destination);
+    router.replace(destination);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -201,20 +193,14 @@ export function LoginView() {
       initial={{ opacity: 0 }}
       animate={{ opacity: isExiting ? 0 : 1 }}
       transition={{ duration: 0.35, ease: easeOut }}
-      className="relative min-h-[100dvh] overflow-x-hidden overflow-y-auto font-sans lg:h-[100dvh] lg:overflow-hidden"
+      className="flex min-h-[100dvh] w-full flex-1 flex-col"
     >
-      <LoginSceneDecor />
-
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-stretch justify-center gap-4 px-3 py-4 sm:px-5 sm:py-5 lg:flex-row lg:items-stretch lg:gap-7 lg:overflow-hidden lg:px-8 lg:py-6 xl:gap-10">
-        <aside className="hidden min-h-0 w-full flex-1 lg:flex lg:max-w-[52%]">
-          <LoginServicesPanel compact className="w-full" />
-        </aside>
-
+      <AuthPageShell aside={<LoginServicesPanel compact className="w-full" />}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...transitions.reveal, delay: 0.05 }}
-          className="mx-auto flex w-full max-w-[420px] flex-col justify-center lg:mx-0 lg:max-w-[430px] lg:flex-none xl:max-w-[450px]"
+          className="w-full min-w-0"
         >
           <AuthFormCard
             title="Welcome back"
@@ -252,7 +238,7 @@ export function LoginView() {
                     onChange={handleCountryChange}
                     size="default"
                     showDialCode
-                    className="h-11 max-w-[7.5rem] rounded-xl border-[#d4dbc8] bg-[#f5f7f0] px-2 shadow-sm sm:h-12 sm:max-w-none sm:rounded-[14px] sm:px-2.5"
+                    className="h-11 max-w-[6.75rem] rounded-xl border-[#d4dbc8] bg-[#f5f7f0] px-2 shadow-sm sm:h-12 sm:max-w-none sm:rounded-[14px] sm:px-2.5"
                   />
                   <Input
                     id="phone"
@@ -415,7 +401,7 @@ export function LoginView() {
             </form>
           </AuthFormCard>
         </motion.div>
-      </div>
+      </AuthPageShell>
     </motion.div>
   );
 }

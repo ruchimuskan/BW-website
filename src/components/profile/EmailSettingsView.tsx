@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/constants/routes";
-import { getAuthSession, setAuthSession } from "@/lib/auth-session";
-import { updateProfile } from "@/lib/profile-api";
+import { setPendingContactVerify } from "@/lib/auth-session";
 import { getEmailValidationError } from "@/lib/auth-validation";
+import { checkEmailMailbox } from "@/lib/email-verify-api";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { cn } from "@/lib/utils";
 
@@ -35,16 +35,20 @@ const benefits = [
 export function EmailSettingsView() {
   const router = useRouter();
   const authUser = useAuthUser();
-  const [email, setEmail] = useState(
-    authUser.email === "Add email" ? "" : authUser.email,
-  );
+  const [email, setEmail] = useState(authUser.email || "");
   const [error, setError] = useState("");
   const [touched, setTouched] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const validationError = useMemo(
-    () => (email.trim() ? getEmailValidationError(email, { required: true }) : null),
-    [email],
+    () =>
+      email.trim()
+        ? getEmailValidationError(email, {
+            required: true,
+            fullName: authUser.name,
+          })
+        : null,
+    [email, authUser.name],
   );
   const valid = Boolean(email.trim()) && !validationError;
 
@@ -52,7 +56,10 @@ export function EmailSettingsView() {
     e.preventDefault();
     setTouched(true);
 
-    const message = getEmailValidationError(email, { required: true });
+    const message = getEmailValidationError(email, {
+      required: true,
+      fullName: authUser.name,
+    });
     if (message) {
       setError(message);
       return;
@@ -62,15 +69,14 @@ export function EmailSettingsView() {
     setError("");
     try {
       const trimmed = email.trim().toLowerCase();
-      await updateProfile({ email: trimmed });
-      const session = getAuthSession();
-      if (session) {
-        setAuthSession({ ...session, email: trimmed });
-      }
-      router.push(ROUTES.profileAccountSettings);
+      await checkEmailMailbox(trimmed, authUser.name);
+      setPendingContactVerify({ type: "email", contact: trimmed });
+      router.push(
+        `${ROUTES.profileEmailVerify}?email=${encodeURIComponent(trimmed)}`,
+      );
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Unable to update email.",
+        err instanceof Error ? err.message : "Unable to verify this email.",
       );
     } finally {
       setSaving(false);
@@ -138,8 +144,8 @@ export function EmailSettingsView() {
               Update email
             </p>
             <p className="mt-1.5 text-sm leading-relaxed text-[#5a6330]">
-              Use a real inbox you can access — temporary emails are not
-              allowed.
+              Use a real inbox you can open. We will send a verification code
+              before saving it on your account.
             </p>
           </div>
 
@@ -188,10 +194,10 @@ export function EmailSettingsView() {
             {saving ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Saving…
+                Sending code…
               </>
             ) : (
-              "Save email"
+              "Verify email"
             )}
           </Button>
 

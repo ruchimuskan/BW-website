@@ -14,10 +14,7 @@ import {
 import { ROUTES } from "@/constants/routes";
 import { AMBULANCE_PAGE_BG, AMBULANCE_CTA } from "@/lib/ambulance-theme";
 import { getAmbulanceVehicleTypes, type VehicleCategory } from "@/lib/home-api";
-import {
-  displayVehicleName,
-  vehicleImageForCategory,
-} from "@/lib/vehicle-map";
+import { vehicleImageForCategory } from "@/lib/vehicle-map";
 import { SettingsHeader } from "@/components/layout/SettingsHeader";
 import { cn } from "@/lib/utils";
 
@@ -89,7 +86,7 @@ export default function AmbulanceLandingPage() {
         </section>
 
         <h3 className="mb-3 font-heading text-lg font-bold text-[#4a1f1f]">
-          Available ambulance types
+          Ambulance
         </h3>
 
         {loading ? (
@@ -107,7 +104,7 @@ export default function AmbulanceLandingPage() {
           </p>
         ) : (
           <div className="space-y-3">
-            {types.map((type) => (
+            {types.slice(0, 1).map((type) => (
               <button
                 key={type.id}
                 type="button"
@@ -123,16 +120,15 @@ export default function AmbulanceLandingPage() {
                 />
                 <div className="min-w-0 flex-1">
                   <p className="font-heading font-bold text-[#4a1f1f]">
-                    {displayVehicleName(type.name, type.slug)}
+                    Ambulance
                   </p>
-                  {type.description ? (
-                    <p className="mt-0.5 line-clamp-2 text-xs text-[#7a4545]">
-                      {type.description}
-                    </p>
-                  ) : null}
+                  <p className="mt-0.5 line-clamp-2 text-xs text-[#7a4545]">
+                    {type.description?.trim() ||
+                      "Emergency medical transport — book free"}
+                  </p>
                 </div>
-                <span className="shrink-0 text-sm font-semibold text-[#4a1f1f]">
-                  from ₹{Math.round(type.base_fare)}
+                <span className="shrink-0 text-sm font-semibold text-[#c62828]">
+                  Book free
                 </span>
               </button>
             ))}

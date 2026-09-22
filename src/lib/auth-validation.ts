@@ -3,6 +3,28 @@
  * before they are sent to the backend.
  */
 
+const FREE_MAIL_DOMAINS = new Set([
+  "gmail.com",
+  "googlemail.com",
+  "yahoo.com",
+  "yahoo.co.in",
+  "ymail.com",
+  "outlook.com",
+  "hotmail.com",
+  "live.com",
+  "msn.com",
+  "icloud.com",
+  "me.com",
+  "mac.com",
+  "proton.me",
+  "protonmail.com",
+  "aol.com",
+  "zoho.com",
+  "rediffmail.com",
+  "gmx.com",
+  "mail.com",
+]);
+
 const BLOCKED_EMAIL_DOMAINS = new Set([
   "example.com",
   "example.org",
@@ -139,10 +161,20 @@ function isKeyboardWalk(value: string) {
   return rows.some((row) => row.includes(value) || [...row].reverse().join("").includes(value));
 }
 
+export function isPlaceholderEmail(value: string | null | undefined): boolean {
+  if (!value?.trim()) return true;
+  const email = value.trim().toLowerCase();
+  return (
+    email.endsWith("@ridebook.app") ||
+    email.endsWith("@bullwaverides.local") ||
+    getEmailValidationError(email, { required: true }) !== null
+  );
+}
+
 /** Returns an error message, or null when the email is acceptable. Empty string → null (optional fields). */
 export function getEmailValidationError(
   value: string,
-  options?: { required?: boolean },
+  options?: { required?: boolean; fullName?: string },
 ): string | null {
   const email = value.trim().toLowerCase();
 
@@ -199,6 +231,28 @@ export function getEmailValidationError(
 
   if (isSequentialAlpha(localKey) || isKeyboardWalk(localKey)) {
     return "Please use your real email — dummy addresses are not allowed";
+  }
+
+  const hasSeparator = /[._+]/.test(local);
+  const hasDigit = /\d/.test(local);
+  if (FREE_MAIL_DOMAINS.has(domain) && !hasSeparator && !hasDigit && localKey.length < 6) {
+    return "Use your full working email (for example first.last@gmail.com) — short placeholders are not allowed";
+  }
+
+  const firstName = (options?.fullName ?? "")
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)[0]
+    ?.replace(/[^a-z]/g, "");
+  if (
+    firstName &&
+    firstName.length >= 3 &&
+    FREE_MAIL_DOMAINS.has(domain) &&
+    localKey === firstName &&
+    !hasSeparator &&
+    !hasDigit
+  ) {
+    return "That looks like a placeholder. Enter the email inbox you actually use.";
   }
 
   return null;

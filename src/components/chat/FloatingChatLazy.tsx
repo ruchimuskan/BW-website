@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
-import { isChatWidgetPath } from "@/lib/chat-widget";
 
 const FloatingChatWidget = dynamic(
   () =>
@@ -13,33 +11,24 @@ const FloatingChatWidget = dynamic(
   { ssr: false },
 );
 
-/** Defer chat JS until idle so first paint stays light. */
+/** Mount once after first paint — never tear down on navigation. */
 export function FloatingChatLazy() {
-  const pathname = usePathname();
   const [ready, setReady] = useState(false);
-  const allowed = isChatWidgetPath(pathname);
 
   useEffect(() => {
-    if (!allowed) {
-      setReady(false);
-      return;
-    }
-
     let cancelled = false;
     const enable = () => {
       if (!cancelled) setReady(true);
     };
-
-    const ric = window.requestIdleCallback?.(enable, { timeout: 600 });
-    const timer = window.setTimeout(enable, 200);
-
+    const ric = window.requestIdleCallback?.(enable, { timeout: 80 });
+    const timer = window.setTimeout(enable, 0);
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
       if (ric != null) window.cancelIdleCallback?.(ric);
     };
-  }, [allowed]);
+  }, []);
 
-  if (!ready || !allowed) return null;
+  if (!ready) return null;
   return <FloatingChatWidget />;
 }

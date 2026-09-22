@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/constants/site";
-import { blogPosts } from "@/data/blogs";
+import { fetchBlogPosts } from "@/lib/blog-api";
 import {
   curatedSeoSiteLinks,
   fetchSeoSiteLinks,
@@ -42,7 +42,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const uniqueRoutes = [...new Set(staticRoutes)];
-  const blogRoutes = blogPosts.map((post) => `/blogs/${post.slug}`);
+  const liveBlogs = await fetchBlogPosts().catch(() => []);
+  const blogRoutes = liveBlogs.map((post) => `/blogs/${post.slug}`);
 
   return [...uniqueRoutes, ...blogRoutes].map((path) => ({
     url: url(path),

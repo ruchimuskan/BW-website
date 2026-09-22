@@ -40,7 +40,15 @@ import {
 } from "@/lib/ride-api";
 import { useActiveRideGuard } from "@/hooks/useActiveRideGuard";
 import type { AppliedCoupon } from "@/lib/coupons-api";
-import { couponFinalAmount } from "@/lib/coupons-api";
+import { couponFinalAmount, validateCoupon } from "@/lib/coupons-api";
+import {
+  fetchFreeRideEligibility,
+  FIRST_FREE_RIDES,
+  FREE_RIDE_MAX_KM,
+  isFreeRideCoupon,
+  isTripEligibleForFreeRide,
+  type FreeRideEligibility,
+} from "@/lib/free-rides";
 import { getProtectedPath, isAuthenticated, setPostLoginRedirect } from "@/lib/auth-session";
 import { buildLocationSearchUrl } from "@/lib/location-search";
 import { resolveAddressCoords } from "@/lib/places-api";
@@ -88,6 +96,7 @@ interface BookableOption {
   price: number;
   originalPrice?: number | null;
   image: string;
+  isFree?: boolean;
 }
 
 function filterCategoriesForTab(categories: VehicleCategory[], tab: string) {
@@ -103,7 +112,7 @@ function filterCategoriesForTab(categories: VehicleCategory[], tab: string) {
     }
     return (
       isListedRideCategory(category) &&
-      !slug.includes("ambulance") &&
+      !isAmbulanceVehicle(category) &&
       !slug.includes("parcel") &&
       !slug.includes("delivery")
     );
@@ -116,6 +125,7 @@ function findQuote(
     {
       vehicle_type_id: string;
       name?: string;
+      slug?: string;
       estimated_fare: number;
       original_fare?: number | null;
     }
@@ -123,17 +133,23 @@ function findQuote(
   category: VehicleCategory,
 ) {
   const idKey = category.id.toLowerCase();
-  const slugKey = category.slug.toLowerCase();
+  const slugKey = (category.slug || "").toLowerCase();
+  const nameKey = (category.name || "").toLowerCase();
   return (
     quotes[idKey] ??
-    quotes[slugKey] ??
-    quotes[category.name.toLowerCase()] ??
-    Object.values(quotes).find(
-      (q) =>
-        q.vehicle_type_id.toLowerCase() === idKey ||
-        q.vehicle_type_id.toLowerCase() === slugKey ||
-        (q.name && q.name.toLowerCase() === category.name.toLowerCase()),
-    ) ??
+    (slugKey ? quotes[slugKey] : undefined) ??
+    (nameKey ? quotes[nameKey] : undefined) ??
+    Object.values(quotes).find((q) => {
+      const qId = q.vehicle_type_id.toLowerCase();
+      const qSlug = (q.slug || "").toLowerCase();
+      const qName = (q.name || "").toLowerCase();
+      return (
+        qId === idKey ||
+        (slugKey && (qId === slugKey || qSlug === slugKey)) ||
+        (nameKey && (qName === nameKey || qSlug === nameKey)) ||
+        (slugKey && qName === slugKey)
+      );
+    }) ??
     null
   );
 }
@@ -168,6 +184,10 @@ export function RideBookingView() {
   const [preferWomenRiders, setPreferWomenRiders] = useState(false);
   const [offersOpen, setOffersOpen] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+  const [freeRide, setFreeRide] = useState<FreeRideEligibility | null>(null);
+  const [estimatePromoMessage, setEstimatePromoMessage] = useState<string | null>(
+    null,
+  );
   const [scheduledAt, setScheduledAt] = useState(
     () => normalizeScheduledAt(scheduledParam) ?? "",
   );
@@ -229,6 +249,67 @@ export function RideBookingView() {
   }, [tripCoords.payment]);
 
   useEffect(() => {
+    let cancelled = false;
+    void fetchFreeRideEligibility()
+      .then((eligibility) => {
+        if (!cancelled) setFreeRide(eligibility);
+      })
+      .catch(() => {
+        if (!cancelled) setFreeRide(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const distanceKm = routeMeta.distanceKm;
+    const maxKm = freeRide?.maxKm ?? 5;
+    const withinKm = isTripEligibleForFreeRide(distanceKm, maxKm);
+
+    // Over 5 km → never keep a free-ride coupon applied; show backend estimate price.
+    if (
+      appliedCoupon?.coupon &&
+      isFreeRideCoupon(appliedCoupon.coupon) &&
+      distanceKm != null &&
+      !withinKm
+    ) {
+      setAppliedCoupon(null);
+      return;
+    }
+
+    if (!freeRide?.enabled || !freeRide.coupon || appliedCoupon) return;
+    if (!withinKm) return;
+    if (options.length === 0) return;
+    if (options.every((option) => option.price <= 0)) return;
+
+    const sample =
+      options.find((o) => o.categoryId === selectedCategoryId) ?? options[0];
+    let cancelled = false;
+    void validateCoupon(
+      freeRide.coupon.code,
+      Math.max(sample.price, 0.01),
+      sample.categoryId,
+      distanceKm,
+    )
+      .then((applied) => {
+        if (!cancelled) setAppliedCoupon(applied);
+      })
+      .catch(() => {
+        // Coupon may be exhausted / distance rejected by backend.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    freeRide,
+    options,
+    appliedCoupon,
+    selectedCategoryId,
+    routeMeta.distanceKm,
+  ]);
+
+  useEffect(() => {
     if (!pickup || !dropoff) {
       router.replace(ROUTES.home);
     }
@@ -274,7 +355,7 @@ export function RideBookingView() {
         const [allCategories, directions] = await Promise.all([
           tab === "ambulance"
             ? getAmbulanceVehicleTypes()
-            : getVehicleCategories(),
+            : getVehicleCategories("ride"),
           getRideDirections(
             {
               label: pickup,
@@ -342,18 +423,73 @@ export function RideBookingView() {
           durationMin,
         });
         setMemberDiscountPercent(fareResult.discount_percent ?? 0);
+        setEstimatePromoMessage(
+          fareResult.promo_message?.trim() ||
+            (fareResult.free_rides_remaining != null &&
+            fareResult.free_rides_remaining > 0
+              ? `${fareResult.free_rides_remaining} free ride${fareResult.free_rides_remaining === 1 ? "" : "s"} left`
+              : null),
+        );
 
         const categories = filterCategoriesForTab(allCategories, tab);
 
         const apiOptions: BookableOption[] = [];
         const seen = new Set<string>();
 
+        const freeFromEstimate =
+          (fareResult.free_rides_remaining != null &&
+            fareResult.free_rides_remaining > 0) ||
+          Number(fareResult.discount_percent ?? 0) >= 100;
+
         const pushOption = (
           category: VehicleCategory,
-          quote: { estimated_fare: number; original_fare?: number | null },
+          quote: {
+            estimated_fare: number;
+            original_fare?: number | null;
+            is_free?: boolean;
+            discount_percent?: number;
+          },
         ) => {
           if (seen.has(category.id)) return;
           seen.add(category.id);
+          const isWithinFreeKm = isTripEligibleForFreeRide(
+            distanceKm,
+            FREE_RIDE_MAX_KM,
+          );
+          const backendFare = Number(quote.estimated_fare);
+          const backendOriginal =
+            quote.original_fare != null && Number(quote.original_fare) > 0
+              ? Number(quote.original_fare)
+              : null;
+
+          let price = backendFare;
+          let originalPrice = backendOriginal;
+          let isFree =
+            isWithinFreeKm &&
+            (quote.is_free === true ||
+              backendFare <= 0 ||
+              Number(quote.discount_percent ?? 0) >= 100 ||
+              freeFromEstimate);
+
+          // Under free-km + free offer: show backend fare struck through, payable Free.
+          if (isFree && isWithinFreeKm) {
+            const strike =
+              backendOriginal != null && backendOriginal > 0
+                ? backendOriginal
+                : backendFare > 0
+                  ? backendFare
+                  : null;
+            originalPrice = strike;
+            price = 0;
+          }
+
+          // Over free-km cap: never show Free — prefer backend original when estimate is 0.
+          if (!isWithinFreeKm && price <= 0 && originalPrice != null && originalPrice > 0) {
+            price = originalPrice;
+            originalPrice = null;
+            isFree = false;
+          }
+
           apiOptions.push({
             categoryId: category.id,
             vehicleId: String(categoryVehicleId(category)),
@@ -361,9 +497,10 @@ export function RideBookingView() {
             capacity: vehicleCapacityForCategory(category),
             durationMin: Math.max(1, Math.round(durationMin || 1)),
             distanceKm,
-            price: quote.estimated_fare,
-            originalPrice: quote.original_fare ?? null,
+            price,
+            originalPrice,
             image: vehicleImageForCategory(category),
+            isFree,
           });
         };
 
@@ -383,12 +520,19 @@ export function RideBookingView() {
           }
           for (const quote of uniqueQuotes.values()) {
             const match =
-              allCategories.find(
-                (c) =>
-                  c.id.toLowerCase() === quote.vehicle_type_id.toLowerCase() ||
-                  c.slug.toLowerCase() === quote.vehicle_type_id.toLowerCase() ||
-                  c.name.toLowerCase() === (quote.name ?? "").toLowerCase(),
-              ) ?? null;
+              allCategories.find((c) => {
+                const cId = c.id.toLowerCase();
+                const cSlug = (c.slug || "").toLowerCase();
+                const cName = (c.name || "").toLowerCase();
+                const qId = quote.vehicle_type_id.toLowerCase();
+                const qSlug = (quote.slug || "").toLowerCase();
+                const qName = (quote.name || "").toLowerCase();
+                return (
+                  cId === qId ||
+                  (cSlug && (cSlug === qId || cSlug === qSlug)) ||
+                  (cName && (cName === qName || cName === qId))
+                );
+              }) ?? null;
             if (tab === "ambulance" && match && !isAmbulanceVehicle(match)) {
               continue;
             }
@@ -464,26 +608,77 @@ export function RideBookingView() {
   ]);
 
   const rideOptions = useMemo(() => {
-    if (!appliedCoupon?.coupon) return options;
+    const distanceKm = routeMeta.distanceKm;
+    const maxKm = freeRide?.maxKm ?? FREE_RIDE_MAX_KM;
+    const freeQualified =
+      tab !== "ambulance" &&
+      tab !== "parcel" &&
+      Boolean(freeRide?.enabled) &&
+      (freeRide?.remaining ?? 0) > 0 &&
+      isTripEligibleForFreeRide(distanceKm, maxKm);
+
     return options.map((option) => {
-      const base = option.price;
-      const discounted = couponFinalAmount(
-        appliedCoupon.coupon,
-        base,
-        option.categoryId,
-      );
-      const priorOriginal =
-        option.originalPrice != null && option.originalPrice > base
-          ? option.originalPrice
-          : base;
+      const base = option.price > 0 ? option.price : option.originalPrice ?? 0;
+      let price = option.price;
+      let originalPrice = option.originalPrice ?? null;
+      let isFree = Boolean(option.isFree);
+
+      if (appliedCoupon?.coupon) {
+        const discounted = couponFinalAmount(
+          appliedCoupon.coupon,
+          Math.max(base, 0.01),
+          option.categoryId,
+          distanceKm,
+        );
+        const priorOriginal =
+          originalPrice != null && originalPrice > base ? originalPrice : base;
+        price = discounted;
+        if (discounted < priorOriginal && priorOriginal > 0) {
+          originalPrice = priorOriginal;
+        }
+        if (discounted <= 0) isFree = true;
+      }
+
+      // First free rides under max km: strike backend fare and show Free.
+      if (freeQualified) {
+        const strikeThrough =
+          originalPrice != null && originalPrice > 0
+            ? originalPrice
+            : base > 0
+              ? base
+              : null;
+        if (strikeThrough != null && strikeThrough > 0) {
+          originalPrice = strikeThrough;
+        }
+        price = 0;
+        isFree = true;
+      }
+
+      if (!freeQualified && !isFree && price > 0) {
+        // Keep paid backend estimate as-is.
+      }
+
       return {
         ...option,
-        price: discounted,
-        originalPrice:
-          discounted < priorOriginal ? priorOriginal : option.originalPrice,
+        price,
+        originalPrice,
+        isFree: isFree || price <= 0,
       };
     });
-  }, [options, appliedCoupon]);
+  }, [options, appliedCoupon, routeMeta.distanceKm, freeRide, tab]);
+
+  const freePromoCode =
+    appliedCoupon?.coupon.code ||
+    (tab !== "ambulance" &&
+    tab !== "parcel" &&
+    freeRide?.enabled &&
+    (freeRide.remaining ?? 0) > 0 &&
+    isTripEligibleForFreeRide(
+      routeMeta.distanceKm,
+      freeRide?.maxKm ?? FREE_RIDE_MAX_KM,
+    )
+      ? freeRide?.coupon?.code
+      : undefined);
 
   if (!pickup || !dropoff) {
     return null;
@@ -503,7 +698,7 @@ export function RideBookingView() {
     durationMin: routeMeta.durationMin,
     payment: payment.id as PaymentMethod,
     stops,
-    promoCode: appliedCoupon?.coupon.code,
+    promoCode: freePromoCode || appliedCoupon?.coupon.code,
     scheduledAt: scheduledAt || undefined,
     notes: notes.trim() || undefined,
   };
@@ -834,6 +1029,30 @@ export function RideBookingView() {
                 />
               </label>
 
+              {estimatePromoMessage || freeRide?.enabled ? (
+                <div className="mt-3 rounded-xl border border-[#C6E31A]/45 bg-[#f8fbe8] px-3.5 py-2.5">
+                  <p className="text-[11px] font-semibold tracking-[0.16em] text-[#5a7a12] uppercase">
+                    Free rides
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold text-[#111411]">
+                    {estimatePromoMessage ||
+                      freeRide?.message ||
+                      `First 5 rides free (up to ${FREE_RIDE_MAX_KM} km)`}
+                  </p>
+                  <p className="mt-0.5 text-[12px] leading-snug text-[#5a6330]">
+                    {routeMeta.distanceKm != null &&
+                    !isTripEligibleForFreeRide(
+                      routeMeta.distanceKm,
+                      freeRide?.maxKm ?? FREE_RIDE_MAX_KM,
+                    )
+                      ? `This trip is ${routeMeta.distanceKm.toFixed(1)} km — free rides apply only up to ${freeRide?.maxKm ?? FREE_RIDE_MAX_KM} km.`
+                      : freeRide?.remaining
+                        ? `${freeRide.remaining} free ride${freeRide.remaining === 1 ? "" : "s"} remaining under ${freeRide.maxKm} km.`
+                        : `Free for your first ${FIRST_FREE_RIDES} rides under ${freeRide?.maxKm ?? FREE_RIDE_MAX_KM} km.`}
+                  </p>
+                </div>
+              ) : null}
+
               {memberDiscountPercent > 0 ? (
                 <p className="mt-2 text-xs font-semibold text-secondary">
                   {Math.round(memberDiscountPercent)}% member discount applied
@@ -926,6 +1145,11 @@ export function RideBookingView() {
                             <p className={cn("text-[15px] font-semibold sm:text-base", theme.ink)}>
                               {option.name}
                             </p>
+                            {option.isFree || option.price <= 0 ? (
+                              <span className="rounded-full bg-[#1a4d2e]/12 px-2 py-0.5 text-[10px] font-bold tracking-wide text-[#1a4d2e] uppercase">
+                                Free
+                              </span>
+                            ) : null}
                             <span className={cn("inline-flex items-center gap-0.5 text-xs font-medium", theme.muted)}>
                               <UserRound className="h-3 w-3" strokeWidth={2} />
                               {option.capacity}
@@ -938,15 +1162,29 @@ export function RideBookingView() {
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
                           <div className="text-right">
-                            {option.originalPrice != null &&
-                            option.originalPrice > option.price ? (
+                            {(option.isFree || option.price <= 0) &&
+                            option.originalPrice != null &&
+                            option.originalPrice > 0 ? (
+                              <p className="text-xs text-[#5a6330]/70 line-through">
+                                {formatFare(option.originalPrice)}
+                              </p>
+                            ) : option.originalPrice != null &&
+                              option.originalPrice > option.price &&
+                              option.price > 0 ? (
                               <p className="text-xs text-[#5a6330]/70 line-through">
                                 {formatFare(option.originalPrice)}
                               </p>
                             ) : null}
-                            <p className={cn("text-base font-bold sm:text-lg", theme.ink)}>
-                              {option.price <= 0
-                                ? "FREE"
+                            <p
+                              className={cn(
+                                "text-base font-bold sm:text-lg",
+                                option.isFree || option.price <= 0
+                                  ? "text-[#1a4d2e]"
+                                  : theme.ink,
+                              )}
+                            >
+                              {option.isFree || option.price <= 0
+                                ? "Free"
                                 : formatFare(option.price)}
                             </p>
                           </div>
@@ -1051,11 +1289,11 @@ export function RideBookingView() {
             ) : !selectedOption ? (
               isAmbulanceTab ? "Select ambulance" : "Select a ride"
             ) : scheduledAt ? (
-              `Schedule ${selectedOption.name} · ${displayFare <= 0 ? "FREE" : formatFare(displayFare)}`
+              `Schedule ${selectedOption.name} · ${displayFare <= 0 ? "Free" : formatFare(displayFare)}`
             ) : isAmbulanceTab ? (
-              `Book ambulance for free · ${displayFare <= 0 ? "FREE" : formatFare(displayFare)}`
+              `Book Ambulance for free · ${displayFare <= 0 ? "Free" : formatFare(displayFare)}`
             ) : (
-              `Book ${selectedOption.name} · ${displayFare <= 0 ? "FREE" : formatFare(displayFare)}`
+              `Book ${selectedOption.name} · ${displayFare <= 0 ? "Free" : formatFare(displayFare)}`
             )}
           </Button>
           {bookingError ? (
@@ -1107,11 +1345,11 @@ export function RideBookingView() {
         fareLabel={
           selectedOption
             ? displayFare <= 0
-              ? "FREE"
+              ? "Free"
               : formatFare(displayFare)
             : isAmbulanceTab
               ? "To be confirmed"
-              : "FREE"
+              : "Free"
         }
         paymentLabel={payment.label}
         scheduleLabel={scheduledAt ? scheduleLabel : null}
@@ -1127,6 +1365,7 @@ export function RideBookingView() {
         open={offersOpen}
         orderAmount={selectedBaseOption?.price ?? 0}
         vehicleTypeId={selectedBaseOption?.categoryId}
+        distanceKm={routeMeta.distanceKm}
         appliedCode={appliedCoupon?.coupon.code}
         onClose={() => setOffersOpen(false)}
         onApply={setAppliedCoupon}

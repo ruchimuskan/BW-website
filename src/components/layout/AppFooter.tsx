@@ -43,7 +43,7 @@ export function AppFooter({ className }: AppFooterProps) {
   const reduceMotion = useReducedMotion();
   const year = new Date().getFullYear();
   const [openSection, setOpenSection] = useState<"explore" | "download" | null>(
-    "explore",
+    null,
   );
 
   const toggle = useCallback((section: "explore" | "download") => {
@@ -66,13 +66,13 @@ export function AppFooter({ className }: AppFooterProps) {
         className="pointer-events-none absolute -right-20 bottom-0 h-48 w-48 rounded-full bg-primary/10 blur-3xl"
       />
 
-      <div className="relative mx-auto w-full min-w-0 max-w-6xl px-4 py-8 sm:px-6 sm:py-10 md:px-8 lg:px-10">
+      <div className="relative mx-auto w-full min-w-0 max-w-6xl px-3 py-5 sm:px-6 sm:py-10 md:px-8 lg:px-10">
         <motion.div
           initial={reduceMotion ? false : { y: 12 }}
           whileInView={{ y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={fastReveal}
-          className="grid gap-5 sm:gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-10 xl:gap-12"
+          className="grid gap-3 sm:gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-10 xl:gap-12"
         >
           {/* Brand */}
           <div className="min-w-0">
@@ -83,20 +83,20 @@ export function AppFooter({ className }: AppFooterProps) {
             >
               <WaveGoLogo
                 size="sm"
-                className="h-12 w-12 sm:h-14 sm:w-14"
+                className="!h-9 !w-9 sm:!h-14 sm:!w-14"
               />
             </Link>
-            <p className="mt-3.5 max-w-sm text-sm leading-relaxed text-[#4a5228]">
+            <p className="mt-2 max-w-sm text-xs leading-relaxed text-[#4a5228] sm:mt-3.5 sm:text-sm">
               Premium rides, parcels, and emergency SOS — built for calm,
               confident city travel.
             </p>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-2.5 flex flex-wrap gap-1.5 sm:mt-4 sm:gap-2">
               {["Live tracking", "Verified captains"].map((chip) => (
                 <motion.span
                   key={chip}
                   whileHover={reduceMotion ? undefined : { y: -1 }}
                   whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-                  className="inline-flex items-center rounded-full border border-primary/15 bg-white/90 px-3 py-1 text-[10px] font-semibold tracking-[0.12em] text-primary uppercase"
+                  className="inline-flex items-center rounded-full border border-primary/15 bg-white/90 px-2.5 py-0.5 text-[9px] font-semibold tracking-[0.12em] text-primary uppercase sm:px-3 sm:py-1 sm:text-[10px]"
                 >
                   {chip}
                 </motion.span>
@@ -107,7 +107,7 @@ export function AppFooter({ className }: AppFooterProps) {
           {/* Explore — accordion on mobile */}
           <div
             className={cn(
-              "min-w-0 overflow-hidden rounded-2xl border border-primary/10 bg-white/80 backdrop-blur-sm lg:rounded-none lg:border-0 lg:bg-transparent lg:backdrop-blur-none",
+              "min-w-0 overflow-hidden rounded-xl border border-primary/10 bg-white/80 backdrop-blur-sm sm:rounded-2xl lg:rounded-none lg:border-0 lg:bg-transparent lg:backdrop-blur-none",
               openSection === "explore" && "border-primary/20 bg-white lg:bg-transparent",
             )}
           >
@@ -116,7 +116,7 @@ export function AppFooter({ className }: AppFooterProps) {
               onClick={() => toggle("explore")}
               whileTap={reduceMotion ? undefined : { scale: 0.99 }}
               transition={transitions.fast}
-              className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left lg:pointer-events-none lg:cursor-default lg:px-0 lg:py-0"
+              className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left lg:pointer-events-none lg:cursor-default lg:px-0 lg:py-0"
               aria-expanded={openSection === "explore"}
               aria-controls="app-footer-explore"
             >
@@ -127,7 +127,7 @@ export function AppFooter({ className }: AppFooterProps) {
                 aria-hidden
                 animate={{ rotate: openSection === "explore" ? 180 : 0 }}
                 transition={accordionTransition}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/15 bg-primary/5 text-primary lg:hidden"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary/15 bg-primary/5 text-primary lg:hidden"
               >
                 <ChevronDown className="h-4 w-4" />
               </motion.span>
@@ -156,7 +156,7 @@ export function AppFooter({ className }: AppFooterProps) {
           {/* Download + legal — accordion on mobile */}
           <div
             className={cn(
-              "min-w-0 overflow-hidden rounded-2xl border border-primary/10 bg-white/80 backdrop-blur-sm lg:rounded-none lg:border-0 lg:bg-transparent lg:backdrop-blur-none",
+              "min-w-0 overflow-hidden rounded-xl border border-primary/10 bg-white/80 backdrop-blur-sm sm:rounded-2xl lg:rounded-none lg:border-0 lg:bg-transparent lg:backdrop-blur-none",
               openSection === "download" && "border-primary/20 bg-white lg:bg-transparent",
             )}
           >
@@ -165,7 +165,7 @@ export function AppFooter({ className }: AppFooterProps) {
               onClick={() => toggle("download")}
               whileTap={reduceMotion ? undefined : { scale: 0.99 }}
               transition={transitions.fast}
-              className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left lg:pointer-events-none lg:cursor-default lg:px-0 lg:py-0"
+              className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left lg:pointer-events-none lg:cursor-default lg:px-0 lg:py-0"
               aria-expanded={openSection === "download"}
               aria-controls="app-footer-download"
             >
@@ -176,7 +176,7 @@ export function AppFooter({ className }: AppFooterProps) {
                 aria-hidden
                 animate={{ rotate: openSection === "download" ? 180 : 0 }}
                 transition={accordionTransition}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/15 bg-primary/5 text-primary lg:hidden"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary/15 bg-primary/5 text-primary lg:hidden"
               >
                 <ChevronDown className="h-4 w-4" />
               </motion.span>
@@ -208,7 +208,7 @@ export function AppFooter({ className }: AppFooterProps) {
           whileInView={{ y: 0 }}
           viewport={{ once: true, margin: "-20px" }}
           transition={fastReveal}
-          className="mt-7 flex flex-col items-center justify-between gap-2 border-t border-primary/10 pt-5 text-center text-xs text-[#4a5228] sm:mt-9 sm:flex-row sm:text-left"
+          className="mt-4 flex flex-col items-center justify-between gap-1.5 border-t border-primary/10 pt-3 text-center text-[11px] text-[#4a5228] sm:mt-9 sm:flex-row sm:gap-2 sm:pt-5 sm:text-left sm:text-xs"
         >
           <p>© {year} BW Rides Technologies. All rights reserved.</p>
           <p className="font-light tracking-wide">
@@ -235,9 +235,9 @@ function ExploreList() {
             >
               <Link
                 href={item.href}
-                className="group flex min-h-11 items-center gap-2.5 rounded-xl px-2 py-1.5 text-sm text-[#4a5228] transition-colors duration-200 hover:bg-primary/[0.05] hover:text-primary active:bg-primary/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
+                className="group flex min-h-9 items-center gap-2 rounded-xl px-2 py-1 text-[13px] text-[#4a5228] transition-colors duration-200 hover:bg-primary/[0.05] hover:text-primary active:bg-primary/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 sm:min-h-11 sm:gap-2.5 sm:py-1.5 sm:text-sm"
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-white">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-white sm:h-8 sm:w-8">
                   <Icon className="h-3.5 w-3.5" strokeWidth={1.9} />
                 </span>
                 <span className="relative min-w-0 flex-1">
@@ -294,9 +294,9 @@ function DownloadBlock({ reduceMotion }: { reduceMotion: boolean }) {
             whileHover={reduceMotion ? undefined : { y: -2 }}
             whileTap={reduceMotion ? undefined : { scale: 0.97 }}
             transition={transitions.spring}
-            className="group flex min-h-12 items-center gap-3 rounded-xl border border-primary/12 bg-white px-3.5 py-2.5 text-sm font-semibold text-primary shadow-sm transition-colors duration-200 hover:border-primary/35 hover:bg-primary/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
+            className="group flex min-h-10 items-center gap-2.5 rounded-xl border border-primary/12 bg-white px-3 py-2 text-[13px] font-semibold text-primary shadow-sm transition-colors duration-200 hover:border-primary/35 hover:bg-primary/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 sm:min-h-12 sm:gap-3 sm:px-3.5 sm:py-2.5 sm:text-sm"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-white">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-white sm:h-9 sm:w-9">
               <Smartphone className="h-4 w-4" />
             </span>
             <span className="min-w-0 flex-1 text-left">

@@ -55,10 +55,15 @@ export function vehicleIdFromRide(ride: {
   is_emergency?: boolean | null;
 }): RideVehicleId {
   const key = `${ride.vehicle_type_name ?? ""} ${ride.booking_purpose ?? ""}`.toLowerCase();
-  if (key.includes("bike")) return "bike";
-  if (key.includes("auto")) return "auto";
-  if (key.includes("parcel") || key.includes("delivery")) return "parcel";
   if (key.includes("ambulance") || ride.is_emergency) return "ambulance";
+  if (key.includes("parcel") || key.includes("delivery")) return "parcel";
+  if (key.includes("rickshaw") || key.includes("e-rick")) return "e-rickshaw";
+  if (key.includes("bike")) return "bike";
+  if (/\bxl\b/.test(key) || key.includes("cab xl") || key.includes("suv")) {
+    return "cab-xl";
+  }
+  if (key.includes("premium") || key.includes("luxury")) return "cab-premium";
+  if (key.includes("auto")) return "auto";
   if (key.includes("cab") || key.includes("car") || key.includes("sedan")) return "cab";
   return "cab";
 }

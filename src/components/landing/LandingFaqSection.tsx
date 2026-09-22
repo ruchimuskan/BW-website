@@ -44,7 +44,7 @@ export function LandingFaqSection({ initialFaqs }: LandingFaqSectionProps) {
   const seed = initialFaqs?.length ? toDisplayFaqs(initialFaqs) : bundledFaqs();
   const [faqItems, setFaqItems] = useState<LandingFaq[]>(seed);
   const [faqsLoaded, setFaqsLoaded] = useState(Boolean(initialFaqs?.length));
-  const [openId, setOpenId] = useState<string | null>(() => seed[0]?.id ?? null);
+  const [openId, setOpenId] = useState<string | null>(null);
   const [helpHref, setHelpHref] = useState<string>(ROUTES.login);
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export function LandingFaqSection({ initialFaqs }: LandingFaqSectionProps) {
         const next = toDisplayFaqs(items);
         setFaqItems(next);
         setOpenId((prev) =>
-          next.some((item) => item.id === prev) ? prev : (next[0]?.id ?? null),
+          prev && next.some((item) => item.id === prev) ? prev : null,
         );
       })
       .finally(() => {

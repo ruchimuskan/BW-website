@@ -15,9 +15,14 @@ import { Label } from "@/components/ui/label";
 import { VerificationCodeInput } from "@/components/profile/VerificationCodeInput";
 import {
   parseContactPhone,
+  resolveOtpForDisplay,
   sendLoginOtp,
   verifyOtp,
 } from "@/lib/auth-api";
+import {
+  sendEmailVerificationCode,
+  verifyEmailVerificationCode,
+} from "@/lib/email-verify-api";
 import {
   clearPendingContactVerify,
   getAuthSession,
@@ -25,7 +30,7 @@ import {
   setAuthSession,
   setPendingContactVerify,
 } from "@/lib/auth-session";
-import { updateProfile } from "@/lib/profile-api";
+import { getProfile, updateProfile } from "@/lib/profile-api";
 
 interface ContactVerifyFormProps {
   type: "phone" | "email";
@@ -35,8 +40,8 @@ interface ContactVerifyFormProps {
 }
 
 /**
- * Phone: same OTP APIs as login/signup (`/auth/send-otp` + `/auth/verify-otp`).
- * Email: profile PATCH (no email-OTP endpoint on the existing backend).
+ * Phone: OTP via `/auth/send-otp` + `/auth/verify-otp`.
+ * Email: live mailbox check + inbox verification code, then profile PATCH.
  */
 export function ContactVerifyForm({
   type,
@@ -50,6 +55,7 @@ export function ContactVerifyForm({
   const [timeLeft, setTimeLeft] = useState(0);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
+  const [deliveredOtp, setDeliveredOtp] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [ready, setReady] = useState(false);
@@ -57,11 +63,14 @@ export function ContactVerifyForm({
 
   const sendPhoneOtp = useCallback(async (target: string) => {
     const { dial_code, phone } = parseContactPhone(target);
-    await sendLoginOtp({
+    const result = await sendLoginOtp({
       dial_code,
       phone,
       mode: "login",
     });
+    setDeliveredOtp(result.otp);
+    if (result.otp) setCode(result.otp);
+    return result;
   }, []);
 
   useEffect(() => {
@@ -85,17 +94,19 @@ export function ContactVerifyForm({
       if (type === "email") {
         setSending(true);
         try {
-          await updateProfile({ email: resolved });
-          const session = getAuthSession();
-          if (session) {
-            setAuthSession({ ...session, email: resolved });
+          const result = await sendEmailVerificationCode(resolved);
+          if (!cancelled) {
+            setContact(result.email);
+            setInfo(result.message);
+            setTimeLeft(45);
+            setReady(true);
           }
-          clearPendingContactVerify();
-          if (!cancelled) router.replace(successHref);
         } catch (err) {
           if (!cancelled) {
             setError(
-              err instanceof Error ? err.message : "Unable to update email.",
+              err instanceof Error
+                ? err.message
+                : "Unable to send a verification email.",
             );
             setReady(true);
           }
@@ -115,14 +126,21 @@ export function ContactVerifyForm({
       setError("");
       try {
         if (!recentlySent) {
-          await sendPhoneOtp(resolved);
+          const result = await sendPhoneOtp(resolved);
           sessionStorage.setItem(sentKey, String(Date.now()));
           if (!cancelled) {
-            setInfo("OTP sent to your mobile number.");
+            setInfo(
+              result.otp
+                ? "OTP ready — enter the code below to continue."
+                : "OTP sent to your mobile number.",
+            );
             setTimeLeft(30);
           }
         } else {
           if (!cancelled) {
+            const fallback = resolveOtpForDisplay(null);
+            setDeliveredOtp(fallback);
+            if (fallback) setCode(fallback);
             setInfo("Enter the OTP sent to your mobile number.");
             const remaining = Math.max(
               0,
@@ -161,7 +179,6 @@ export function ContactVerifyForm({
   }, [timeLeft]);
 
   const handleVerify = async (nextCode = code) => {
-    if (type !== "phone") return;
     if (verifyLock.current || nextCode.length !== 6 || !contact) return;
 
     verifyLock.current = true;
@@ -170,6 +187,30 @@ export function ContactVerifyForm({
     setInfo("");
 
     try {
+      if (type === "email") {
+        const verifiedEmail = await verifyEmailVerificationCode(
+          contact,
+          nextCode,
+        );
+        await updateProfile({ email: verifiedEmail });
+        const profile = await getProfile().catch(() => null);
+        const persisted =
+          profile?.email?.trim().toLowerCase() || verifiedEmail;
+        const existing = getAuthSession();
+        if (existing) {
+          setAuthSession({
+            ...existing,
+            email: persisted,
+            profileComplete:
+              existing.profileComplete === true && Boolean(persisted),
+          });
+        }
+        sessionStorage.removeItem(`bw-contact-otp-sent:${contact}`);
+        clearPendingContactVerify();
+        router.push(successHref);
+        return;
+      }
+
       const { dial_code, phone } = parseContactPhone(contact);
       const result = await verifyOtp({
         dial_code,
@@ -207,17 +248,22 @@ export function ContactVerifyForm({
   };
 
   const handleResend = async () => {
-    if (type !== "phone" || timeLeft > 0 || sending || !contact) return;
+    if (timeLeft > 0 || sending || !contact) return;
     setSending(true);
     setError("");
     setInfo("");
     setCode("");
     verifyLock.current = false;
     try {
-      await sendPhoneOtp(contact);
-      sessionStorage.setItem(`bw-contact-otp-sent:${contact}`, String(Date.now()));
-      setInfo("A new OTP was sent to your mobile number.");
-      setTimeLeft(30);
+      if (type === "email") {
+        const result = await sendEmailVerificationCode(contact);
+        setInfo(result.message);
+      } else {
+        await sendPhoneOtp(contact);
+        sessionStorage.setItem(`bw-contact-otp-sent:${contact}`, String(Date.now()));
+        setInfo("A new OTP was sent to your mobile number.");
+      }
+      setTimeLeft(type === "email" ? 45 : 30);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Unable to resend OTP.",
@@ -233,35 +279,14 @@ export function ContactVerifyForm({
         <div className="flex flex-col items-center justify-center gap-3 py-20 text-[#5a6330]">
           <Loader2 className="h-7 w-7 animate-spin text-primary" />
           <p className="text-sm">
-            {type === "phone" ? "Sending OTP…" : "Saving email…"}
+            {type === "phone" ? "Sending OTP…" : "Sending email code…"}
           </p>
         </div>
       </SettingsPageLayout>
     );
   }
 
-  if (type === "email") {
-    return (
-      <SettingsPageLayout backHref={backHref} title="Email">
-        <div className="rounded-2xl border border-[#eef5d4] bg-white p-5 sm:p-6">
-          {error ? (
-            <p className="text-sm text-destructive" role="alert">
-              {error}
-            </p>
-          ) : (
-            <p className="text-sm text-[#5a6330]">Redirecting…</p>
-          )}
-          <Button
-            type="button"
-            className="mt-6"
-            onClick={() => router.push(backHref)}
-          >
-            Go back
-          </Button>
-        </div>
-      </SettingsPageLayout>
-    );
-  }
+  const isEmail = type === "email";
 
   return (
     <SettingsPageLayout backHref={backHref} wide>
@@ -275,17 +300,18 @@ export function ContactVerifyForm({
             <MessageSquare className="h-5 w-5" />
           </div>
           <h2 className="relative mt-4 font-heading text-xl font-semibold sm:text-2xl">
-            Verify your number
+            {isEmail ? "Verify your email" : "Verify your number"}
           </h2>
           <p className="relative mt-2 text-sm leading-relaxed text-white/85">
-            Enter the 6-digit SMS code sent to{" "}
+            Enter the 6-digit code sent to{" "}
             <span className="break-all font-semibold text-white">{contact}</span>.
           </p>
           <div className="relative mt-5 flex items-start gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-3 text-sm text-white/90">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
             <span>
-              This uses the same secure OTP flow as sign-in. Codes expire
-              quickly — request a new one if needed.
+              {isEmail
+                ? "The inbox must be real and working. Dummy addresses are rejected."
+                : "This uses the same secure OTP flow as sign-in. Codes expire quickly — request a new one if needed."}
             </span>
           </div>
         </aside>
@@ -305,6 +331,18 @@ export function ContactVerifyForm({
             >
               {info}
             </p>
+          ) : null}
+
+          {deliveredOtp && type === "phone" ? (
+            <div className="mt-4 rounded-xl border border-[#dce8a8] bg-[#f5f9e8] px-4 py-3 text-sm text-[#283614]">
+              <p className="font-semibold tracking-wide">Your verification code</p>
+              <p className="mt-1 font-heading text-2xl font-bold tracking-[0.28em] text-[#111411]">
+                {deliveredOtp}
+              </p>
+              <p className="mt-1.5 text-xs leading-relaxed text-[#5a6330]">
+                SMS delivery is delayed on the server. Use this code to verify.
+              </p>
+            </div>
           ) : null}
 
           <div className="mt-6 flex flex-col items-center sm:items-start">

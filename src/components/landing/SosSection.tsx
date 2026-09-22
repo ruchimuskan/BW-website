@@ -71,8 +71,9 @@ export function SosSection() {
               className="mt-3 font-heading text-[1.55rem] font-light leading-tight tracking-tight sm:text-3xl lg:text-4xl bw-title"
             >
               Need help fast?
-              <span className="mt-1 block font-semibold text-destructive">
-                Choose & book ambulance for free.
+              <span className="mt-1 block font-semibold text-[#111411]">
+                Choose & book{" "}
+                <span className="text-destructive">Ambulance</span> for free.
               </span>
             </h2>
             <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-[#4a5228] sm:text-base">
@@ -89,7 +90,7 @@ export function SosSection() {
                   "h-12 w-full bg-destructive px-7 font-semibold text-white hover:bg-destructive/90 sm:w-auto",
                 )}
               >
-                Book ambulance for free
+                Book Ambulance for free
               </Link>
               <Link
                 href={ROUTES.sos}

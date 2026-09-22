@@ -37,7 +37,7 @@ import {
   parseTripCoords,
 } from "@/lib/ride-booking";
 import { getProtectedPath, isAuthenticated } from "@/lib/auth-session";
-import { VEHICLE_TO_CATEGORY_SLUG } from "@/lib/vehicle-map";
+import { VEHICLE_TO_CATEGORY_SLUG, resolveRideVehicleId } from "@/lib/vehicle-map";
 import { getVehicleCategories } from "@/lib/home-api";
 
 export function RideSearchingView() {
@@ -204,10 +204,16 @@ export function RideSearchingView() {
         let categoryId = categoryIdParam ?? undefined;
         if (!categoryId) {
           const slug = VEHICLE_TO_CATEGORY_SLUG[vehicle];
-          if (slug) {
-            const categories = await getVehicleCategories("ride");
-            categoryId = categories.find((c) => c.slug === slug)?.id;
-          }
+          const categories = await getVehicleCategories("ride");
+          categoryId =
+            (slug
+              ? categories.find((c) => c.slug?.toLowerCase() === slug)?.id
+              : undefined) ??
+            categories.find(
+              (c) =>
+                resolveRideVehicleId(`${c.slug ?? ""} ${c.name ?? ""}`) ===
+                vehicle,
+            )?.id;
         }
 
         if (!scheduledAt) {

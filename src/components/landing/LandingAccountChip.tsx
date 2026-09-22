@@ -66,10 +66,7 @@ export function LandingAccountChip({
   }
 
   const displayName = getDisplayName({ name: user.name });
-  const firstName =
-    displayName === "BW Rides User"
-      ? "My account"
-      : displayName.split(/\s+/).filter(Boolean)[0] || "My account";
+  const firstName = displayName.split(/\s+/).filter(Boolean)[0] || "My account";
 
   if (layout === "icon") {
     return (
@@ -187,7 +184,15 @@ export function LandingAccountChip({
             luxury ? "bg-white/15 text-white" : "bg-primary/10 text-primary",
           )}
         >
-          <Star className="h-3 w-3 fill-secondary text-secondary" strokeWidth={1.5} />
+          <Star
+            className={cn(
+              "h-3 w-3",
+              luxury
+                ? "fill-white text-white"
+                : "fill-secondary text-secondary",
+            )}
+            strokeWidth={1.5}
+          />
           {user.rating}
         </span>
       ) : null}

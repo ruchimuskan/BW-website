@@ -25,6 +25,7 @@ const TABS: { id: HomeBookingTab; label: string }[] = [
 type HomeBookingPanelProps = {
   pickup: string;
   dropoff: string;
+  pickupLocating?: boolean;
   onSwap: () => void;
   coords?: LocationCoords;
   stops?: TripStop[];
@@ -37,6 +38,7 @@ type HomeBookingPanelProps = {
 export function HomeBookingPanel({
   pickup,
   dropoff,
+  pickupLocating = false,
   onSwap,
   coords,
   stops,
@@ -74,7 +76,7 @@ export function HomeBookingPanel({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-white/40 bg-white/95 shadow-[0_28px_64px_-28px_rgba(32,42,16,0.55)] backdrop-blur-md sm:rounded-[1.5rem]",
+        "overflow-hidden rounded-2xl border border-white/50 bg-white shadow-[0_28px_64px_-28px_rgba(32,42,16,0.5)] sm:rounded-[1.5rem]",
         className,
       )}
     >
@@ -97,7 +99,7 @@ export function HomeBookingPanel({
                   if (item.id !== "rental") setRentalStyle(null);
                 }}
                 className={cn(
-                  "min-h-11 rounded-full px-2 py-2 text-[11px] font-semibold tracking-wide transition-all duration-200 sm:text-sm",
+                  "min-h-10 rounded-full px-1 py-2 text-[10px] font-semibold tracking-wide transition-all duration-200 sm:min-h-11 sm:px-2 sm:text-sm",
                   active
                     ? "bg-primary text-white shadow-[0_8px_18px_-10px_rgba(184,217,38,0.7)]"
                     : "text-primary/70 hover:bg-primary/5 hover:text-primary",
@@ -166,6 +168,7 @@ export function HomeBookingPanel({
         <LocationCard
           pickup={pickup}
           dropoff={dropoff}
+          pickupLocating={pickupLocating}
           onSwap={onSwap}
           coords={coords}
           stops={stops}

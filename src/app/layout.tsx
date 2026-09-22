@@ -213,7 +213,7 @@ export default async function RootLayout({
         <AuthSessionGuard />
         <ScrollToTopOnNavigate />
         <PageBackground />
-        <div className="bw-page-root relative z-10 min-h-dvh w-full min-w-0">
+        <div className="bw-page-root relative z-10 flex min-h-dvh w-full min-w-0 flex-col overflow-x-clip">
           {children}
         </div>
         <FloatingChatLazy />

@@ -13,6 +13,7 @@ import { LandingServicesSection } from "@/components/landing/LandingServicesSect
 import { LandingFaqSection } from "@/components/landing/LandingFaqSection";
 import { ROUTES } from "@/constants/routes";
 import {
+  landingServices,
   type LandingBookingTab,
   type ServiceItem,
 } from "@/constants/services";
@@ -33,6 +34,7 @@ import { resolveAddressCoords } from "@/lib/places-api";
 import { fetchSchedulePreview } from "@/lib/schedule-api";
 import { cn } from "@/lib/utils";
 import { useActiveRideGuard } from "@/hooks/useActiveRideGuard";
+import { useBackendGpsPickup } from "@/hooks/useBackendGpsPickup";
 
 const SectionSkeleton = ({ className }: { className?: string }) => (
   <div
@@ -96,24 +98,38 @@ export function LandingView({
   const [activeTab, setActiveTab] = useState<LandingBookingTab>("rides");
   const [pickup, setPickup] = useState("");
   const [dropoff, setDropoff] = useState("");
+  const [pickupLat, setPickupLat] = useState<number | undefined>();
+  const [pickupLng, setPickupLng] = useState<number | undefined>();
+  const [dropoffLat, setDropoffLat] = useState<number | undefined>();
+  const [dropoffLng, setDropoffLng] = useState<number | undefined>();
   const [scheduledAt, setScheduledAt] = useState<string | null>(null);
   const [schedulePreviewLabel, setSchedulePreviewLabel] = useState<string | null>(
     null,
   );
   const [isBooking, setIsBooking] = useState(false);
-  const [services, setServices] = useState<ServiceItem[]>([]);
-  const [servicesLoading, setServicesLoading] = useState(true);
+  const [services, setServices] = useState<ServiceItem[]>(landingServices);
   const [draftHydrated, setDraftHydrated] = useState(false);
+  const [gpsEnabled, setGpsEnabled] = useState(false);
   const hydratedOnce = useRef(false);
 
   const dropoffCopy = getDropoffLocationCopy(activeTab);
 
   const tripCoords = {
-    pickupLat: Number(searchParams.get("plat")) || undefined,
-    pickupLng: Number(searchParams.get("plng")) || undefined,
-    dropoffLat: Number(searchParams.get("dlat")) || undefined,
-    dropoffLng: Number(searchParams.get("dlng")) || undefined,
+    pickupLat:
+      pickupLat ??
+      (Number(searchParams.get("plat")) || undefined),
+    pickupLng:
+      pickupLng ??
+      (Number(searchParams.get("plng")) || undefined),
+    dropoffLat:
+      dropoffLat ??
+      (Number(searchParams.get("dlat")) || undefined),
+    dropoffLng:
+      dropoffLng ??
+      (Number(searchParams.get("dlng")) || undefined),
   };
+
+  const gpsPickup = useBackendGpsPickup(gpsEnabled);
 
   const applySchedulePreview = useCallback(
     async (iso: string) => {
@@ -167,12 +183,13 @@ export function LandingView({
   useEffect(() => {
     void warmBackend();
     let cancelled = false;
+    // Soft refresh only — curated local tiles already render instantly.
     void fetchLandingServices()
       .then((items) => {
-        if (!cancelled) setServices(items);
+        if (!cancelled && items.length > 0) setServices(items);
       })
-      .finally(() => {
-        if (!cancelled) setServicesLoading(false);
+      .catch(() => {
+        if (!cancelled) setServices(landingServices);
       });
     return () => {
       cancelled = true;
@@ -189,17 +206,37 @@ export function LandingView({
     const fromLocationRoute =
       typeof document !== "undefined" &&
       /\/location(\?|$|#)/.test(document.referrer || "");
-    // Addresses only when the user is mid booking (location return / #book).
-    const restorePlaces =
-      hashIsBook ||
-      fromLocationRoute ||
-      Boolean(searchParams.get("plat") && searchParams.get("plng"));
+    // Addresses only when mid-booking (location return / #book). Fresh `/`
+    // uses GPS + backend reverse-geocode for pickup — not sticky URL leftovers.
+    const restorePlaces = hashIsBook || fromLocationRoute;
 
-    if (restorePlaces && urlPickup) setPickup(urlPickup);
-    else if (!hydratedOnce.current) setPickup("");
+    if (restorePlaces && urlPickup) {
+      setPickup(urlPickup);
+      const plat = Number(searchParams.get("plat"));
+      const plng = Number(searchParams.get("plng"));
+      if (Number.isFinite(plat) && Number.isFinite(plng)) {
+        setPickupLat(plat);
+        setPickupLng(plng);
+      }
+    } else if (!hydratedOnce.current) {
+      setPickup("");
+      setPickupLat(undefined);
+      setPickupLng(undefined);
+    }
 
-    if (restorePlaces && urlDropoff) setDropoff(urlDropoff);
-    else if (!hydratedOnce.current) setDropoff("");
+    if (restorePlaces && urlDropoff) {
+      setDropoff(urlDropoff);
+      const dlat = Number(searchParams.get("dlat"));
+      const dlng = Number(searchParams.get("dlng"));
+      if (Number.isFinite(dlat) && Number.isFinite(dlng)) {
+        setDropoffLat(dlat);
+        setDropoffLng(dlng);
+      }
+    } else if (!hydratedOnce.current) {
+      setDropoff("");
+      setDropoffLat(undefined);
+      setDropoffLng(undefined);
+    }
 
     if (isLandingBookingTab(urlTab)) setActiveTab(urlTab);
     else if (!hydratedOnce.current) setActiveTab("rides");
@@ -214,7 +251,7 @@ export function LandingView({
 
     if (!hydratedOnce.current && !restorePlaces) {
       clearLandingBookingDraft();
-      // Drop sticky ?pickup=&dropoff= leftovers so a refresh of `/` stays empty.
+      // Drop sticky place leftovers so a refresh of `/` uses live GPS pickup.
       try {
         const url = new URL(window.location.href);
         let dirty = false;
@@ -250,6 +287,9 @@ export function LandingView({
 
     hydratedOnce.current = true;
     setDraftHydrated(true);
+    // Fresh visit: track pickup via GPS + backend reverse (app-style).
+    // Mid-flow restore keeps the user-chosen pickup and skips GPS.
+    setGpsEnabled(!(restorePlaces && Boolean(urlPickup)));
 
     if (restorePlaces || hashIsBook) {
       const scrollToBookWidget = () => {
@@ -263,6 +303,15 @@ export function LandingView({
       return () => window.clearTimeout(timer);
     }
   }, [searchParams]);
+
+  /** Apply backend-resolved GPS place into pickup (never overwrite user choice). */
+  useEffect(() => {
+    if (!gpsPickup.place) return;
+    const label = gpsPickup.place.label?.trim() || "Current location";
+    setPickup((current) => current || label);
+    setPickupLat((current) => current ?? gpsPickup.place?.latitude);
+    setPickupLng((current) => current ?? gpsPickup.place?.longitude);
+  }, [gpsPickup.place]);
 
   useEffect(() => {
     const routes = [
@@ -456,6 +505,9 @@ export function LandingView({
         pickup={pickup}
         dropoff={dropoff}
         dropoffEmptyLabel={dropoffCopy.emptyLabel}
+        pickupEmptyLabel={
+          gpsPickup.locating ? "Detecting current location…" : "Current location"
+        }
         ctaLabel={ctaLabel}
         onOpenLocation={openLocationSearch}
         onSubmit={handleBook}
@@ -469,7 +521,7 @@ export function LandingView({
         isSubmitting={isBooking}
       />
 
-      <LandingServicesSection services={services} isLoading={servicesLoading} />
+      <LandingServicesSection services={services} />
 
       <LandingPremiumGallery />
 

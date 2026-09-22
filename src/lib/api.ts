@@ -496,6 +496,10 @@ export async function apiFetch<T>(
             "Server is waking up. Please wait a few seconds and try again.",
           )
         : getErrorMessage(errorBody, fallbackError);
+    if (response.status === 401 && !skipAuth && typeof window !== "undefined") {
+      const { clearAuthSession } = await import("@/lib/auth-session");
+      clearAuthSession();
+    }
     throw new Error(
       response.status === 401 ? friendlyAuthError(raw) : raw,
     );

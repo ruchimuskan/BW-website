@@ -93,7 +93,7 @@ export function SelfDriveLocationsView() {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#f7fbe8] pb-[calc(5.5rem+env(safe-area-inset-bottom))] lg:pb-0">
+    <div className="flex min-h-dvh flex-col bg-[#f7fbe8] pb-[calc(4.75rem+env(safe-area-inset-bottom))] lg:pb-0">
       <header className="sticky top-0 z-40 border-b border-[#e8f0c8] bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-5xl items-center gap-3 px-4 py-3.5 sm:px-6 lg:px-8">
           <button
