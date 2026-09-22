@@ -37,7 +37,6 @@ export default async function TwitterImage() {
             gap: 26,
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={logoSrc}
             width={120}

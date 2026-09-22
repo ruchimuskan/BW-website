@@ -318,7 +318,7 @@ export function LocationSearchView() {
     return () => {
       cancelled = true;
     };
-  }, [field, searchBias.latitude, searchBias.longitude]);
+  }, [field, searchBias]);
 
   useEffect(() => {
     const trimmed = query.trim();

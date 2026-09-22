@@ -2,7 +2,14 @@
 
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
-import { startTransition, useCallback, useEffect, useRef, useState } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { MarketingPageShell } from "@/components/landing/MarketingPageShell";
 import { LandingHeader } from "@/components/landing/LandingHeader";
@@ -114,20 +121,23 @@ export function LandingView({
 
   const dropoffCopy = getDropoffLocationCopy(activeTab);
 
-  const tripCoords = {
-    pickupLat:
-      pickupLat ??
-      (Number(searchParams.get("plat")) || undefined),
-    pickupLng:
-      pickupLng ??
-      (Number(searchParams.get("plng")) || undefined),
-    dropoffLat:
-      dropoffLat ??
-      (Number(searchParams.get("dlat")) || undefined),
-    dropoffLng:
-      dropoffLng ??
-      (Number(searchParams.get("dlng")) || undefined),
-  };
+  const tripCoords = useMemo(
+    () => ({
+      pickupLat:
+        pickupLat ??
+        (Number(searchParams.get("plat")) || undefined),
+      pickupLng:
+        pickupLng ??
+        (Number(searchParams.get("plng")) || undefined),
+      dropoffLat:
+        dropoffLat ??
+        (Number(searchParams.get("dlat")) || undefined),
+      dropoffLng:
+        dropoffLng ??
+        (Number(searchParams.get("dlng")) || undefined),
+    }),
+    [pickupLat, pickupLng, dropoffLat, dropoffLng, searchParams],
+  );
 
   const gpsPickup = useBackendGpsPickup(gpsEnabled);
 
@@ -159,12 +169,7 @@ export function LandingView({
         setSchedulePreviewLabel("Schedule saved · fares load on next step");
       }
     },
-    [
-      tripCoords.pickupLat,
-      tripCoords.pickupLng,
-      tripCoords.dropoffLat,
-      tripCoords.dropoffLng,
-    ],
+    [tripCoords],
   );
 
   const applyScheduledAt = useCallback(

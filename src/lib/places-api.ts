@@ -353,14 +353,13 @@ export async function resolveCurrentGpsPlace(options?: {
   ) {
     best = await new Promise<GeolocationPosition>((resolve) => {
       let current = best;
-      let timer: ReturnType<typeof setTimeout> | undefined;
       let settled = false;
       let watchId = 0;
 
       const finish = (pos: GeolocationPosition) => {
         if (settled) return;
         settled = true;
-        if (timer != null) window.clearTimeout(timer);
+        window.clearTimeout(timer);
         if (watchId) navigator.geolocation.clearWatch(watchId);
         resolve(pos);
       };
@@ -379,7 +378,7 @@ export async function resolveCurrentGpsPlace(options?: {
         { enableHighAccuracy: true, maximumAge: 0, timeout: timeoutMs },
       );
 
-      timer = setTimeout(() => finish(current), refineMs);
+      const timer = setTimeout(() => finish(current), refineMs);
 
       signal?.addEventListener("abort", () => finish(current), { once: true });
     });
