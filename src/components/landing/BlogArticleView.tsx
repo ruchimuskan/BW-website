@@ -1,119 +1,129 @@
 "use client";
 
-import Image from "next/image";
+import { ResilientImage } from "@/components/brand/ResilientImage";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ArrowLeft, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { MarketingPageShell } from "@/components/landing/MarketingPageShell";
 import { LandingHeader } from "@/components/landing/LandingHeader";
-import { BrandImageOverlay } from "@/components/brand/BrandImageOverlay";
-import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
-import { getBlogPost, blogPosts } from "@/data/blogs";
+import { NEXT_IMAGE_QUALITY } from "@/constants/images";
+import { resolveBlogCover, type BlogPost } from "@/data/blogs";
 import { ROUTES } from "@/constants/routes";
 import { blogPostPath } from "@/lib/blog-routes";
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-IN", {
+  if (!iso) return "";
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) return iso;
+  return parsed.toLocaleDateString("en-IN", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 }
 
-interface BlogArticleViewProps {
-  slug: string;
-}
-
-export function BlogArticleView({ slug }: BlogArticleViewProps) {
-  const post = getBlogPost(slug);
-  if (!post) {
-    notFound();
-  }
-
-  const related = blogPosts
-    .filter((p) => p.slug !== post.slug && p.category === post.category)
-    .slice(0, 2);
+export function BlogArticleView({
+  post,
+  related = [],
+}: {
+  post: BlogPost;
+  related?: BlogPost[];
+}) {
 
   return (
     <MarketingPageShell>
       <LandingHeader />
 
-      <article className="relative border-b border-[#eef5d4] bg-[#f8faf2] px-4 py-10 sm:px-6 sm:py-14">
-        <AnimateIn className="relative z-10 mx-auto max-w-3xl">
-          <Link
-            href={ROUTES.blogs}
-            className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-[#38471B] transition-colors hover:text-[#5a6330]"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to all blogs
-          </Link>
+      <article className="border-b border-[#e8edd8] bg-[#f7f8f3]">
+        <div className="mx-auto max-w-3xl px-4 pb-14 pt-8 sm:px-6 sm:pb-16 sm:pt-10">
+          <nav aria-label="Breadcrumb" className="text-[12px] text-[#8a9184]">
+            <ol className="flex flex-wrap items-center gap-1.5">
+              <li>
+                <Link
+                  href={ROUTES.blogs}
+                  className="inline-flex items-center gap-1.5 font-semibold text-[#38471B] transition-colors hover:text-[#111411]"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+                  All stories
+                </Link>
+              </li>
+              <li aria-hidden>/</li>
+              <li className="uppercase tracking-[0.14em] text-[#5a7a12]">
+                {post.category}
+              </li>
+            </ol>
+          </nav>
 
-          <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#7a8450]">
-            {post.category}
-          </p>
-          <div className="mt-2 h-px w-12 bg-gradient-to-r from-[#B8D926] to-transparent" />
+          <header className="mt-6">
+            <h1 className="font-heading text-[1.55rem] font-semibold leading-[1.15] tracking-tight text-[#111411] sm:text-4xl lg:text-[2.55rem]">
+              {post.title}
+            </h1>
+            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-[#5A6158]">
+              <span>{post.author}</span>
+              {post.date ? (
+                <>
+                  <span aria-hidden>·</span>
+                  <time dateTime={post.date}>{formatDate(post.date)}</time>
+                </>
+              ) : null}
+              {post.readTime ? (
+                <>
+                  <span aria-hidden>·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <Clock className="h-3.5 w-3.5" aria-hidden />
+                    {post.readTime}
+                  </span>
+                </>
+              ) : null}
+            </div>
+          </header>
 
-          <h1 className="mt-4 font-heading text-[1.75rem] font-semibold leading-tight tracking-tight text-[#38471B] sm:text-4xl lg:text-[2.5rem]">
-            {post.title}
-          </h1>
-
-          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[#4a5228]">
-            <span>{post.author}</span>
-            <span aria-hidden>·</span>
-            <span>{formatDate(post.date)}</span>
-            <span aria-hidden>·</span>
-            <span className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              {post.readTime}
-            </span>
-          </div>
-
-          <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-xl border border-[#e8edd8] bg-[#eef2e0] shadow-[0_20px_48px_-28px_rgba(40,54,20,0.28)] sm:rounded-2xl">
-            <Image
-              src={post.image}
-              alt={post.imageAlt}
+          <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-2xl border border-[#e8edd8] bg-[#eef2e0]">
+            <ResilientImage
+              src={resolveBlogCover(post)}
+              alt={post.imageAlt || post.title}
               fill
-              quality={90}
-              className="object-cover"
-              style={{ objectPosition: post.imagePosition ?? "center center" }}
+              quality={NEXT_IMAGE_QUALITY.high}
+              className="object-cover object-center"
               sizes="(max-width: 768px) 100vw, 768px"
               priority
+              fallbackSrc="/images/blogs/cities.jpg"
             />
-            <BrandImageOverlay variant="subtle" />
           </div>
 
-          <div className="mt-10 space-y-5 text-sm font-light leading-relaxed text-[#4a5228] sm:text-base lg:text-lg">
+          <div className="mt-10 space-y-5 text-[15px] leading-[1.75] text-[#3d4438] sm:text-base sm:leading-[1.8]">
             {post.paragraphs.map((paragraph) => (
-              <p key={paragraph.slice(0, 48)}>{paragraph}</p>
+              <p key={paragraph.slice(0, 64)}>{paragraph}</p>
             ))}
           </div>
-        </AnimateIn>
 
-        {related.length > 0 ? (
-          <AnimateIn className="mx-auto mt-14 max-w-3xl border-t border-[#eef5d4] pt-10">
-            <p className="text-[10px] font-semibold tracking-[0.24em] uppercase text-[#7a8450]">
-              Related
-            </p>
-            <Stagger className="mt-4 space-y-3">
-              {related.map((item, index) => (
-                <StaggerItem key={item.slug} index={index}>
-                  <Link
-                    href={blogPostPath(item.slug)}
-                    className="group flex items-start justify-between gap-4 rounded-xl border border-[#e8eed8] bg-white px-4 py-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#dce8a8] hover:shadow-[0_12px_28px_-20px_rgba(40,54,20,0.22)] sm:rounded-2xl"
-                  >
-                    <span className="font-heading text-base font-semibold tracking-tight text-[#38471B] group-hover:text-[#283614]">
-                      {item.title}
-                    </span>
-                    <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-[#38471B]">
-                      Read →
-                    </span>
-                  </Link>
-                </StaggerItem>
-              ))}
-            </Stagger>
-          </AnimateIn>
-        ) : null}
+          {related.length > 0 ? (
+            <aside className="mt-14 border-t border-[#e8edd8] pt-8">
+              <p className="text-[10px] font-semibold tracking-[0.22em] text-[#5a7a12] uppercase">
+                More stories
+              </p>
+              <ul className="mt-4 space-y-2">
+                {related.map((item) => (
+                  <li key={item.slug}>
+                    <Link
+                      href={blogPostPath(item.slug)}
+                      prefetch
+                      className="group flex min-h-12 items-center justify-between gap-3 rounded-xl bg-white px-4 py-3.5 ring-1 ring-[#e8edd8] transition-colors hover:ring-[#C6E31A]/70 sm:gap-4"
+                    >
+                      <span className="min-w-0 font-heading text-[14px] font-semibold leading-snug tracking-tight text-[#111411] group-hover:text-[#283614] sm:text-[15px]">
+                        {item.title}
+                      </span>
+                      <ArrowRight
+                        className="h-4 w-4 shrink-0 text-[#111411] transition-transform group-hover:translate-x-0.5"
+                        aria-hidden
+                      />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          ) : null}
+        </div>
       </article>
 
       <LandingFooter />

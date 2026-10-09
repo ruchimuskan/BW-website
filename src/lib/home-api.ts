@@ -1,5 +1,6 @@
 import type { SelfDriveLocation } from "@/constants/home-booking";
 import { authFetch, apiFetch } from "@/lib/api";
+import { publicFetchCache, rememberPublic } from "@/lib/public-cache";
 
 export interface VehicleCategory {
   id: string;
@@ -225,11 +226,18 @@ export function getVehicleCategories(
   serviceGroup?: "ride" | "rental" | "ambulance" | "self_drive",
 ): Promise<VehicleCategory[]> {
   const query = serviceGroup ? `?service_group=${serviceGroup}` : "";
-  return apiFetch<unknown>(
-    `/api/v1/common/vehicle-types${query}`,
-    { skipAuth: true },
-    "Unable to load vehicles"
-  ).then((res) => {
+  const cacheKey = `vehicle-types:${serviceGroup ?? "all"}`;
+  return rememberPublic(cacheKey, () =>
+    apiFetch<unknown>(
+      `/api/v1/common/vehicle-types${query}`,
+      {
+        skipAuth: true,
+        timeoutMs: 2_500,
+        skipRetry: true,
+        ...publicFetchCache(),
+      },
+      "Unable to load vehicles",
+    ).then((res) => {
     let rows: unknown[] = [];
     if (Array.isArray(res)) rows = res;
     else if (res && typeof res === "object") {
@@ -286,7 +294,8 @@ export function getVehicleCategories(
         } as VehicleCategory;
       })
       .filter((row): row is VehicleCategory => row != null);
-  });
+    }),
+  );
 }
 
 export function getRentalCategories(): Promise<VehicleCategory[]> {

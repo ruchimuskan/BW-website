@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_BRAND } from "@/constants/seo";
+import { SITE_BRAND, SITE_SHARE_IMAGE_PATH } from "@/constants/seo";
 
 type PageMetaInput = {
   title: string;
@@ -37,18 +37,19 @@ export function pageMetadata({
       description,
       images: [
         {
-          url: "/opengraph-image",
-          width: 1200,
-          height: 630,
-          alt: SITE_BRAND,
+          url: SITE_SHARE_IMAGE_PATH,
+          width: 512,
+          height: 512,
+          alt: `${SITE_BRAND} logo`,
+          type: "image/png",
         },
       ],
     },
     twitter: {
-      card: "summary_large_image",
+      card: "summary",
       title: resolvedTitle,
       description,
-      images: ["/twitter-image"],
+      images: [SITE_SHARE_IMAGE_PATH],
     },
     robots: noIndex
       ? { index: false, follow: false }

@@ -63,7 +63,7 @@ const exploreLinks = [
   { label: "Download App", href: ROUTES.download },
   { label: "Become a captain", href: ROUTES.captains },
   { label: "Sitemap", href: ROUTES.siteMap },
-  { label: "Services", href: "#services" },
+  { label: "Services", href: `${ROUTES.landing}#services` },
   { label: "FAQs", href: "#faqs" },
 ] as const;
 

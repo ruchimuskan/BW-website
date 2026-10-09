@@ -74,6 +74,14 @@ const nextConfig: NextConfig = {
         key: "X-Content-Type-Options",
         value: "nosniff",
       },
+      {
+        key: "Access-Control-Allow-Origin",
+        value: "*",
+      },
+      {
+        key: "Accept-Ranges",
+        value: "bytes",
+      },
     ];
     return [
       {
@@ -82,6 +90,13 @@ const nextConfig: NextConfig = {
       },
       // Fast image delivery for every public asset folder shipped in the zip.
       { source: "/images/:path*", headers: longCache },
+      { source: "/images/pages/:path*", headers: longCache },
+      { source: "/images/blogs/:path*", headers: longCache },
+      { source: "/images/gallery/:path*", headers: longCache },
+      { source: "/images/services/:path*", headers: longCache },
+      { source: "/images/landing/:path*", headers: longCache },
+      { source: "/images/features/:path*", headers: longCache },
+      { source: "/images/chat/:path*", headers: longCache },
       { source: "/gallery/:path*", headers: longCache },
       { source: "/landing/:path*", headers: longCache },
       { source: "/brand/:path*", headers: longCache },
@@ -89,6 +104,11 @@ const nextConfig: NextConfig = {
       { source: "/media/:path*", headers: longCache },
       { source: "/assets/:path*", headers: longCache },
       { source: "/static/:path*", headers: longCache },
+      { source: "/files/:path*", headers: longCache },
+      { source: "/photos/:path*", headers: longCache },
+      { source: "/img/:path*", headers: longCache },
+      { source: "/services/:path*", headers: longCache },
+      { source: "/uploads/:path*", headers: longCache },
       {
         source:
           "/:file(favicon.png|icon.png|icon-192.png|icon-512.png|apple-touch-icon.png|bwride.png)",

@@ -1,6 +1,5 @@
-import { landingFaqItems, shortenLandingFaqQuestion } from "@/constants/landing-faq";
-import { ROUTES } from "@/constants/routes";
-import { landingServices, type ServiceItem } from "@/constants/services";
+import { shortenLandingFaqQuestion } from "@/constants/landing-faq";
+import { type ServiceItem } from "@/constants/services";
 import {
   getVehicleCategories,
   isAmbulanceVehicle,
@@ -120,20 +119,6 @@ function pickLandingCategories(categories: VehicleCategory[]): VehicleCategory[]
   return picks;
 }
 
-const AMBULANCE_SERVICE: ServiceItem = {
-  name: "Ambulance",
-  description: "Book Ambulance free",
-  image: "/images/services/ambulance-studio.png",
-  route: `${ROUTES.start}?tab=ambulance&vehicle=ambulance`,
-};
-
-const ERICKSHAW_SERVICE: ServiceItem = {
-  name: "E-Rickshaw",
-  description: "Local electric hops",
-  image: "/images/services/e-rickshaw.png",
-  route: `${ROUTES.start}?tab=rides&vehicle=e-rickshaw`,
-};
-
 function isAmbulanceItem(s: ServiceItem): boolean {
   const key = `${s.name} ${s.route}`.toLowerCase();
   return (
@@ -151,32 +136,18 @@ function isRickshawItem(s: ServiceItem): boolean {
 }
 
 /**
- * Always show Bike · Auto · E-Rickshaw · Cab · Ambulance with branded studio art.
- * API categories fill ride slots when available; ambulance is never dropped.
+ * Keep only vehicle types returned by the backend. Local studio art is branding,
+ * not a substitute SKU.
  */
 function finalizeLandingServices(mapped: ServiceItem[]): ServiceItem[] {
-  const rides = mapped.filter((s) => !isAmbulanceItem(s));
-  const next = [...rides];
-
-  if (!next.some(isRickshawItem)) {
-    const cabIdx = next.findIndex((s) =>
-      /cab|economy|car|sedan/i.test(s.name),
-    );
-    next.splice(
-      cabIdx >= 0 ? cabIdx : Math.min(2, next.length),
-      0,
-      ERICKSHAW_SERVICE,
-    );
-  }
-
-  const uniqueRides: ServiceItem[] = [];
+  const unique: ServiceItem[] = [];
   const seen = new Set<string>();
-  for (const item of next) {
+  for (const item of mapped) {
     const key = item.name.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
     const localImage = vehicleImageForSlug(`${item.name} ${item.image}`);
-    uniqueRides.push({
+    unique.push({
       ...item,
       image: isRickshawItem(item)
         ? "/images/services/e-rickshaw.png"
@@ -186,26 +157,10 @@ function finalizeLandingServices(mapped: ServiceItem[]): ServiceItem[] {
             ? item.image
             : localImage,
     });
-    if (uniqueRides.length >= 4) break;
   }
-
-  while (uniqueRides.length < 4) {
-    const fallback = landingServices.find(
-      (s) =>
-        !isAmbulanceItem(s) &&
-        !uniqueRides.some((u) => u.name.toLowerCase() === s.name.toLowerCase()),
-    );
-    if (!fallback) break;
-    uniqueRides.push(fallback);
-  }
-
-  return [
-    ...uniqueRides.slice(0, 4),
-    {
-      ...AMBULANCE_SERVICE,
-      route: mapped.find(isAmbulanceItem)?.route || AMBULANCE_SERVICE.route,
-    },
-  ];
+  const rides = unique.filter((s) => !isAmbulanceItem(s));
+  const ambulance = unique.find(isAmbulanceItem);
+  return ambulance ? [...rides, ambulance] : rides;
 }
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
@@ -235,7 +190,7 @@ export async function fetchLandingServices(): Promise<ServiceItem[]> {
         getVehicleCategories("ride"),
         getVehicleCategories("ambulance").catch(() => [] as VehicleCategory[]),
       ]),
-      6_000,
+      2_800,
       "Landing vehicle types",
     );
 
@@ -246,10 +201,10 @@ export async function fetchLandingServices(): Promise<ServiceItem[]> {
       return finalizeLandingServices(mapped);
     }
   } catch {
-    // Fall through to curated marketing tiles so production never shows an empty grid.
+    return [];
   }
 
-  return landingServices;
+  return [];
 }
 
 function mapFaqItem(item: FaqItem, index: number): LandingFaq {
@@ -266,24 +221,16 @@ function mapFaqItem(item: FaqItem, index: number): LandingFaq {
   };
 }
 
-function bundledLandingFaqs(): LandingFaq[] {
-  return landingFaqItems.map(({ id, question, answer }) => ({
-    id,
-    question,
-    answer,
-  }));
-}
-
-/** Landing FAQ accordion — live CMS first; curated copy keeps production usable. */
+/** Landing FAQ accordion — CMS only. Empty until the server publishes FAQs. */
 export async function fetchLandingFaqs(): Promise<LandingFaq[]> {
   try {
-    const items = await getFaqs();
+    const items = await withTimeout(getFaqs(), 2_800, "Landing FAQs");
     if (items.length > 0) {
       return items.slice(0, 12).map(mapFaqItem);
     }
   } catch {
-    // Fall through to curated FAQ copy.
+    return [];
   }
 
-  return bundledLandingFaqs();
+  return [];
 }

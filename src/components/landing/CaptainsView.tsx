@@ -17,10 +17,11 @@ import { MarketingPageShell } from "@/components/landing/MarketingPageShell";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { APP_DOWNLOAD } from "@/constants/app-download";
 import { ROUTES } from "@/constants/routes";
-import { landingAssets } from "@/constants/services";
 import { landingShell } from "@/lib/landing-shell";
 import { cn } from "@/lib/utils";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
+import { PAGE_PHOTOS } from "@/constants/brand-images";
+import { NEXT_IMAGE_QUALITY } from "@/constants/images";
 
 const benefits = [
   {
@@ -59,7 +60,12 @@ export function CaptainsView() {
 
         <div className={landingShell("relative z-10 grid grid-cols-1 items-center gap-6 py-10 sm:gap-8 sm:py-14 lg:grid-cols-2 lg:gap-12 lg:py-16")}>
           <AnimateIn direction="right" delay={0.08} className="order-2 min-w-0 lg:order-2">
-            <CaptainsShowcaseGallery priority />
+            <CaptainsShowcaseGallery
+              priority
+              src={PAGE_PHOTOS.captains}
+              fallbackSrc={PAGE_PHOTOS.captainsSafety}
+              alt="BW Rides captain partner beside a premium cab"
+            />
           </AnimateIn>
 
           <div className="order-1 min-w-0 lg:order-1">
@@ -163,24 +169,19 @@ export function CaptainsView() {
       {/* Safety */}
       <section className="bw-responsive-section">
         <div className="bw-marketing-container grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-          <AnimateIn className="relative order-1 overflow-hidden rounded-2xl border border-[#dce8a8]/60 shadow-[0_24px_48px_-28px_rgba(40,54,20,0.4)] sm:rounded-3xl">
-            <div
-              className="relative aspect-[16/11] w-full bg-[#F4F5F2]"
-              style={{
-                backgroundImage: `url(${landingAssets.slideFleet})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
+          <AnimateIn className="relative order-1 min-w-0 overflow-hidden rounded-2xl border border-[#dce8a8]/50 shadow-[0_24px_48px_-28px_rgba(40,54,20,0.35)] sm:rounded-3xl">
+            <figure className="relative aspect-[16/11] w-full bg-[#1a1f16]">
               <ResilientImage
-                src={landingAssets.slideFleet}
-                alt="BW Rides captain fleet"
+                src={PAGE_PHOTOS.captainsSafety}
+                alt="BW Rides captain protected on the road"
                 fill
-                className={BRAND_PHOTO_CLASS}
+                quality={NEXT_IMAGE_QUALITY.high}
                 sizes="(max-width: 1024px) 100vw, 50vw"
+                className={cn(BRAND_PHOTO_CLASS, "object-cover object-center")}
+                fallbackSrc={PAGE_PHOTOS.captains}
               />
-              <BrandImageOverlay variant="default" />
-            </div>
+              <BrandImageOverlay variant="card" />
+            </figure>
           </AnimateIn>
 
           <AnimateIn delay={0.08} className="order-2 min-w-0">

@@ -5,11 +5,11 @@ export const easeSoft = [0.16, 1, 0.3, 1] as const;
 
 export const transitions = {
   page: { duration: 0.12, ease: easeOut },
-  reveal: { duration: 0.55, ease: easeSoft },
-  fast: { duration: 0.22, ease: easeOut },
-  hover: { duration: 0.28, ease: easeOut },
-  spring: { type: "spring" as const, stiffness: 340, damping: 30 },
-  softSpring: { type: "spring" as const, stiffness: 220, damping: 26 },
+  reveal: { duration: 0.38, ease: easeSoft },
+  fast: { duration: 0.18, ease: easeOut },
+  hover: { duration: 0.22, ease: easeOut },
+  spring: { type: "spring" as const, stiffness: 380, damping: 32 },
+  softSpring: { type: "spring" as const, stiffness: 260, damping: 28 },
 };
 
 export const pageVariants = {
@@ -51,7 +51,7 @@ export const fadeRightVariants = {
 export const staggerContainerVariants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.09, delayChildren: 0.08 },
+    transition: { staggerChildren: 0.06, delayChildren: 0.04 },
   },
 };
 

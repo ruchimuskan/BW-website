@@ -18,6 +18,13 @@ export const SITE_BRAND_ALTERNATES = [
 export const DEFAULT_SITE_DESCRIPTION =
   "Book BW Rides online — bike, auto, cab, parcel, and book ambulance for free. Live tracking, verified captains, and safer travel anytime across India.";
 
+/** Canonical brand mark for Google Search, Open Graph, and Organization.logo. */
+export const SITE_LOGO_PATH = "/images/bwride.png";
+/** Square share mark Google uses as the search thumbnail (logo only, never a vehicle). */
+export const SITE_SHARE_IMAGE_PATH = "/images/bwride.png";
+export const SITE_OG_IMAGE_PATH = "/opengraph-image";
+export const SITE_LOGO_ALT = "BW Rides logo";
+
 /** Official profiles / store pages for Organization.sameAs (helps knowledge panel trust). */
 export function organizationSameAs(): string[] {
   const links = [
@@ -111,7 +118,7 @@ export const SITE_LINK_PAGES = [
     path: ROUTES.about,
     title: "About Us | BW Rides",
     description:
-      "We're building calm, confident mobility for India — premium rides, parcels, and book ambulance for free for millions of riders and captains.",
+      "We're building calm, confident mobility for India — premium rides, parcels, and book ambulance for free for riders and captains.",
     sitelinkDescription:
       "Premium rides, parcels, and emergency care built for modern India.",
   },

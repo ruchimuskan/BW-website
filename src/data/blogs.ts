@@ -1,6 +1,3 @@
-import { BRAND_PHOTOS } from "@/constants/brand-images";
-import { landingAssets } from "@/constants/services";
-
 export type BlogCategory =
   | "Company"
   | "Safety"
@@ -23,6 +20,44 @@ export interface BlogPost {
   paragraphs: string[];
 }
 
+export const BLOG_COVERS = {
+  "wavego-ambulance-sos-launch": "/images/blogs/ambulance.jpg",
+  "50-cities-and-counting": "/images/blogs/cities.jpg",
+  "captain-earnings-transparency": "/images/blogs/captain-earnings.jpg",
+  "monsoon-ride-safety-tips": "/images/blogs/monsoon.jpg",
+  "parcel-delivery-milestone": "/images/blogs/parcel.jpg",
+  "women-safety-commitment": "/images/blogs/women-safety.jpg",
+} as const;
+
+const CATEGORY_COVERS: Record<BlogCategory, string> = {
+  Product: "/images/bwride.png",
+  Company: BLOG_COVERS["50-cities-and-counting"],
+  Captains: BLOG_COVERS["captain-earnings-transparency"],
+  Safety: BLOG_COVERS["monsoon-ride-safety-tips"],
+  Community: BLOG_COVERS["women-safety-commitment"],
+};
+
+const PLACEHOLDER_IMAGE =
+  /pic-8|pic-best-fare|quick.?fare|lime-cab\.png|landing\/brand/i;
+
+export function resolveBlogCover(post: {
+  slug: string;
+  image?: string;
+  category?: string;
+}): string {
+  const bySlug = BLOG_COVERS[post.slug as keyof typeof BLOG_COVERS];
+  if (bySlug) return bySlug;
+  const src = (post.image ?? "").trim();
+  if (src.startsWith("http://") || src.startsWith("https://")) return src;
+  if (src.startsWith("/images/") && !PLACEHOLDER_IMAGE.test(src)) {
+    if (/ambulance/i.test(src)) return "/images/bwride.png";
+    return src;
+  }
+  const category = post.category as BlogCategory | undefined;
+  if (category && CATEGORY_COVERS[category]) return CATEGORY_COVERS[category];
+  return "/images/bwride.png";
+}
+
 export const blogPosts: BlogPost[] = [
   {
     slug: "wavego-ambulance-sos-launch",
@@ -32,8 +67,8 @@ export const blogPosts: BlogPost[] = [
     category: "Product",
     date: "2026-05-12",
     readTime: "4 min read",
-    image: landingAssets.slideAmbulance,
-    imageAlt: "BW Rides ambulance service",
+    image: BLOG_COVERS["wavego-ambulance-sos-launch"],
+    imageAlt: "Lime-green BW Rides ambulance on an Indian city street",
     imagePosition: "center 35%",
     author: "BW Rides Team",
     paragraphs: [
@@ -45,21 +80,21 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "50-cities-and-counting",
-    title: "50 cities and counting: BW Rides' expansion across India",
+    title: "Growing across India: how BW Rides launches in a new city",
     excerpt:
-      "From a single-city pilot to a nationwide mobility network — how BW Rides is bringing reliable rides to more communities every month.",
+      "From a single-city pilot to more communities — how we bring reliable rides, parcels, and support to each new launch.",
     category: "Company",
     date: "2026-04-28",
     readTime: "5 min read",
-    image: landingAssets.slideFleet,
-    imageAlt: "BW Rides fleet on Indian roads",
+    image: BLOG_COVERS["50-cities-and-counting"],
+    imageAlt: "Lime-green BW Rides cab on an Indian city highway",
     imagePosition: "center 40%",
     author: "Priya Sharma",
     paragraphs: [
-      "BW Rides started with a simple belief: Indian cities deserve mobility that is fast, fair, and safe. Today we operate in over 50 cities, connecting millions of rides, parcels, and emergency trips each quarter.",
-      "Expansion is not just about maps on a website. Each new city gets local captain onboarding, regional pricing, airport and hospital route coverage, and a dedicated support team that understands local roads and peak-hour patterns.",
-      "We prioritise neighbourhoods that are underserved by traditional transport — late-night corridors, hospital zones, and industrial hubs where reliable pickup matters most.",
-      "Thank you to our riders, captains, and city partners who make every new launch possible. The wave is only getting bigger.",
+      "BW Rides started with a simple belief: Indian cities deserve mobility that is fast, fair, and safe. We expand city by city, standing up a network that works on local roads before we talk about growth.",
+      "Each new city gets local captain onboarding, regional pricing, airport and hospital route coverage, and a support team that understands peak-hour patterns.",
+      "We prioritise neighbourhoods that are underserved by traditional transport — late-night corridors, hospital zones, and industrial hubs where a reliable pickup matters most.",
+      "Thank you to our riders, captains, and city partners who make every launch possible.",
     ],
   },
   {
@@ -70,8 +105,8 @@ export const blogPosts: BlogPost[] = [
     category: "Captains",
     date: "2026-04-10",
     readTime: "6 min read",
-    image: BRAND_PHOTOS.captainsHero,
-    imageAlt: "BW Rides captain on the road",
+    image: BLOG_COVERS["captain-earnings-transparency"],
+    imageAlt: "BW Rides captain checking trip earnings in the car",
     imagePosition: "center 28%",
     author: "Rahul Kapoor",
     paragraphs: [
@@ -83,14 +118,14 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "monsoon-ride-safety-tips",
-    title: "7 monsoon ride safety tips every BW Rides rider should know",
+    title: "Monsoon ride safety tips every BW Rides rider should know",
     excerpt:
       "Heavy rain changes how we move through the city. Here is how to stay safe, dry, and informed during the monsoon season.",
     category: "Safety",
     date: "2026-03-22",
     readTime: "3 min read",
-    image: landingAssets.cityCab,
-    imageAlt: "Safe BW Rides ride in the city",
+    image: BLOG_COVERS["monsoon-ride-safety-tips"],
+    imageAlt: "Lime-green BW Rides cab driving in monsoon rain",
     imagePosition: "center 40%",
     author: "BW Rides Safety Team",
     paragraphs: [
@@ -103,21 +138,21 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "parcel-delivery-milestone",
-    title: "One million parcels delivered: BW Rides Parcel hits a milestone",
+    title: "BW Rides Parcel: same-day delivery across the city",
     excerpt:
-      "Same-day intra-city delivery is now a core part of how businesses and families move goods across BW Rides cities.",
+      "Send documents, gifts, and small business shipments with verified captains, live tracking, and photo proof at drop-off.",
     category: "Product",
     date: "2026-03-05",
     readTime: "4 min read",
-    image: landingAssets.slideParcel,
-    imageAlt: "BW Rides parcel delivery",
+    image: BLOG_COVERS["parcel-delivery-milestone"],
+    imageAlt: "BW Rides captain delivering a parcel to a customer",
     imagePosition: "center 45%",
     author: "BW Rides Team",
     paragraphs: [
-      "BW Rides Parcel crossed one million completed deliveries this quarter — documents, gifts, pharmacy runs, and small business shipments that needed to move fast within the city.",
-      "Parcel rides use the same verified captain network as passenger trips, with photo proof at pickup and drop-off, live tracking for senders, and insured coverage on eligible items.",
-      "Businesses can book recurring routes from the app, and families use Parcel for everything from forgotten laptops to surprise birthday cakes across town.",
-      "Try Parcel from the landing page booking widget or the home screen — enter pickup and delivery addresses, see upfront pricing, and send in minutes.",
+      "BW Rides Parcel is for the things that need to move fast within the city — documents, gifts, pharmacy runs, and small business shipments.",
+      "Parcel trips use the same verified captain network as passenger rides, with photo proof at pickup and drop-off, live tracking for senders, and insured coverage on eligible items.",
+      "Businesses can book recurring routes from the app, and families use Parcel for everything from forgotten laptops to birthday cakes across town.",
+      "Try Parcel from the booking widget or the home screen — enter pickup and delivery addresses, see upfront pricing, and send in minutes.",
     ],
   },
   {
@@ -128,8 +163,8 @@ export const blogPosts: BlogPost[] = [
     category: "Community",
     date: "2026-02-14",
     readTime: "5 min read",
-    image: landingAssets.cityAuto,
-    imageAlt: "BW Rides community safety",
+    image: BLOG_COVERS["women-safety-commitment"],
+    imageAlt: "Women passengers riding safely in a BW Rides cab",
     imagePosition: "center 40%",
     author: "BW Rides Safety Team",
     paragraphs: [
@@ -140,6 +175,33 @@ export const blogPosts: BlogPost[] = [
     ],
   },
 ];
+
+const DUMMY_CLAIM =
+  /50 cities|over 50 cities|one million parcels|million parcels delivered|million completed deliveries|millions of rides/i;
+
+function scrubClaims(text: string) {
+  return text
+    .replace(/\b50 cities and counting:?\s*/gi, "")
+    .replace(/\bover 50 cities\b/gi, "more cities")
+    .replace(/\bone million parcels delivered:?\s*/gi, "")
+    .replace(/\b(one )?million parcels\b/gi, "parcels")
+    .replace(/\b(one )?million (completed )?deliveries\b/gi, "deliveries")
+    .replace(/\bmillions of rides\b/gi, "rides")
+    .replace(/^[:\s]+/, "")
+    .trim();
+}
+
+/** Drop unverified milestone claims if a CMS feed still sends them. */
+export function withoutDummyClaims(post: BlogPost): BlogPost {
+  const blob = `${post.title} ${post.excerpt} ${post.paragraphs.join(" ")}`;
+  if (!DUMMY_CLAIM.test(blob)) return post;
+  return {
+    ...post,
+    title: scrubClaims(post.title) || post.title,
+    excerpt: scrubClaims(post.excerpt),
+    paragraphs: post.paragraphs.map(scrubClaims),
+  };
+}
 
 export function getBlogPost(slug: string): BlogPost | undefined {
   return blogPosts.find((post) => post.slug === slug);

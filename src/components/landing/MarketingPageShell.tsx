@@ -13,7 +13,7 @@ export function MarketingPageShell({
   return (
     <div
       className={cn(
-        "bw-page-shell font-sans text-[#283614] antialiased",
+        "bw-page-shell font-sans text-[#38471B] antialiased [text-rendering:optimizeLegibility]",
         className,
       )}
     >

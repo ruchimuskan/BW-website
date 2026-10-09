@@ -1,4 +1,5 @@
 import { apiFetch, authFetch } from "@/lib/api";
+import { publicFetchCache, rememberPublic } from "@/lib/public-cache";
 import { triggerRideSos } from "@/lib/ride-api";
 
 export interface FaqItem {
@@ -9,11 +10,20 @@ export interface FaqItem {
 }
 
 function unwrapFaqList(res: unknown): FaqItem[] {
-  const raw = Array.isArray(res)
-    ? res
-    : res && typeof res === "object" && Array.isArray((res as { data?: unknown }).data)
-      ? ((res as { data: unknown[] }).data)
-      : [];
+  let raw: unknown[] = [];
+  if (Array.isArray(res)) {
+    raw = res;
+  } else if (res && typeof res === "object") {
+    const record = res as Record<string, unknown>;
+    const nested = record.data ?? record.items ?? record.results ?? record.faqs;
+    if (Array.isArray(nested)) {
+      raw = nested;
+    } else if (nested && typeof nested === "object") {
+      const inner = nested as Record<string, unknown>;
+      const list = inner.data ?? inner.items ?? inner.results ?? inner.faqs;
+      if (Array.isArray(list)) raw = list;
+    }
+  }
   const items: FaqItem[] = [];
   for (const row of raw) {
     if (!row || typeof row !== "object") continue;
@@ -32,11 +42,18 @@ function unwrapFaqList(res: unknown): FaqItem[] {
 }
 
 export function getFaqs(): Promise<FaqItem[]> {
-  return apiFetch<unknown>(
-    "/api/v1/common/support/faqs",
-    { skipAuth: true },
-    "Unable to load FAQs",
-  ).then(unwrapFaqList);
+  return rememberPublic("support-faqs", () =>
+    apiFetch<unknown>(
+      "/api/v1/common/support/faqs",
+      {
+        skipAuth: true,
+        timeoutMs: 2_500,
+        skipRetry: true,
+        ...publicFetchCache(),
+      },
+      "Unable to load FAQs",
+    ).then(unwrapFaqList),
+  );
 }
 
 export interface SupportTicketMessage {

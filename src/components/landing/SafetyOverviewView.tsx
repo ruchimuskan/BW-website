@@ -1,7 +1,6 @@
 "use client";
 
 import { ResilientImage } from "@/components/brand/ResilientImage";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { BrandImageOverlay, BRAND_PHOTO_CLASS } from "@/components/brand/BrandImageOverlay";
@@ -42,12 +41,12 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
   return (
     <>
       <section
-        className="relative overflow-hidden py-10 sm:py-14 lg:py-16 xl:py-20"
+        className="relative overflow-x-clip overflow-y-visible py-7 sm:py-12 lg:py-16 xl:py-20"
         aria-labelledby="overview-hero-heading"
       >
         <SafetyAtmosphere />
 
-        <div className={landingShell("relative grid items-center gap-8 sm:gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14 xl:gap-16")}>
+        <div className={landingShell("relative grid items-start gap-6 sm:gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10 xl:gap-12")}>
           <div className="min-w-0">
             <AnimateIn>
               <SafetyEyebrow>Safety</SafetyEyebrow>
@@ -56,10 +55,10 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
             <AnimateIn delay={0.06}>
               <h1
                 id="overview-hero-heading"
-                className="mt-5 font-heading text-[2.15rem] font-light leading-[1.12] tracking-tight sm:text-5xl lg:text-[3.35rem] bw-title"
+                className="mt-4 font-heading text-[1.75rem] font-light leading-[1.12] tracking-tight sm:mt-5 sm:text-5xl lg:text-[3.35rem] bw-title"
               >
                 {hero.title.replace(".", "")}
-                <span className="text-[#B8D926]">.</span>
+                <span className="text-[#C6E31A]">.</span>
               </h1>
             </AnimateIn>
 
@@ -74,10 +73,10 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
             </AnimateIn>
 
             <AnimateIn delay={0.2}>
-              <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row">
+              <div className="mt-6 flex flex-col gap-2.5 sm:mt-8 sm:flex-row sm:gap-3">
                 <Button
                   size="lg"
-                  className="h-12 rounded-xl border border-[#f0c7c2] bg-white px-7 font-semibold text-[#111411] shadow-[0_14px_32px_-18px_rgba(185,28,28,0.28)] hover:bg-[#fff5f3]"
+                  className="h-11 w-full rounded-full border border-[#f0c7c2] bg-white px-6 text-sm font-semibold text-[#111411] shadow-[0_14px_32px_-18px_rgba(185,28,28,0.28)] hover:bg-[#fff5f3] sm:h-12 sm:w-auto sm:rounded-xl sm:px-7"
                   onClick={() =>
                     router.push(getProtectedPath(ROUTES.ambulanceBook))
                   }
@@ -88,7 +87,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-12 rounded-xl border-primary/25 bg-white/80 px-7 font-semibold text-primary backdrop-blur-sm hover:bg-primary/5"
+                  className="h-11 w-full rounded-full border-primary/25 bg-white/80 px-6 text-sm font-semibold text-primary backdrop-blur-sm hover:bg-primary/5 sm:h-12 sm:w-auto sm:rounded-xl sm:px-7"
                   onClick={() =>
                     document
                       .getElementById("safety-measures")
@@ -104,11 +103,11 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
           <AnimateIn
             direction="right"
             delay={0.1}
-            className="flex w-full min-w-0 items-center justify-center lg:justify-end"
+            className="flex w-full min-w-0 items-center justify-center overflow-visible lg:justify-end"
           >
             <SafetyImageCollage
               images={hero.images}
-              className="w-full lg:max-w-[min(100%,28rem)] xl:max-w-[min(100%,32rem)]"
+            className="w-full max-w-none pb-3"
             />
           </AnimateIn>
         </div>
@@ -147,7 +146,6 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
                       className={cn(
                         BRAND_PHOTO_CLASS,
                         "transition-transform duration-700 group-hover:scale-[1.03]",
-                        "imageClassName" in card ? card.imageClassName : undefined,
                       )}
                       sizes="(max-width: 640px) 100vw, 480px"
                       fallbackSrc={
@@ -199,7 +197,7 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
             {protectionSteps.map((step, index) => (
               <AnimateIn key={step.step} delay={index * 0.05}>
                 <div className="relative flex h-full flex-col rounded-2xl border border-[#dce8a8]/50 bg-gradient-to-b from-white to-[#f8fbe8]/60 p-5 shadow-[0_12px_36px_-24px_rgba(56,71,27,0.12)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_18px_44px_-26px_rgba(184,217,38,0.32)] sm:p-6">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-[#9BB820] text-sm font-bold text-white shadow-[0_8px_20px_-10px_rgba(184,217,38,0.65)]">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#C6E31A] text-sm font-bold text-[#111411] shadow-[0_8px_20px_-10px_rgba(198,227,26,0.75)]">
                     {step.step}
                   </span>
                   <h3
@@ -288,31 +286,9 @@ export function SafetyOverviewView({ onTabChange }: SafetyOverviewViewProps) {
         </div>
       </SafetySectionBand>
 
-      <SafetySectionBand tinted aria-labelledby="safety-faq-heading">
-        <div className="w-full min-w-0 lg:max-w-4xl lg:mx-auto">
-          <AnimateIn className="text-center">
-            <SafetyEyebrow>FAQ</SafetyEyebrow>
-            <h2
-              id="safety-faq-heading"
-              className="mt-5 font-heading text-[1.65rem] font-light tracking-tight sm:text-3xl bw-title"
-            >
-              Common safety questions
-            </h2>
-          </AnimateIn>
-
-          <div className="mt-9 sm:mt-11">
-            <SafetyFaqAccordion items={safetyFaqItems} limit={5} />
-          </div>
-
-          <AnimateIn className="mt-8 text-center">
-            <Link
-              href={getProtectedPath(ROUTES.profileHelp)}
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#38471B] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_-18px_rgba(56,71,27,0.45)] transition-colors hover:bg-[#2f3c17] hover:text-white"
-            >
-              Visit help center
-              <ChevronRight className="h-4 w-4 text-white" />
-            </Link>
-          </AnimateIn>
+      <SafetySectionBand accent aria-labelledby="safety-faq-heading">
+        <div className="w-full min-w-0">
+          <SafetyFaqAccordion items={safetyFaqItems} />
         </div>
       </SafetySectionBand>
 

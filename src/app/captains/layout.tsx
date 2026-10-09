@@ -8,14 +8,14 @@ export default function CaptainsLayout({
       <link
         rel="preload"
         as="image"
-        href="/images/img15.png"
-        type="image/png"
+        href="/images/pages/page-captains.jpg"
+        type="image/jpeg"
       />
       <link
         rel="preload"
         as="image"
-        href="/images/img15-2x.webp"
-        type="image/webp"
+        href="/images/pages/page-captains-safety.jpg"
+        type="image/jpeg"
       />
       {children}
     </>

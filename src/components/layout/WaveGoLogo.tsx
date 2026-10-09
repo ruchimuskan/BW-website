@@ -96,6 +96,9 @@ export function WaveGoLogo({
         sizeStyles[size],
         !withWordmark && className,
       )}
+      itemScope={priority || undefined}
+      itemType={priority ? "https://schema.org/ImageObject" : undefined}
+      itemProp={priority ? "logo" : undefined}
     >
       <Image
         src={BW_RIDES_LOGO_SRC}
@@ -106,6 +109,7 @@ export function WaveGoLogo({
         unoptimized
         quality={NEXT_IMAGE_QUALITY.high}
         sizes="(max-width: 640px) 48px, 64px"
+        itemProp={priority ? "image" : undefined}
         className={cn(
           "object-contain object-center p-[6%]",
           !onDark && "mix-blend-multiply",

@@ -1,4 +1,5 @@
 import { ROUTES } from "@/constants/routes";
+import { isMediaPath, isStaticAssetPath } from "@/lib/static-media";
 
 /**
  * Shared route access rules for middleware (edge) and client auth guards.
@@ -56,6 +57,32 @@ export const PUBLIC_PREFIXES = [
   `${ROUTES.safety}/`,
   "/legal/",
   "/corporate/",
+  "/images/",
+  "/images/pages/",
+  "/images/blogs/",
+  "/images/gallery/",
+  "/images/services/",
+  "/images/features/",
+  "/images/landing/",
+  "/images/chat/",
+  "/gallery/",
+  "/landing/",
+  "/uploads/",
+  "/brand/",
+  "/icons/",
+  "/media/",
+  "/assets/",
+  "/static/",
+  "/files/",
+  "/photos/",
+  "/img/",
+  "/pics/",
+  "/services/",
+  "/covers/",
+  "/cover/",
+  "/cdn/",
+  "/fonts/",
+  "/chat/",
 ] as const;
 
 export const PROTECTED_PATHS = new Set<string>([
@@ -106,6 +133,7 @@ export const PROTECTED_PREFIXES = [
 ] as const;
 
 export function isPublicPath(pathname: string): boolean {
+  if (isMediaPath(pathname) || isStaticAssetPath(pathname)) return true;
   if (PUBLIC_PATHS.has(pathname)) return true;
   return PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }

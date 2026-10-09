@@ -31,21 +31,21 @@ export function CaptainSafetyView() {
       >
         <SafetyAtmosphere />
 
-        <div className={landingShell("relative grid items-center gap-10 lg:grid-cols-2 lg:gap-16")}>
-          <div>
+        <div className={landingShell("relative grid items-center gap-8 pb-28 sm:gap-10 sm:pb-16 lg:grid-cols-2 lg:gap-16 lg:pb-0")}>
+          <div className="min-w-0">
             <AnimateIn>
               <SafetyEyebrow>Captains</SafetyEyebrow>
             </AnimateIn>
             <AnimateIn delay={0.06}>
               <h1
                 id="captain-safety-heading"
-                className="mt-5 font-heading text-[2.15rem] font-light leading-[1.12] tracking-tight sm:text-5xl lg:text-[3.1rem] bw-title"
+                className="mt-5 font-heading text-[1.85rem] font-semibold leading-[1.12] tracking-tight text-[#111411] sm:text-5xl lg:text-[3.1rem]"
               >
                 {hero.title}
               </h1>
             </AnimateIn>
             <AnimateIn delay={0.12}>
-              <p className="mt-5 max-w-lg text-sm font-light leading-relaxed text-[#4a5228] sm:text-lg">
+              <p className="mt-5 max-w-lg text-sm leading-relaxed text-[#38471B]/80 sm:text-lg">
                 {hero.description}
               </p>
             </AnimateIn>
@@ -56,7 +56,7 @@ export function CaptainSafetyView() {
               <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row">
                 <Button
                   size="lg"
-                  className="h-12 rounded-xl bg-primary px-7 font-semibold text-white shadow-[0_14px_32px_-18px_rgba(184,217,38,0.55)] hover:bg-[#D4F04A] hover:text-white"
+                  className="h-12 w-full rounded-xl bg-[#C6E31A] px-7 font-semibold text-[#111411] shadow-[0_14px_32px_-18px_rgba(56,71,27,0.35)] hover:bg-[#D4F04A] hover:text-[#111411] sm:w-auto"
                   onClick={() => router.push(ROUTES.captains)}
                 >
                   Become a captain
@@ -64,7 +64,7 @@ export function CaptainSafetyView() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-12 rounded-xl border-primary/25 bg-white/80 px-7 font-semibold text-primary backdrop-blur-sm hover:bg-primary/5"
+                  className="h-12 w-full rounded-xl border-[#38471B]/20 bg-white px-7 font-semibold text-[#38471B] hover:border-[#C6E31A] hover:bg-[#C6E31A]/15 hover:text-[#111411] sm:w-auto"
                   onClick={() =>
                     document
                       .getElementById("captain-safety-measures")
@@ -77,7 +77,7 @@ export function CaptainSafetyView() {
             </AnimateIn>
           </div>
 
-          <AnimateIn direction="right" delay={0.1}>
+          <AnimateIn direction="right" delay={0.1} className="min-w-0">
             <SafetyOffsetImage
               src={hero.image}
               alt={hero.alt}
@@ -154,13 +154,13 @@ export function CaptainSafetyView() {
               href={APP_DOWNLOAD.captainAndroidPlayStoreUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-gradient-to-r from-primary to-[#9BB820] px-7 text-sm font-semibold text-white shadow-[0_14px_32px_-18px_rgba(56,71,27,0.38)] transition-opacity hover:opacity-95"
+              className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-[#C6E31A] px-7 text-sm font-semibold text-[#111411] shadow-[0_14px_32px_-18px_rgba(56,71,27,0.35)] transition hover:bg-[#D4F04A] sm:w-auto"
             >
               Get Captain App
             </a>
             <Link
               href={ROUTES.captains}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.14em] uppercase text-primary transition-colors hover:text-secondary sm:text-sm"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.14em] uppercase text-[#38471B] transition-colors hover:text-[#111411] sm:text-sm"
             >
               Learn more
               <ChevronRight className="h-4 w-4" />

@@ -4,6 +4,8 @@ import { SITE_LINK_PAGES } from "@/constants/seo";
 import { fetchBlogPosts } from "@/lib/blog-api";
 import { pageMetadata } from "@/lib/page-metadata";
 
+export const revalidate = 60;
+
 const page = SITE_LINK_PAGES.find((p) => p.path === "/blogs")!;
 
 export const metadata: Metadata = pageMetadata({

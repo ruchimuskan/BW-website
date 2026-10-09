@@ -57,7 +57,7 @@ export const landingServices: ServiceItem[] = [
   {
     name: "Auto",
     description: "Everyday rides",
-    image: "/images/gallery/shoot-auto.png",
+    image: "/images/pic-5.png",
     route: `${ROUTES.start}?tab=rides&vehicle=auto`,
   },
   {
@@ -276,37 +276,37 @@ export const landingServiceLifestyle: Record<string, string> = {
   ambulance: BRAND_PHOTOS.ambulance,
 };
 
-/** Book section + luxury hero — 3D service cutouts (contained, same style as ride cab). */
+/** Book section + luxury hero — lifestyle photography (no cartoon cutouts). */
 export const landingBookImages = {
   rides: {
-    src: "/images/services/car.webp",
-    fallback: "/images/landing/brand/lime-cab.png",
-    alt: "BW Rides premium cab",
-    objectPosition: "50% 100%",
+    src: BRAND_PHOTOS.limeCab,
+    fallback: BRAND_PHOTOS.streetCab,
+    alt: "BW Rides lime cab on a city street",
+    objectPosition: "50% 55%",
     offsetY: "0%",
-    accent: "from-transparent via-transparent to-transparent",
-    glow: "rgba(198,227,26,0.42)",
-    scale: 1.26,
+    accent: "from-[#111411]/20 via-transparent to-[#111411]/50",
+    glow: "rgba(198,227,26,0.28)",
+    scale: 1,
   },
   parcel: {
-    src: landingAssets.serviceParcel,
-    fallback: "/images/services/parcel.png",
-    alt: "BW Rides secure parcel delivery",
-    objectPosition: "50% 88%",
-    offsetY: "16%",
-    accent: "from-transparent via-transparent to-transparent",
-    glow: "rgba(198,227,26,0.36)",
-    scale: 1.34,
+    src: BRAND_PHOTOS.parcelDelivery,
+    fallback: BRAND_PHOTOS.shootParcel,
+    alt: "BW Rides parcel handed to a customer",
+    objectPosition: "50% 40%",
+    offsetY: "0%",
+    accent: "from-[#111411]/15 via-transparent to-[#111411]/45",
+    glow: "rgba(198,227,26,0.22)",
+    scale: 1,
   },
   ambulance: {
-    src: "/images/services/ambulance-cutout.png",
-    fallback: "/images/services/ambulance.png",
-    alt: "BW Rides emergency ambulance",
-    objectPosition: "50% 90%",
-    offsetY: "12%",
-    accent: "from-transparent via-transparent to-transparent",
-    glow: "rgba(220,38,38,0.28)",
-    scale: 1.28,
+    src: BRAND_PHOTOS.ambulance,
+    fallback: BRAND_PHOTOS.shootSos,
+    alt: "BW Rides emergency ambulance on the road",
+    objectPosition: "45% 50%",
+    offsetY: "0%",
+    accent: "from-[#111411]/20 via-transparent to-[#111411]/50",
+    glow: "rgba(198,227,26,0.18)",
+    scale: 1,
   },
 } as const;
 
@@ -338,10 +338,10 @@ export const landingHeroCtas = [
 ] as const;
 
 export const landingStats = [
-  { value: "50+", label: "Cities" },
   { value: "24×7", label: "Availability" },
-  { value: "<5 min", label: "Avg. pickup" },
-  { value: "100%", label: "Live tracking" },
+  { value: "Verified", label: "Captains" },
+  { value: "Live", label: "Trip tracking" },
+  { value: "SOS", label: "Emergency care" },
 ] as const;
 
 export const landingPillars = [

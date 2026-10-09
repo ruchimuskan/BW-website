@@ -9,7 +9,7 @@ import { MarketingPageShell } from "@/components/landing/MarketingPageShell";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { GlowButton } from "@/components/landing/GlowButton";
 import { ROUTES } from "@/constants/routes";
-import { landingAssets } from "@/constants/services";
+import { PAGE_PHOTOS } from "@/constants/brand-images";
 
 const openAreas = [
   {
@@ -63,7 +63,7 @@ export function CareersView() {
             </AnimateIn>
             <AnimateIn delay={0.12}>
               <p className="mt-5 max-w-lg text-sm font-light leading-relaxed text-[#4a5228] sm:text-lg">
-                Join BW Rides and help millions move with confidence —
+                Join BW Rides and help people move with confidence —
                 through rides, parcels, and emergency care across India.
               </p>
             </AnimateIn>
@@ -90,8 +90,8 @@ export function CareersView() {
           <AnimateIn delay={0.1} className="relative">
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl sm:aspect-[5/4] sm:rounded-[1.4rem] lg:aspect-[4/5]">
               <Image
-                src={landingAssets.slideFleet}
-                alt="BW Rides team and fleet"
+                src={PAGE_PHOTOS.careers}
+                alt="BW Rides careers and operations team"
                 fill
                 priority
                 quality={85}

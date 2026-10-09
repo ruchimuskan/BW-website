@@ -8,60 +8,15 @@ import {
 import { ROUTES } from "@/constants/routes";
 import { isProductionEnv } from "@/lib/app-env";
 import { isProtectedPath, isPublicPath } from "@/lib/route-access";
+import {
+  isCacheableMediaPath,
+  isStaticAssetPath,
+} from "@/lib/static-media";
 
 /**
  * Edge gate: auth cookie flag + profile-complete cookie.
- * Real JWT lives in sessionStorage — AuthSessionGuard clears stale cookies
- * and redirects when the backend token is missing.
- * Static images, uploads, and media proxies must never be gated.
+ * Images, fonts, and media always pass — never send photos through login.
  */
-
-const IMAGE_EXT =
-  /\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm|css|js|map)$/i;
-
-function isStaticAssetPath(pathname: string): boolean {
-  if (
-    pathname.startsWith("/_next/") ||
-    pathname.startsWith("/images/") ||
-    pathname.startsWith("/gallery/") ||
-    pathname.startsWith("/landing/") ||
-    pathname.startsWith("/uploads/") ||
-    pathname.startsWith("/api/") ||
-    pathname.startsWith("/fonts/") ||
-    pathname.startsWith("/brand/") ||
-    pathname.startsWith("/icons/") ||
-    pathname.startsWith("/media/") ||
-    pathname.startsWith("/assets/") ||
-    pathname.startsWith("/static/") ||
-    pathname.startsWith("/services/") ||
-    pathname.startsWith("/chat/") ||
-    pathname.startsWith("/opengraph-image") ||
-    pathname.startsWith("/twitter-image") ||
-    pathname.startsWith("/icon") ||
-    pathname.startsWith("/apple-icon") ||
-    pathname.startsWith("/apple-touch-icon") ||
-    pathname.startsWith("/favicon")
-  ) {
-    return true;
-  }
-  return IMAGE_EXT.test(pathname);
-}
-
-function isCacheableMediaPath(pathname: string): boolean {
-  return (
-    pathname.startsWith("/images/") ||
-    pathname.startsWith("/gallery/") ||
-    pathname.startsWith("/landing/") ||
-    pathname.startsWith("/uploads/") ||
-    pathname.startsWith("/brand/") ||
-    pathname.startsWith("/icons/") ||
-    pathname.startsWith("/media/") ||
-    pathname.startsWith("/assets/") ||
-    pathname.startsWith("/static/") ||
-    pathname.startsWith("/services/") ||
-    IMAGE_EXT.test(pathname)
-  );
-}
 
 function passthrough(pathname: string) {
   const response = NextResponse.next();
@@ -71,6 +26,9 @@ function passthrough(pathname: string) {
       "public, max-age=31536000, immutable",
     );
     response.headers.set("X-Content-Type-Options", "nosniff");
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set("Timing-Allow-Origin", "*");
+    response.headers.set("Accept-Ranges", "bytes");
   }
   return response;
 }
@@ -100,7 +58,7 @@ function safeReturnPath(pathname: string, search: string): string {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (isStaticAssetPath(pathname)) {
+  if (isStaticAssetPath(pathname) || isCacheableMediaPath(pathname)) {
     return passthrough(pathname);
   }
 
@@ -158,6 +116,10 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|_next/data|images|gallery|landing|uploads|api|fonts|brand|icons|media|assets|static|services|chat|favicon\\.ico|robots\\.txt|sitemap\\.xml|manifest\\.webmanifest|opengraph-image|twitter-image|icon|apple-icon|apple-touch-icon|.*\\.(?:svg|png|jpe?g|gif|webp|avif|ico|txt|xml|webmanifest|apk|woff2?|ttf|otf|mp4|webm|css|js|map)$).*)",
+    /*
+     * Run on pages AND public media so photos get an explicit allow + cache
+     * headers. Skip only Next internals and App Router API routes.
+     */
+    "/((?!_next/static|_next/data|_next/image|api/).*)",
   ],
 };

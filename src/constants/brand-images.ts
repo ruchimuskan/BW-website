@@ -8,6 +8,22 @@
  * Paths must match files shipped in /public/images (PNG when no WebP twin exists).
  */
 
+/** Unique lifestyle photos — one assignment per marketing page (never reused). */
+export const PAGE_PHOTOS = {
+  safetyCaptains: "/images/pages/safety-captains-hero.jpg",
+  safetyCustomers: "/images/pages/safety-customers-hero.jpg",
+  safetyVerify: "/images/pages/safety-verify-captain.jpg",
+  safetyCoversCustomers: "/images/pages/safety-covers-customers.jpg",
+  safetyCoversCaptains: "/images/pages/safety-covers-captains.jpg",
+  captains: "/images/pages/page-captains.jpg",
+  captainsSafety: "/images/pages/page-captains-safety.jpg",
+  about: "/images/pages/page-about.jpg",
+  aboutBike: "/images/pages/page-about-bike.jpg",
+  aboutFleet: "/images/pages/page-about-fleet.jpg",
+  sos: "/images/pages/page-sos.jpg",
+  careers: "/images/pages/page-careers.jpg",
+} as const;
+
 export const BRAND_PHOTOS = {
   limeCab: "/images/img-1.png",
   parcelDelivery: "/images/img-2.png",
@@ -128,14 +144,14 @@ export const BRAND_IMAGES = {
   blogCommunity: BRAND_PHOTOS.parcelDelivery,
 } as const;
 
-/** Marlin-style hero cutouts — matched 3D set (cab · parcel · ambulance). */
+/** Marlin-style hero — real lifestyle photography (no 3D/cartoon cutouts). */
 export const HERO_STAGE_ASSETS = {
-  rides: "/images/services/car.webp",
-  ridesFallback: "/images/landing/brand/lime-cab.png",
-  parcel: "/images/landing/brand/parcel-delivery.png",
-  parcelFallback: "/images/services/parcel.png",
-  ambulance: "/images/landing/brand/ambulance.png",
-  ambulanceFallback: "/images/services/ambulance-cutout.png",
+  rides: BRAND_PHOTOS.limeCab,
+  ridesFallback: BRAND_PHOTOS.streetCab,
+  parcel: BRAND_PHOTOS.parcelDelivery,
+  parcelFallback: BRAND_PHOTOS.shootParcel,
+  ambulance: BRAND_PHOTOS.ambulance,
+  ambulanceFallback: BRAND_PHOTOS.shootSos,
 } as const;
 
 export const BRAND_IMAGE_SIZES = {

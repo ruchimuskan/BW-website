@@ -8,16 +8,15 @@ import {
   DEFAULT_SITE_DESCRIPTION,
   SITE_BRAND,
   SITE_BRAND_ALTERNATES,
+  SITE_LOGO_ALT,
+  SITE_LOGO_PATH,
+  SITE_SHARE_IMAGE_PATH,
   absoluteUrl,
   organizationSameAs,
 } from "@/constants/seo";
 import { getSiteUrl } from "@/constants/site";
 import { inter, playwriteEnglandJoined } from "@/lib/fonts";
-import {
-  curatedSeoSiteLinks,
-  fetchSeoSiteLinks,
-  type SeoSiteLink,
-} from "@/lib/seo-sitelinks";
+import { curatedSeoSiteLinks, type SeoSiteLink } from "@/lib/seo-sitelinks";
 import "./globals.css";
 
 const siteUrl = getSiteUrl();
@@ -52,7 +51,7 @@ export const metadata: Metadata = {
       { url: "/icon.png", type: "image/png", sizes: "48x48" },
       { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
       { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
-      { url: "/images/bwride.png", type: "image/png", sizes: "any" },
+      { url: SITE_LOGO_PATH, type: "image/png", sizes: "any" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
@@ -67,18 +66,23 @@ export const metadata: Metadata = {
     description: DEFAULT_SITE_DESCRIPTION,
     images: [
       {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: SITE_BRAND,
+        url: SITE_SHARE_IMAGE_PATH,
+        width: 512,
+        height: 512,
+        alt: SITE_LOGO_ALT,
+        type: "image/png",
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: SITE_BRAND,
     description: DEFAULT_SITE_DESCRIPTION,
-    images: ["/twitter-image"],
+    images: [SITE_SHARE_IMAGE_PATH],
+  },
+  other: {
+    "og:logo": `${siteUrl}${SITE_LOGO_PATH}`,
+    "og:image:alt": SITE_LOGO_ALT,
   },
   robots: {
     index: true,
@@ -112,7 +116,22 @@ function buildSiteGraph(siteLinks: SeoSiteLink[]) {
         url: siteUrl,
         logo: {
           "@type": "ImageObject",
-          url: `${siteUrl}/images/bwride.png`,
+          "@id": `${siteUrl}/#logo`,
+          url: `${siteUrl}${SITE_LOGO_PATH}`,
+          contentUrl: `${siteUrl}${SITE_LOGO_PATH}`,
+          caption: SITE_BRAND,
+          width: 512,
+          height: 512,
+          encodingFormat: "image/png",
+        },
+        image: {
+          "@type": "ImageObject",
+          "@id": `${siteUrl}/#logo`,
+          url: `${siteUrl}${SITE_LOGO_PATH}`,
+          contentUrl: `${siteUrl}${SITE_LOGO_PATH}`,
+          caption: SITE_BRAND,
+          width: 512,
+          height: 512,
         },
         description: DEFAULT_SITE_DESCRIPTION,
         ...(sameAs.length ? { sameAs } : {}),
@@ -124,6 +143,7 @@ function buildSiteGraph(siteLinks: SeoSiteLink[]) {
         alternateName: [...SITE_BRAND_ALTERNATES],
         url: siteUrl,
         description: DEFAULT_SITE_DESCRIPTION,
+        image: `${siteUrl}${SITE_LOGO_PATH}`,
         publisher: { "@id": organizationId },
         inLanguage: "en-IN",
         hasPart: { "@id": `${siteUrl}/#sitelinks` },
@@ -184,23 +204,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const siteLinks = await fetchSeoSiteLinks().catch(() => curatedSeoSiteLinks());
-  const jsonLd = buildSiteGraph(siteLinks);
+  const jsonLd = buildSiteGraph(curatedSeoSiteLinks());
 
   return (
     <html lang="en-IN" data-scroll-behavior="smooth">
       <head>
         <link rel="preconnect" href="https://api.bullwaverides.com" />
         <link rel="dns-prefetch" href="https://api.bullwaverides.com" />
-        <link rel="preload" as="image" href="/images/bwride.png" />
-        <link rel="preload" as="image" href="/images/services/car.webp" type="image/webp" />
-        <link
-          rel="preload"
-          as="image"
-          href="/images/services/ambulance-cutout.png"
-          type="image/png"
-        />
-        <link rel="preload" as="image" href="/images/services/parcel.png" type="image/png" />
+        <link rel="preload" as="image" href={SITE_LOGO_PATH} type="image/png" />
+        <link rel="image_src" href={SITE_LOGO_PATH} />
       </head>
       <body
         className={`${inter.variable} ${playwriteEnglandJoined.variable} font-sans antialiased bg-background text-foreground`}

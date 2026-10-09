@@ -2,7 +2,6 @@
 
 import { MapPin, ShieldCheck, Sparkles } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useState } from "react";
 import { HeroVehicleStage } from "@/components/landing/HeroVehicleStage";
 import {
   LandingBookingWidget,
@@ -29,11 +28,6 @@ export function LandingLuxuryHero({
   ...bookingProps
 }: LandingLuxuryHeroProps) {
   const reduceMotion = useReducedMotion();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const scrollToBook = () => {
     document.getElementById("book")?.scrollIntoView({
@@ -65,7 +59,7 @@ export function LandingLuxuryHero({
           <div className="grid w-full min-w-0 grid-cols-1 items-center gap-4 sm:gap-5 md:gap-6 lg:grid-cols-2 lg:gap-8 xl:gap-9">
             <motion.div
               className="relative z-20 order-1 min-w-0 lg:py-1"
-              initial={reduceMotion || !mounted ? false : { y: 16 }}
+              initial={reduceMotion ? false : { y: 16 }}
               animate={{ y: 0 }}
               transition={{ ...transitions.reveal, delay: 0.04 }}
             >
@@ -90,7 +84,7 @@ export function LandingLuxuryHero({
                   return (
                     <motion.li
                       key={item.label}
-                      initial={reduceMotion || !mounted ? false : { y: 10 }}
+                      initial={reduceMotion ? false : { y: 10 }}
                       animate={{ y: 0 }}
                       transition={{
                         ...transitions.reveal,
@@ -121,7 +115,7 @@ export function LandingLuxuryHero({
 
             <motion.div
               className="relative z-0 order-2 w-full min-w-0 overflow-hidden lg:order-2 lg:flex lg:items-center lg:justify-center"
-              initial={reduceMotion || !mounted ? false : { y: 18, opacity: 0.9 }}
+              initial={reduceMotion ? false : { y: 18, opacity: 0.9 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ ...transitions.reveal, delay: 0.1 }}
             >
@@ -141,7 +135,7 @@ export function LandingLuxuryHero({
       >
         <motion.div
           className="w-full max-w-3xl lg:max-w-4xl"
-          initial={reduceMotion || !mounted ? false : { y: 20 }}
+          initial={reduceMotion ? false : { y: 20 }}
           animate={{ y: 0 }}
           transition={{ ...transitions.reveal, delay: 0.14 }}
         >

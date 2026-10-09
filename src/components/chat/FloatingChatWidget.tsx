@@ -912,18 +912,6 @@ export function FloatingChatWidget() {
           ) : null}
         </AnimatePresence>
 
-        {!open ? (
-          <motion.button
-            type="button"
-            initial={{ opacity: 0, x: 12 }}
-            animate={{ opacity: 1, x: 0 }}
-            onClick={() => setOpen(true)}
-            className="pointer-events-auto max-w-[min(13rem,calc(100vw-5.5rem))] rounded-2xl rounded-br-md border border-[#C6E31A]/45 bg-white px-3 py-2 text-left text-[12px] font-semibold leading-snug text-[#111411] shadow-[0_12px_28px_-14px_rgba(17,20,17,0.45)] lg:hidden"
-          >
-            How can I help you?
-          </motion.button>
-        ) : null}
-
         {!open && showAssistHint ? (
           <motion.button
             type="button"

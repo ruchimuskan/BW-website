@@ -59,7 +59,11 @@ export function captainImageFallbackChain(
 
 /** Local public assets skip the optimizer — faster and reliable on any host. */
 export function shouldSkipImageOptimizer(src: string): boolean {
-  return src.startsWith("/images/") || src.startsWith("/icon") || src.startsWith("/apple");
+  if (!src || src.startsWith("data:") || src.startsWith("blob:")) return true;
+  if (src.startsWith("/")) {
+    return !src.startsWith("//") && !src.startsWith("/api/");
+  }
+  return false;
 }
 
 export function resolveBrandImageSrc(src: string): string {

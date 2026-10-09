@@ -7,6 +7,7 @@ import {
   Loader2,
   MapPin,
   Navigation2,
+  Siren,
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useState } from "react";
@@ -30,17 +31,17 @@ const tabMeta: Record<
   }
 > = {
   rides: {
-    photo: "/images/services/car.webp",
+    photo: BRAND_PHOTOS.limeCab,
     photoAlt: "Rides",
     hint: "Bike, auto & cab — matched in seconds",
   },
   parcel: {
-    photo: "/images/services/parcel.png",
+    photo: BRAND_PHOTOS.parcelDelivery,
     photoAlt: "Parcel",
     hint: "Same-city deliveries with live tracking",
   },
   ambulance: {
-    photo: "/images/services/ambulance-cutout.png",
+    photo: BRAND_PHOTOS.ambulance,
     photoAlt: "Emergency",
     hint: "Verified medical transport, 24×7",
   },
@@ -69,21 +70,23 @@ function TabPhoto({
         className,
       )}
     >
-      <ResilientImage
-        src={src}
-        alt=""
-        fill
-        sizes="36px"
-        className={cn(
-          emergency ? "object-contain p-0.5" : "object-cover",
-        )}
-        aria-hidden
-        fallbackSrc={
-          emergency
-            ? "/images/services/ambulance-cutout.png"
-            : BRAND_PHOTOS.streetCab
-        }
-      />
+      {emergency ? (
+        <Siren
+          className="relative z-10 h-3.5 w-3.5 text-white sm:h-4 sm:w-4"
+          strokeWidth={2.2}
+          aria-hidden
+        />
+      ) : (
+        <ResilientImage
+          src={src}
+          alt=""
+          fill
+          sizes="36px"
+          className="object-cover"
+          aria-hidden
+          fallbackSrc={BRAND_PHOTOS.streetCab}
+        />
+      )}
       <span className="sr-only">{alt}</span>
     </span>
   );
@@ -254,7 +257,7 @@ export function LandingBookingWidget({
                 aria-selected={isActive}
                 onClick={() => onTabChange(tab.id)}
                 className={cn(
-                  "relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1 rounded-lg px-1.5 py-2.5 text-[11px] font-semibold transition-all duration-200 sm:gap-2 sm:px-3 sm:py-3 sm:text-xs md:text-sm",
+                  "relative z-10 flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1 rounded-lg px-1 py-2 text-[11px] font-semibold transition-all duration-200 sm:min-h-12 sm:gap-2 sm:px-3 sm:py-3 sm:text-xs md:text-sm",
                   emergency
                     ? isActive
                       ? "bg-destructive text-white shadow-md shadow-destructive/25"
@@ -269,7 +272,7 @@ export function LandingBookingWidget({
                   alt={photo.photoAlt}
                   active={isActive}
                   emergency={emergency}
-                  className="hidden min-[360px]:block"
+                  className="hidden sm:block"
                 />
                 <span
                   className={cn(

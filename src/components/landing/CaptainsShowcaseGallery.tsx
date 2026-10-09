@@ -11,12 +11,18 @@ import { cn } from "@/lib/utils";
 type CaptainsShowcaseGalleryProps = {
   className?: string;
   priority?: boolean;
+  src?: string;
+  fallbackSrc?: string;
+  alt?: string;
 };
 
-/** Captains hero — img15 from /public/images, HQ webp with png fallback. */
+/** Captains photo — pass a page-unique src so landing and /captains never share. */
 export function CaptainsShowcaseGallery({
   className,
   priority = false,
+  src = BRAND_PHOTOS.captainsHero,
+  fallbackSrc = BRAND_PHOTOS.captainsHeroPng,
+  alt = "BW Rides captain driving at night",
 }: CaptainsShowcaseGalleryProps) {
   return (
     <figure
@@ -27,16 +33,16 @@ export function CaptainsShowcaseGallery({
     >
       <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl bg-[#1a1f16] sm:rounded-3xl">
         <ResilientImage
-          src={BRAND_PHOTOS.captainsHero}
-          alt="BW Rides captain driving at night"
+          src={src}
+          alt={alt}
           fill
           priority={priority}
           sizes={BRAND_IMAGE_SIZES.half}
           className={cn(
             BRAND_PHOTO_CLASS,
-            "object-[center_42%] transition-transform duration-700 hover:scale-[1.02]",
+            "object-cover object-center transition-transform duration-700 hover:scale-[1.02]",
           )}
-          fallbackSrc={BRAND_PHOTOS.captainsHeroPng}
+          fallbackSrc={fallbackSrc}
         />
         <BrandImageOverlay variant="card" />
         <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10" />

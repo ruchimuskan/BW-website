@@ -5,13 +5,11 @@ import { absoluteUrl, SITE_BRAND } from "@/constants/seo";
 import { fetchBlogPost, fetchBlogPosts } from "@/lib/blog-api";
 import { pageMetadata } from "@/lib/page-metadata";
 
+export const revalidate = 60;
+export const dynamicParams = true;
+
 interface BlogArticlePageProps {
   params: Promise<{ slug: string }>;
-}
-
-export async function generateStaticParams() {
-  const posts = await fetchBlogPosts();
-  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({
@@ -49,12 +47,19 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
     notFound();
   }
 
+  const related = (await fetchBlogPosts().catch(() => []))
+    .filter((row) => row.slug !== post.slug)
+    .slice(0, 3);
+
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
     description: post.excerpt,
-    image: [absoluteUrl(post.image)],
+    image: [
+      absoluteUrl("/images/bwride.png"),
+      ...(/ambulance/i.test(post.image) ? [] : [absoluteUrl(post.image)]),
+    ],
     datePublished: post.date,
     dateModified: post.date,
     author: {
@@ -112,7 +117,7 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <BlogArticleView slug={slug} />
+      <BlogArticleView post={post} related={related} />
     </>
   );
 }

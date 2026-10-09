@@ -2,17 +2,15 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
+export const alt = "BW Rides logo";
 export const size = {
   width: 1200,
-  height: 600,
+  height: 630,
 };
-
 export const contentType = "image/png";
 
 export default async function TwitterImage() {
-  const logo = await readFile(
-    join(process.cwd(), "public/images/bwride.png")
-  );
+  const logo = await readFile(join(process.cwd(), "public/images/bwride.png"));
   const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
 
   return new ImageResponse(
@@ -22,43 +20,33 @@ export default async function TwitterImage() {
           width: "100%",
           height: "100%",
           display: "flex",
-          justifyContent: "center",
+          flexDirection: "column",
           alignItems: "center",
-          background:
-            "linear-gradient(135deg, rgba(15,23,42,1) 0%, rgba(0,0,0,0.95) 100%)",
+          justifyContent: "center",
+          background: "#111411",
           color: "white",
-          padding: 64,
         }}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={logoSrc}
+          width={240}
+          height={240}
+          alt="BW Rides"
+          style={{ borderRadius: 40, padding: 8 }}
+        />
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 26,
+            marginTop: 24,
+            fontSize: 52,
+            fontWeight: 800,
+            color: "#C6E31A",
           }}
         >
-          <img
-            src={logoSrc}
-            width={120}
-            height={120}
-            alt="Bullwave Rides"
-            style={{
-              borderRadius: 24,
-              backgroundColor: "rgba(255,255,255,0.06)",
-              padding: 16,
-            }}
-          />
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1 }}>
-              Bullwave Rides
-            </div>
-            <div style={{ fontSize: 26, opacity: 0.9, lineHeight: 1.25 }}>
-              Fast, reliable, and safe rides.
-            </div>
-          </div>
+          BW Rides
         </div>
       </div>
     ),
-    size
+    size,
   );
 }

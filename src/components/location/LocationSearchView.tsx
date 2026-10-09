@@ -238,8 +238,10 @@ export function LocationSearchView() {
   }, [initialQuery]);
 
   // Prefer live GPS so autocomplete stays local (e.g. Delhi places, not Nagpur).
+  // Dropoff already biased to pickup must stay near the trip, not jump to GPS.
   useEffect(() => {
     if (!navigator.geolocation) return;
+    if (field === "dropoff" && savedPlat != null && savedPlng != null) return;
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -266,8 +268,10 @@ export function LocationSearchView() {
   useEffect(() => {
     if (mapLat == null || mapLng == null) return;
     setSearchBias((prev) => {
-      // Don't override a fresher GPS fix with a weaker map default.
-      if (biasLabel === "Near your GPS") return prev;
+      // Don't override a fresher GPS fix or pickup-anchored dropoff search.
+      if (biasLabel === "Near your GPS" || biasLabel === "Near your pickup") {
+        return prev;
+      }
       return {
         latitude: mapLat,
         longitude: mapLng,

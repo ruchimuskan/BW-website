@@ -3,6 +3,7 @@ import { SafetyPolicyView } from "@/components/landing/SafetyPolicyView";
 import { SITE_LINK_PAGES } from "@/constants/seo";
 import { ROUTES } from "@/constants/routes";
 import { pageMetadata } from "@/lib/page-metadata";
+import type { SafetyAudience } from "@/constants/safety-content";
 
 const page =
   SITE_LINK_PAGES.find((p) => p.path === ROUTES.safety) ??
@@ -16,6 +17,17 @@ export const metadata: Metadata = pageMetadata({
   path: ROUTES.safety,
 });
 
-export default function SafetyPage() {
-  return <SafetyPolicyView />;
+function parseTab(raw: string | undefined): SafetyAudience {
+  if (raw === "customer" || raw === "captain" || raw === "all") return raw;
+  return "all";
+}
+
+export default async function SafetyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const raw = Array.isArray(params.tab) ? params.tab[0] : params.tab;
+  return <SafetyPolicyView initialTab={parseTab(raw)} />;
 }

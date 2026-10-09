@@ -551,11 +551,11 @@ export function RideBookingView() {
               service_group: "ride",
             };
             if (tab === "ambulance" && !match) {
-              const fake = {
+              const quoteVehicle = {
                 slug: quote.name ?? quote.vehicle_type_id,
                 name: quote.name ?? quote.vehicle_type_id,
               };
-              if (!isAmbulanceVehicle(fake)) continue;
+              if (!isAmbulanceVehicle(quoteVehicle)) continue;
             }
             if (tab !== "ambulance" && tab !== "parcel" && !isListedRideCategory(category)) {
               continue;

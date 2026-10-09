@@ -26,12 +26,6 @@ export default function HomePage() {
       <link rel="preload" as="image" href="/images/gallery/shoot-auto.png" type="image/png" />
       <link rel="preload" as="image" href="/images/services/e-rickshaw.png" type="image/png" />
       <link rel="preload" as="image" href="/images/services/cab-lime.png" type="image/png" />
-      <link
-        rel="preload"
-        as="image"
-        href="/images/services/ambulance-cutout.png"
-        type="image/png"
-      />
       <Suspense fallback={<HomeFallback />}>
         <HomeView />
       </Suspense>

@@ -21,11 +21,8 @@ import { MarketingPageShell } from "@/components/landing/MarketingPageShell";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
 import { ROUTES } from "@/constants/routes";
-import { BRAND_PHOTOS } from "@/constants/brand-images";
-import {
-  landingAssets,
-  landingStats,
-} from "@/constants/services";
+import { PAGE_PHOTOS } from "@/constants/brand-images";
+import { landingStats } from "@/constants/services";
 import { getProtectedPath } from "@/lib/auth-session";
 import { cn } from "@/lib/utils";
 
@@ -233,9 +230,9 @@ export function AboutUsView() {
 
             <AnimateIn delay={0.1}>
               <p className="mt-3 max-w-md text-sm font-light leading-relaxed text-[#4a5228] sm:mt-4 sm:text-base">
-                We are not an option — we are a choice. Millions of riders trust
-                BW Rides for safe, transparently priced journeys from bike to
-                emergency <AmbulanceWord />.
+                We are not an option — we are a choice. Riders trust BW Rides
+                for safe, transparently priced journeys from bike to emergency{" "}
+                <AmbulanceWord />.
               </p>
             </AnimateIn>
 
@@ -271,16 +268,16 @@ export function AboutUsView() {
           >
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#dce8a8]/60 bg-[#1a1f16] shadow-[0_28px_56px_-28px_rgba(40,54,20,0.5)] sm:rounded-3xl">
               <ResilientImage
-                src={BRAND_PHOTOS.captainsHero}
-                alt="BW Rides captain driving at night"
+                src={PAGE_PHOTOS.about}
+                alt="BW Rides operations team"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 560px"
                 className={cn(
                   BRAND_PHOTO_CLASS,
-                  "object-[center_42%]",
+                  "object-cover object-center",
                 )}
-                fallbackSrc={BRAND_PHOTOS.captainsHeroPng}
+                fallbackSrc={PAGE_PHOTOS.aboutFleet}
               />
               <BrandImageOverlay variant="card" />
               <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10" />
@@ -292,12 +289,12 @@ export function AboutUsView() {
 
                 <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border-2 border-white/85 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.55)] sm:h-16 sm:w-16 sm:rounded-2xl">
                   <ResilientImage
-                    src={landingAssets.cityBike}
+                    src={PAGE_PHOTOS.aboutBike}
                     alt="BW Rides bike taxi"
                     fill
                     sizes="64px"
                     className={cn(BRAND_PHOTO_CLASS, "object-center")}
-                    fallbackSrc="/images/pic-14.png"
+                    fallbackSrc={PAGE_PHOTOS.about}
                   />
                   <BrandImageOverlay variant="subtle" />
                 </div>
@@ -449,7 +446,7 @@ export function AboutUsView() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <ResilientImage
-            src={landingAssets.slideFleet}
+            src={PAGE_PHOTOS.aboutFleet}
             alt=""
             fill
             className={BRAND_PHOTO_CLASS}

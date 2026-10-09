@@ -6,10 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Minus, Plus } from "lucide-react";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  landingFaqItems,
-  shortenLandingFaqQuestion,
-} from "@/constants/landing-faq";
+import { shortenLandingFaqQuestion } from "@/constants/landing-faq";
 import { ROUTES } from "@/constants/routes";
 import { getProtectedPath } from "@/lib/auth-session";
 import { fetchLandingFaqs, type LandingFaq } from "@/lib/landing-api";
@@ -23,16 +20,6 @@ function toDisplayFaqs(items: LandingFaq[]): LandingFaq[] {
   }));
 }
 
-function bundledFaqs(): LandingFaq[] {
-  return toDisplayFaqs(
-    landingFaqItems.map(({ id, question, answer }) => ({
-      id,
-      question,
-      answer,
-    })),
-  );
-}
-
 interface LandingFaqSectionProps {
   /** Server-fetched FAQs — must match FAQPage JSON-LD for Google rich results. */
   initialFaqs?: LandingFaq[];
@@ -41,7 +28,7 @@ interface LandingFaqSectionProps {
 export function LandingFaqSection({ initialFaqs }: LandingFaqSectionProps) {
   const reduceMotion = useReducedMotion();
   const headingId = useId();
-  const seed = initialFaqs?.length ? toDisplayFaqs(initialFaqs) : bundledFaqs();
+  const seed = initialFaqs?.length ? toDisplayFaqs(initialFaqs) : [];
   const [faqItems, setFaqItems] = useState<LandingFaq[]>(seed);
   const [faqsLoaded, setFaqsLoaded] = useState(Boolean(initialFaqs?.length));
   const [openId, setOpenId] = useState<string | null>(null);
@@ -52,6 +39,10 @@ export function LandingFaqSection({ initialFaqs }: LandingFaqSectionProps) {
   }, []);
 
   useEffect(() => {
+    if (initialFaqs?.length) {
+      setFaqsLoaded(true);
+      return;
+    }
     let cancelled = false;
     void fetchLandingFaqs()
       .then((items) => {
@@ -68,7 +59,7 @@ export function LandingFaqSection({ initialFaqs }: LandingFaqSectionProps) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialFaqs?.length]);
 
   return (
     <section

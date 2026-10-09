@@ -11,7 +11,7 @@ export function PageBackground({ className }: { className?: string }) {
       )}
       style={{
         backgroundImage:
-          "radial-gradient(ellipse 55% 42% at 0% 0%, rgba(198,227,26,0.16), transparent 58%), radial-gradient(ellipse 48% 38% at 100% 0%, rgba(17,20,17,0.05), transparent 52%), linear-gradient(180deg, #F7F8F5 0%, #F4F5F2 42%, #EEF0EC 100%)",
+          "radial-gradient(ellipse 58% 44% at 0% 0%, rgba(198,227,26,0.18), transparent 60%), radial-gradient(ellipse 42% 36% at 100% 0%, rgba(56,71,27,0.07), transparent 54%), linear-gradient(180deg, #F8F9F4 0%, #F4F5F2 48%, #EEF1E8 100%)",
       }}
     />
   );

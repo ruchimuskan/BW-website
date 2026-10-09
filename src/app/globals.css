@@ -60,8 +60,8 @@
   --brand-ink: #111411;
   --brand-asphalt: #1A1F16;
   --brand-steel: #5A6158;
-  --brand-olive: #1A1F16;
-  --brand-olive-deep: #111411;
+  --brand-olive: #38471B;
+  --brand-olive-deep: #283614;
   --brand-sage: #5A6158;
   --brand-lime: #C6E31A;
   --brand-lime-soft: #D4F04A;
@@ -241,23 +241,55 @@ body {
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: calc(4.5rem + env(safe-area-inset-top, 0px));
   overflow-x: clip;
   max-width: 100%;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  color-scheme: light;
+  overscroll-behavior-x: none;
 }
 
 body {
   overflow-x: clip;
   max-width: 100%;
+  overscroll-behavior-x: none;
+  -webkit-overflow-scrolling: touch;
 }
 
-img,
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media (max-width: 639px) {
+  .bw-page-root h1,
+  .bw-page-root h2,
+  .bw-page-root p {
+    overflow-wrap: break-word;
+  }
+}
+
+::selection {
+  background: #c6e31a;
+  color: #111411;
+}
+
+img {
+  image-rendering: auto;
+  max-width: 100%;
+}
+
+/* Do not force height:auto on next/image fill photos (breaks rings and heroes). */
+img:not([data-nimg="fill"]) {
+  height: auto;
+}
+
 video,
 canvas,
 svg {
   max-width: 100%;
-  height: auto;
 }
 
 .bw-page-root input,
@@ -270,6 +302,15 @@ svg {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+}
+
+@keyframes pillar-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
   }
 }
 
@@ -513,7 +554,7 @@ svg {
 
   /** Standard marketing content width — aligned with landingShell. */
   .bw-marketing-container {
-    @apply mx-auto w-full min-w-0 max-w-[min(100%,76rem)] px-3 sm:px-4 md:px-5 lg:px-6 xl:max-w-[min(100%,82rem)] xl:px-7 2xl:max-w-[min(100%,88rem)];
+    @apply mx-auto w-full min-w-0 max-w-[min(100%,76rem)] px-2.5 min-[360px]:px-3 sm:px-4 md:px-5 lg:px-6 xl:max-w-[min(100%,82rem)] xl:px-7 2xl:max-w-[min(100%,88rem)];
   }
 
   .bw-responsive-section {
@@ -1300,6 +1341,14 @@ svg {
 }
 
 @media (max-width: 640px) {
+  .bw-page-bg__mesh,
+  .bw-page-bg__orb,
+  .bw-page-bg__beam,
+  .bw-page-bg__dot {
+    animation: none !important;
+    will-change: auto;
+  }
+
   .bw-page-bg__orb {
     filter: blur(40px);
   }

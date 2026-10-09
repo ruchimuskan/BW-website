@@ -55,7 +55,7 @@ function VerificationAccordion({
                 className={cn(
                   "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-all",
                   isOpen
-                    ? "border-primary/30 bg-primary text-white rotate-45"
+                    ? "border-[#C6E31A] bg-[#C6E31A] text-[#111411] rotate-45"
                     : "border-[#dce8a8]/70 bg-[#f8fbe8]/80 text-primary",
                 )}
               >
@@ -99,7 +99,7 @@ export function CustomerSafetyView() {
       >
         <SafetyAtmosphere />
 
-        <div className={landingShell("relative grid items-center gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16")}>
+        <div className={landingShell("relative grid items-center gap-8 pb-28 sm:gap-12 sm:pb-12 lg:grid-cols-2 lg:gap-16 lg:pb-0")}>
           <div className="min-w-0">
             <AnimateIn>
               <SafetyEyebrow>Customers</SafetyEyebrow>
@@ -107,7 +107,7 @@ export function CustomerSafetyView() {
             <AnimateIn delay={0.06}>
               <h1
                 id="customer-safety-heading"
-                className="mt-5 font-heading text-[2.15rem] font-light leading-[1.12] tracking-tight sm:text-5xl lg:text-[3.1rem] bw-title"
+                className="mt-5 font-heading text-[1.85rem] font-semibold leading-[1.12] tracking-tight text-[#111411] sm:text-5xl lg:text-[3.1rem]"
               >
                 {hero.title}
               </h1>

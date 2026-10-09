@@ -2,31 +2,18 @@
 
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { MarketingPageShell } from "@/components/landing/MarketingPageShell";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingLuxuryHero } from "@/components/landing/LandingLuxuryHero";
-import { LandingPremiumExperience } from "@/components/landing/LandingPremiumExperience";
 import { LandingPremiumGallery } from "@/components/landing/LandingPremiumGallery";
 import { LandingServicesSection } from "@/components/landing/LandingServicesSection";
 import { LandingFaqSection } from "@/components/landing/LandingFaqSection";
 import { ROUTES } from "@/constants/routes";
-import {
-  landingServices,
-  type LandingBookingTab,
-  type ServiceItem,
-} from "@/constants/services";
+import { type LandingBookingTab, type ServiceItem } from "@/constants/services";
 import { fetchLandingServices } from "@/lib/landing-api";
 import type { LandingFaq } from "@/lib/landing-api";
-import { warmBackend } from "@/lib/api";
 import {
   clearLandingBookingDraft,
   normalizeScheduledAt,
@@ -58,18 +45,18 @@ const LandingPillarsSection = dynamic(
     import("@/components/landing/LandingPillarsSection").then(
       (m) => m.LandingPillarsSection,
     ),
-  { ssr: false, loading: () => <SectionSkeleton className="min-h-[14rem]" /> },
+  { loading: () => <SectionSkeleton className="min-h-[14rem]" /> },
 );
 const SosSection = dynamic(
   () => import("@/components/landing/SosSection").then((m) => m.SosSection),
-  { ssr: false, loading: () => <SectionSkeleton className="min-h-[18rem]" /> },
+  { loading: () => <SectionSkeleton className="min-h-[18rem]" /> },
 );
 const LandingCaptainsSection = dynamic(
   () =>
     import("@/components/landing/LandingCaptainsSection").then(
       (m) => m.LandingCaptainsSection,
     ),
-  { ssr: false, loading: () => <SectionSkeleton className="min-h-[18rem]" /> },
+  { loading: () => <SectionSkeleton className="min-h-[18rem]" /> },
 );
 
 function getDropoffLocationCopy(tab: LandingBookingTab) {
@@ -96,8 +83,10 @@ function getDropoffLocationCopy(tab: LandingBookingTab) {
 
 export function LandingView({
   faqs,
+  initialServices = [],
 }: {
   faqs?: LandingFaq[];
+  initialServices?: ServiceItem[];
 } = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -114,9 +103,13 @@ export function LandingView({
     null,
   );
   const [isBooking, setIsBooking] = useState(false);
-  const [services, setServices] = useState<ServiceItem[]>(landingServices);
+  const [services, setServices] = useState<ServiceItem[]>(initialServices);
+  const [servicesLoading, setServicesLoading] = useState(
+    initialServices.length === 0,
+  );
   const [draftHydrated, setDraftHydrated] = useState(false);
   const [gpsEnabled, setGpsEnabled] = useState(false);
+  const [allowUrlCoords, setAllowUrlCoords] = useState(true);
   const hydratedOnce = useRef(false);
 
   const dropoffCopy = getDropoffLocationCopy(activeTab);
@@ -125,18 +118,18 @@ export function LandingView({
     () => ({
       pickupLat:
         pickupLat ??
-        (Number(searchParams.get("plat")) || undefined),
+        (allowUrlCoords ? Number(searchParams.get("plat")) || undefined : undefined),
       pickupLng:
         pickupLng ??
-        (Number(searchParams.get("plng")) || undefined),
+        (allowUrlCoords ? Number(searchParams.get("plng")) || undefined : undefined),
       dropoffLat:
         dropoffLat ??
-        (Number(searchParams.get("dlat")) || undefined),
+        (allowUrlCoords ? Number(searchParams.get("dlat")) || undefined : undefined),
       dropoffLng:
         dropoffLng ??
-        (Number(searchParams.get("dlng")) || undefined),
+        (allowUrlCoords ? Number(searchParams.get("dlng")) || undefined : undefined),
     }),
-    [pickupLat, pickupLng, dropoffLat, dropoffLng, searchParams],
+    [allowUrlCoords, pickupLat, pickupLng, dropoffLat, dropoffLng, searchParams],
   );
 
   const gpsPickup = useBackendGpsPickup(gpsEnabled);
@@ -186,20 +179,25 @@ export function LandingView({
   );
 
   useEffect(() => {
-    void warmBackend();
+    if (initialServices.length > 0) {
+      setServicesLoading(false);
+      return;
+    }
     let cancelled = false;
-    // Soft refresh only — curated local tiles already render instantly.
     void fetchLandingServices()
       .then((items) => {
         if (!cancelled && items.length > 0) setServices(items);
       })
       .catch(() => {
-        if (!cancelled) setServices(landingServices);
+        /* Keep server-fetched tiles; never invent catalog SKUs. */
+      })
+      .finally(() => {
+        if (!cancelled) setServicesLoading(false);
       });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialServices.length]);
 
   useEffect(() => {
     const urlPickup = searchParams.get("pickup")?.trim() || "";
@@ -256,6 +254,7 @@ export function LandingView({
 
     if (!hydratedOnce.current && !restorePlaces) {
       clearLandingBookingDraft();
+      setAllowUrlCoords(false);
       // Drop sticky place leftovers so a refresh of `/` uses live GPS pickup.
       try {
         const url = new URL(window.location.href);
@@ -275,11 +274,9 @@ export function LandingView({
           }
         }
         if (dirty) {
-          window.history.replaceState(
-            window.history.state,
-            "",
-            `${url.pathname}${url.search}${url.hash}`,
-          );
+          router.replace(`${url.pathname}${url.search}${url.hash}`, {
+            scroll: false,
+          });
         }
       } catch {
         // ignore
@@ -307,7 +304,7 @@ export function LandingView({
       const timer = window.setTimeout(scrollToBookWidget, 80);
       return () => window.clearTimeout(timer);
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   /** Apply backend-resolved GPS place into pickup (never overwrite user choice). */
   useEffect(() => {
@@ -526,11 +523,9 @@ export function LandingView({
         isSubmitting={isBooking}
       />
 
-      <LandingServicesSection services={services} />
+      <LandingServicesSection services={services} isLoading={servicesLoading} />
 
       <LandingPremiumGallery />
-
-      <LandingPremiumExperience />
 
       <LandingPillarsSection />
 

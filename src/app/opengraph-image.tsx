@@ -2,17 +2,15 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
+export const alt = "BW Rides logo";
 export const size = {
   width: 1200,
   height: 630,
 };
-
 export const contentType = "image/png";
 
 export default async function OpenGraphImage() {
-  const logo = await readFile(
-    join(process.cwd(), "public/images/bwride.png")
-  );
+  const logo = await readFile(join(process.cwd(), "public/images/bwride.png"));
   const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
 
   return new ImageResponse(
@@ -23,65 +21,57 @@ export default async function OpenGraphImage() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
           alignItems: "center",
-          background:
-            "linear-gradient(135deg, rgba(0,0,0,0.92) 0%, rgba(17,24,39,1) 55%, rgba(0,0,0,0.92) 100%)",
+          justifyContent: "center",
+          background: "linear-gradient(145deg, #111411 0%, #1A1F16 55%, #111411 100%)",
           color: "white",
-          padding: 64,
         }}
       >
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 28,
-            width: "100%",
+            position: "absolute",
+            width: 720,
+            height: 720,
+            borderRadius: 720,
+            background: "rgba(198, 227, 26, 0.16)",
+            top: -220,
+            right: -180,
           }}
-        >
-          <img
-            src={logoSrc}
-            width={140}
-            height={140}
-            alt="Bullwave Rides"
-            style={{
-              borderRadius: 28,
-              backgroundColor: "rgba(255,255,255,0.06)",
-              padding: 18,
-            }}
-          />
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ fontSize: 64, fontWeight: 800, lineHeight: 1 }}>
-              Bullwave Rides
-            </div>
-            <div
-              style={{
-                fontSize: 30,
-                opacity: 0.9,
-                lineHeight: 1.25,
-                maxWidth: 820,
-              }}
-            >
-              Premium ride-booking platform for fast, reliable, and safe rides.
-            </div>
-          </div>
-        </div>
-
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={logoSrc}
+          width={280}
+          height={280}
+          alt="BW Rides"
+          style={{
+            borderRadius: 48,
+            backgroundColor: "#111411",
+            padding: 12,
+          }}
+        />
         <div
           style={{
-            marginTop: 44,
-            display: "flex",
-            width: "100%",
-            justifyContent: "space-between",
-            opacity: 0.85,
-            fontSize: 22,
+            marginTop: 28,
+            fontSize: 64,
+            fontWeight: 800,
+            letterSpacing: -1,
+            color: "#C6E31A",
           }}
         >
-          <div>Book rides • Track trips • Safety-first</div>
-          <div>bullwaverides</div>
+          BW Rides
+        </div>
+        <div
+          style={{
+            marginTop: 10,
+            fontSize: 26,
+            color: "rgba(255,255,255,0.82)",
+          }}
+        >
+          Ride with confidence
         </div>
       </div>
     ),
-    size
+    size,
   );
 }

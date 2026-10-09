@@ -26,8 +26,12 @@ const tabIcons: Record<SafetyAudience, typeof Shield> = {
   captain: Car,
 };
 
-export function SafetyPolicyView() {
-  const [activeTab, setActiveTab] = useState<SafetyAudience>("all");
+export function SafetyPolicyView({
+  initialTab = "all",
+}: {
+  initialTab?: SafetyAudience;
+}) {
+  const [activeTab, setActiveTab] = useState<SafetyAudience>(initialTab);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -81,10 +85,10 @@ export function SafetyPolicyView() {
                   aria-selected={selected}
                   onClick={() => selectTab(tab.id)}
                   className={cn(
-                    "relative flex min-w-[7.5rem] flex-1 items-center justify-center gap-1.5 rounded-xl px-2.5 py-2.5 text-[12px] font-semibold tracking-wide transition-all duration-300 sm:min-w-0 sm:gap-2 sm:px-5 sm:py-3.5 sm:text-sm",
+                    "relative flex min-w-0 flex-1 items-center justify-center gap-1 rounded-xl px-1.5 py-2 text-[11px] font-semibold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-3.5 sm:text-sm",
                     selected
-                      ? "bg-gradient-to-r from-primary to-[#9BB820] text-white shadow-[0_10px_28px_-14px_rgba(184,217,38,0.65)]"
-                      : "text-[#4a5228]/80 hover:bg-primary/[0.05] hover:text-primary",
+                      ? "bg-[#C6E31A] text-[#111411] shadow-[0_10px_28px_-14px_rgba(198,227,26,0.85)]"
+                      : "text-[#38471B]/80 hover:bg-[#C6E31A]/12 hover:text-[#111411]",
                   )}
                 >
                   <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden />

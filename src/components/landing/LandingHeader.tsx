@@ -50,7 +50,7 @@ const navIcons: Record<string, LucideIcon> = {
   [ROUTES.blogs]: BookOpen,
 };
 
-function getActiveFromUrl(pathname: string) {
+function getActiveFromUrl(pathname: string, hash = "") {
   if (pathname === ROUTES.about) return ROUTES.about;
   if (pathname === ROUTES.safety) return ROUTES.safety;
   if (pathname === ROUTES.sos) return ROUTES.sos;
@@ -69,7 +69,6 @@ function getActiveFromUrl(pathname: string) {
     return "";
   }
   if (pathname === ROUTES.landing) {
-    const hash = typeof window !== "undefined" ? window.location.hash : "";
     if (hash && landingNavLinks.some((link) => link.href === hash)) {
       return hash;
     }
@@ -93,10 +92,11 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
   const bookRideHref = loggedIn ? ROUTES.home : ROUTES.ride;
 
   useEffect(() => {
-    setActiveNav(getActiveFromUrl(pathname));
-    const onHashChange = () => setActiveNav(getActiveFromUrl(pathname));
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
+    const apply = () =>
+      setActiveNav(getActiveFromUrl(pathname, window.location.hash));
+    apply();
+    window.addEventListener("hashchange", apply);
+    return () => window.removeEventListener("hashchange", apply);
   }, [pathname]);
 
   useEffect(() => {
@@ -141,7 +141,7 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
   const closeMobile = () => setMobileMenuOpen(false);
 
   const downloadButtonClass =
-    "bg-[#C6E31A] text-[#1B3A22] hover:bg-[#D4F04A] shadow-[0_8px_20px_-12px_rgba(27,58,34,0.35)]";
+    "bg-[#C6E31A] text-[#111411] hover:bg-[#D4F04A] shadow-[0_8px_20px_-12px_rgba(56,71,27,0.35)]";
 
   return (
     <>
@@ -180,6 +180,8 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
             onClick={() => handleNavClick(logoHref)}
             className="flex min-w-0 shrink-0 items-center transition-opacity hover:opacity-90"
             aria-label="BW Rides home"
+            itemScope
+            itemType="https://schema.org/Organization"
           >
             <WaveGoLogo
               size="sm"
@@ -216,11 +218,11 @@ export function LandingHeader({ variant = "default" }: LandingHeaderProps) {
                       "whitespace-nowrap rounded-full px-1.5 py-1 text-[10px] font-semibold tracking-tight transition-colors lg:px-2 lg:py-1.5 lg:text-[11px] xl:px-2.5 xl:text-[12px] 2xl:px-3.5 2xl:text-[13px]",
                       luxury
                         ? active
-                          ? "bg-[#C6E31A] text-[#1B3A22]"
+                          ? "bg-[#C6E31A] text-[#111411]"
                           : "text-white/75 hover:bg-white/10 hover:text-white"
                         : active
-                          ? "bg-[#C6E31A] text-[#1B3A22] shadow-[0_4px_14px_-6px_rgba(198,227,26,0.7)]"
-                          : "text-[#1B3A22]/75 hover:bg-[#F4F5F2] hover:text-[#1B3A22]",
+                          ? "bg-[#C6E31A] text-[#111411] shadow-[0_4px_14px_-6px_rgba(198,227,26,0.7)]"
+                          : "text-[#38471B]/80 hover:bg-[#F4F5F2] hover:text-[#111411]",
                     )}
                   >
                     <span className="xl:hidden">{link.shortLabel}</span>

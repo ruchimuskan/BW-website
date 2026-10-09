@@ -13,23 +13,23 @@ import {
   Users,
 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
-import { BRAND_PHOTOS } from "@/constants/brand-images";
+import { BRAND_PHOTOS, PAGE_PHOTOS } from "@/constants/brand-images";
 import { landingAssets } from "@/constants/services";
 
-/** Customer-focused assets — real brand photography only (no cartoons). */
+/** Customer-focused assets — page-unique photography (no shared heroes). */
 const customerImages = {
-  quickPickup: BRAND_PHOTOS.streetCab,
-  rideConfirmed: BRAND_PHOTOS.streetCab,
-  familyRide: BRAND_PHOTOS.eAuto,
+  quickPickup: PAGE_PHOTOS.safetyCoversCustomers,
+  rideConfirmed: PAGE_PHOTOS.safetyCustomers,
+  familyRide: PAGE_PHOTOS.safetyCoversCustomers,
   bikePassenger: BRAND_PHOTOS.studioBike,
   ambulance: BRAND_PHOTOS.ambulance,
 } as const;
 
-/** Captain-focused assets (partners, fleet, delivery) */
+/** Captain-focused assets — unique from /captains and landing. */
 const captainImages = {
-  partner: BRAND_PHOTOS.captainsHero,
-  partnerPng: BRAND_PHOTOS.captainsHeroPng,
-  partnerIllustration: BRAND_PHOTOS.captainsHero,
+  partner: PAGE_PHOTOS.safetyCoversCaptains,
+  partnerPng: PAGE_PHOTOS.safetyCoversCaptains,
+  partnerIllustration: PAGE_PHOTOS.safetyCoversCaptains,
   fleet: landingAssets.slideFleet,
   delivery: landingAssets.slideParcel,
 } as const;
@@ -47,7 +47,7 @@ export const safetyHeroImages = [
     src: "/images/services/cab-lime.png",
     alt: "BW Rides premium street cab",
     label: "Street Cab",
-    fallbackSrc: BRAND_PHOTOS.streetCab,
+    fallbackSrc: BRAND_PHOTOS.limeCab,
   },
   {
     src: "/images/services/ambulance-studio.png",
@@ -58,10 +58,10 @@ export const safetyHeroImages = [
     fallbackSrc: BRAND_PHOTOS.ambulance,
   },
   {
-    src: BRAND_PHOTOS.studioBike,
+    src: "/images/services/bike.png",
     alt: "BW Rides bike taxi",
     label: "Bike Taxi",
-    fallbackSrc: "/images/pic-14.png",
+    fallbackSrc: BRAND_PHOTOS.studioBike,
   },
 ] as const;
 
@@ -72,8 +72,8 @@ export const coversEveryoneCards = [
     description:
       "Every ride is protected through live tracking, verified captain information, emergency support, and trip-sharing features designed to keep you safe.",
     image: customerImages.quickPickup,
-    alt: "BW Rides customer safety",
-    imageFallbackSrc: "/images/pic-12.png",
+    alt: "Family travelling safely with BW Rides",
+    imageFallbackSrc: PAGE_PHOTOS.safetyCustomers,
     tab: "customer" as const,
   },
   {
@@ -82,9 +82,8 @@ export const coversEveryoneCards = [
     description:
       "BW Rides supports captains with verification systems, safety training, emergency support tools, and fair platform policies.",
     image: captainImages.partner,
-    alt: "BW Rides captain driving at night",
-    imageFallbackSrc: captainImages.partnerPng,
-    imageClassName: "object-[center_42%]",
+    alt: "BW Rides captain with on-road safety gear",
+    imageFallbackSrc: PAGE_PHOTOS.safetyCaptains,
     tab: "captain" as const,
   },
 ] as const;
@@ -187,36 +186,42 @@ export const protectionSteps = [
 export const safetyFaqItems = [
   {
     id: "verify",
+    tag: "Ride",
     question: "How does BW Rides verify drivers?",
     answer:
       "Every captain submits government ID, driving license, vehicle documents, and passes background screening. Profiles are re-verified periodically to maintain platform standards.",
   },
   {
     id: "share",
+    tag: "Ride",
     question: "How can I share my ride with family?",
     answer:
       "During an active trip, tap Share trip to send a live tracking link to trusted contacts via SMS or messaging apps.",
   },
   {
     id: "emergency",
+    tag: "Emergency",
     question: "What should I do in an emergency?",
     answer:
       "Use in-app SOS for immediate BW Rides support. For life-threatening situations, call local emergency services first, then report the incident through Help & Support.",
   },
   {
     id: "sos",
+    tag: "Emergency",
     question: "How does the SOS feature work?",
     answer:
       "SOS connects you to BW Rides' safety team with your live location and trip details. The team can coordinate with local authorities when required.",
   },
   {
     id: "privacy",
+    tag: "Privacy",
     question: "Is my personal data secure?",
     answer:
       "BW Rides encrypts personal data and follows our Privacy Policy. Trip data is used for safety, support, and service improvement — never sold to third parties.",
   },
   {
     id: "report",
+    tag: "Support",
     question: "How can I report a safety issue?",
     answer:
       "Open Help & Support from the app menu, select Report Issue, and share trip details. Our trust & safety team reviews reports within 24 hours.",
@@ -517,18 +522,18 @@ export const customerSafetyPage = {
     title: "Customers Safety",
     description:
       "At BW Rides, the well-being of our customers is above everything else. We constantly enhance our safety technologies and processes — live tracking, verified captains, SOS support, and trip sharing — so every ride is secure and comfortable.",
-    image: BRAND_PHOTOS.streetCab,
-    alt: "BW Rides customer enjoying a safe street cab ride",
-    fallbackSrc: "/images/pic-12.png",
+    image: PAGE_PHOTOS.safetyCustomers,
+    alt: "BW Rides customer on a tracked cab ride",
+    fallbackSrc: PAGE_PHOTOS.safetyCoversCustomers,
   },
   captainVerification: {
     title: "Captain Verification",
     description:
       "At BW Rides, the safety and security of our customers is of utmost importance. We have a zero-tolerance policy towards captains who violate our community guidelines. Every captain undergoes a thorough background check and verification before joining the platform.",
-    image: BRAND_PHOTOS.captainsHero,
-    alt: "Verified BW Rides captain partner",
-    imageFallbackSrc: BRAND_PHOTOS.captainsHeroPng,
-    imageClassName: "object-[center_42%]",
+    image: PAGE_PHOTOS.safetyVerify,
+    alt: "BW Rides captain completing partner verification",
+    imageFallbackSrc: PAGE_PHOTOS.safetyCoversCaptains,
+    imageClassName: "object-[center_40%]",
     accordion: [
       {
         id: "hiring",
@@ -621,9 +626,9 @@ export const captainSafetyPage = {
     title: "Captains Safety",
     description:
       "At BW Rides, every captain on the road matters. All active rides are insured — with accidental coverage and medical benefits up to ₹5 Lakh for you and your family. From OPD treatment and hospitalisation to emergency support, we stand behind our partners so you can ride with confidence, every single trip.",
-    image: BRAND_PHOTOS.captainsHero,
-    alt: "BW Rides captain on the road at night",
-    fallbackSrc: BRAND_PHOTOS.captainsHeroPng,
+    image: PAGE_PHOTOS.safetyCaptains,
+    alt: "BW Rides captain driving with partner protection",
+    fallbackSrc: PAGE_PHOTOS.safetyCaptains,
     imageClassName: "object-[center_42%]",
   },
   measures: {

@@ -12,7 +12,7 @@ import { LandingHeader } from "@/components/landing/LandingHeader";
 import { AnimateIn, Stagger, StaggerItem } from "@/components/motion";
 import { buttonVariants } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
-import { landingAssets } from "@/constants/services";
+import { PAGE_PHOTOS } from "@/constants/brand-images";
 import { getProtectedPath } from "@/lib/auth-session";
 import { cn } from "@/lib/utils";
 
@@ -138,8 +138,8 @@ export function SosView() {
           <AnimateIn direction="right" delay={0.1}>
             <div className="relative aspect-[5/4] overflow-hidden rounded-xl border border-primary/15 bg-[#f7fbe8] shadow-[0_24px_48px_-28px_rgba(184,217,38,0.45)] sm:rounded-2xl">
               <Image
-                src={landingAssets.slideAmbulance}
-                alt="BW Rides emergency ambulance"
+                src={PAGE_PHOTOS.sos}
+                alt="BW Rides emergency ambulance support"
                 fill
                 priority
                 quality={90}

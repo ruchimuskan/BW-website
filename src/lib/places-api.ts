@@ -364,6 +364,8 @@ export async function resolveCurrentGpsPlace(options?: {
         resolve(pos);
       };
 
+      const timer = setTimeout(() => finish(current), refineMs);
+
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
           if (
@@ -377,8 +379,6 @@ export async function resolveCurrentGpsPlace(options?: {
         () => finish(current),
         { enableHighAccuracy: true, maximumAge: 0, timeout: timeoutMs },
       );
-
-      const timer = setTimeout(() => finish(current), refineMs);
 
       signal?.addEventListener("abort", () => finish(current), { once: true });
     });
